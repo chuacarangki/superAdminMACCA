@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>SUPER ADMIN MACCA - INTEGRATED v13.4</title>
+    <title>SUPER ADMIN MACCA - TOTAL ORDER UPDATE</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -44,21 +44,21 @@
             <div class="stat-card text-center border-t-2 border-yellow-500/20">
                 <p class="text-[9px] font-bold text-slate-500 uppercase mb-1">Stok Ayam</p>
                 <h4 id="dash-ayam" class="text-4xl font-black italic text-yellow-500">--</h4>
-                <p class="text-[8px] text-zinc-600 mt-1 italic uppercase">V13.4 Synchronized</p>
+                <p class="text-[8px] text-zinc-600 mt-1 italic uppercase">V13.4 Sync</p>
             </div>
             <div class="stat-card text-center border-t-2 border-emerald-500/20">
                 <p class="text-[9px] font-bold text-slate-500 uppercase mb-1">Stok Ikan</p>
                 <h4 id="dash-ikan" class="text-4xl font-black italic text-emerald-500">--</h4>
-                <p class="text-[8px] text-zinc-600 mt-1 italic uppercase">V13.4 Synchronized</p>
+                <p class="text-[8px] text-zinc-600 mt-1 italic uppercase">V13.4 Sync</p>
             </div>
         </div>
 
         <div class="stat-card border-l-4 border-blue-500 flex justify-between items-center">
             <div>
-                <p class="text-[10px] font-black text-slate-500 uppercase mb-1">Active Orders</p>
+                <p class="text-[10px] font-black text-slate-500 uppercase mb-1">Total Order Laundry</p>
                 <h4 id="dash-laundry-count" class="text-2xl font-black italic">0</h4>
             </div>
-            <i class="fas fa-truck-loading text-blue-500 text-2xl opacity-20"></i>
+            <i class="fas fa-clipboard-list text-blue-500 text-2xl opacity-20"></i>
         </div>
     </main>
 
@@ -86,7 +86,7 @@
 
     <main id="page-laundry" class="page-content p-6 space-y-6">
         <div class="stat-card">
-            <p class="text-[10px] font-black text-slate-500 uppercase mb-2">Pilih Tanggal Laporan</p>
+            <p class="text-[10px] font-black text-slate-500 uppercase mb-2">Filter Tanggal Laundry</p>
             <input type="date" id="l-input-date" onchange="renderLaundry()">
         </div>
         <div>
@@ -111,11 +111,9 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
         import { getFirestore, collection, onSnapshot, query, orderBy } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-
         const conf = { apiKey: "AIzaSyAf4pkzvpCuzmXquzIoCDXLAr6-_l3i8O0", projectId: "kopi-shaka" };
         const app = initializeApp(conf);
         const db = getFirestore(app);
-
         window.allKopi = [];
         onSnapshot(query(collection(db, "transactions"), orderBy("tgl", "desc")), (snap) => {
             window.allKopi = snap.docs.map(doc => doc.data());
@@ -126,24 +124,19 @@
     </script>
 
     <script>
-        // Konfigurasi Stok disesuaikan dengan index.html (v13.4)
         const configStok = {
             apiKey: "AIzaSyCCmKgOnBFpluEKuycYjrBRm4zbxrHI1P8",
             databaseURL: "https://stocklistmacca-default-rtdb.asia-southeast1.firebasedatabase.app"
         };
-        // Konfigurasi Laundry disesuaikan dengan driver.html
         const configLaundry = {
             apiKey: "AIzaSyA-1GyDIS77tlL0vpiZS_ZLvx1S71TnkQU",
             databaseURL: "https://awwabim-laundry-default-rtdb.firebaseio.com"
         };
-        
         firebase.initializeApp(configStok, "STOK");
         firebase.initializeApp(configLaundry, "LAUNDRY");
-        
         const dbStok = firebase.app("STOK").database();
         const dbLaundry = firebase.app("LAUNDRY").database();
 
-        // 1. INTEGRASI LOGIC STOK (DIAMBIL DARI RENDER V13.4)
         dbStok.ref('stok_macca_v9').on('value', snap => {
             let sA = 0; let sI = 0;
             snap.forEach(child => {
@@ -155,12 +148,14 @@
             document.getElementById('dash-ikan').innerText = sI;
         });
 
-        // 2. INTEGRASI LOGIC LAUNDRY & REKAP DRIVER
         let rawLaundry = [];
         dbLaundry.ref('Pesanan').on('value', snap => {
             rawLaundry = [];
             snap.forEach(c => { rawLaundry.push(c.val()); });
-            document.getElementById('dash-laundry-count').innerText = rawLaundry.filter(o => o.status !== 'SELESAI').length;
+            
+            // UPDATE: Menghitung TOTAL SEMUA ORDER (tanpa filter status)
+            document.getElementById('dash-laundry-count').innerText = rawLaundry.length;
+            
             renderLaundry();
         });
 
@@ -169,7 +164,6 @@
             const list = document.getElementById('list-laundry');
             const recap = document.getElementById('driver-recap');
             list.innerHTML = ''; recap.innerHTML = '';
-            
             let stats = {};
             const filtered = rawLaundry.filter(o => {
                 if(!fDate) return true;
@@ -182,38 +176,27 @@
                     if(o.layanan === "ANTAR") stats[o.driverName].a++;
                     if(o.layanan === "JEMPUT") stats[o.driverName].j++;
                 }
-
                 const jam = new Date(o.mulai).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
                 const tgl = new Date(o.mulai).toLocaleDateString('id-ID', {day:'2-digit', month:'short'});
-
-                list.innerHTML += `
-                <div class="stat-card border-l-4 ${o.status === 'SELESAI' ? 'border-emerald-500' : 'border-blue-500'} mb-3">
+                list.innerHTML += `<div class="stat-card border-l-4 ${o.status === 'SELESAI' ? 'border-emerald-500' : 'border-blue-500'} mb-3">
                     <div class="flex justify-between items-start">
-                        <div>
-                            <h4 class="text-xs font-black uppercase text-white">${o.nama}</h4>
-                            <p class="text-[9px] text-slate-500 font-bold">${tgl} | ${jam}</p>
-                        </div>
+                        <div><h4 class="text-xs font-black uppercase text-white">${o.nama}</h4><p class="text-[9px] text-slate-500 font-bold">${tgl} | ${jam}</p></div>
                         <span class="text-[8px] font-black px-2 py-1 bg-white/5 rounded ${o.status === 'SELESAI' ? 'text-emerald-500' : 'text-blue-500'}">${o.status.replace('_',' ')}</span>
                     </div>
-                    <div class="mt-3 pt-3 border-t border-white/5 flex justify-between items-center">
-                        <p class="text-[10px] font-bold text-slate-300 uppercase"><i class="fas fa-motorcycle mr-1 text-blue-500"></i> ${o.layanan || 'ORDER'} : ${o.driverName || '-'}</p>
+                    <div class="mt-3 pt-3 border-t border-white/5 flex justify-between items-center text-[10px] font-bold text-slate-300 uppercase">
+                        <span><i class="fas fa-motorcycle mr-1 text-blue-500"></i> ${o.layanan}: ${o.driverName || '-'}</span>
                     </div>
                 </div>`;
             });
 
             Object.keys(stats).forEach(d => {
-                recap.innerHTML += `
-                <div class="bg-zinc-900 border border-white/5 p-3 rounded-2xl">
+                recap.innerHTML += `<div class="bg-zinc-900 border border-white/5 p-3 rounded-2xl">
                     <p class="text-[10px] font-black text-white uppercase truncate">${d}</p>
-                    <div class="flex gap-3 mt-1">
-                        <span class="text-[9px] font-bold text-blue-400">🧺 ${stats[d].j}</span>
-                        <span class="text-[9px] font-bold text-emerald-400">🛵 ${stats[d].a}</span>
-                    </div>
+                    <div class="flex gap-3 mt-1"><span class="text-[9px] font-bold text-blue-400">🧺 ${stats[d].j}</span><span class="text-[9px] font-bold text-emerald-400">🛵 ${stats[d].a}</span></div>
                 </div>`;
             });
         }
 
-        // 3. UI LOGIC
         window.switchPage = (id, btn) => {
             document.querySelectorAll('.page-content').forEach(p => p.classList.remove('active'));
             document.querySelectorAll('nav button').forEach(b => b.classList.remove('nav-active', 'text-slate-500'));
@@ -237,14 +220,12 @@
             const y = parseInt(document.getElementById('k-input-tahun').value);
             const list = document.getElementById('list-kopi');
             let total = 0; list.innerHTML = '';
-
             const filtered = window.allKopi.filter(t => {
                 const d = new Date(t.tgl);
                 if (window.modeKopi === 'hari') return d.toDateString() === new Date(h).toDateString();
                 if (window.modeKopi === 'bulan') return d.getMonth() === m && d.getFullYear() === y;
                 return d.getFullYear() === y;
             });
-
             filtered.forEach(t => {
                 total += (t.total || 0);
                 list.innerHTML += `<div class="stat-card flex justify-between items-center border-l-2 border-gold mb-2 py-3">
