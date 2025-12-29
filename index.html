@@ -66,6 +66,7 @@
         <div class="modal-content text-center">
             <div class="w-16 h-16 bg-red-500/20 text-red-500 rounded-full flex items-center justify-center mx-auto mb-4 text-2xl"><i class="fas fa-power-off"></i></div>
             <h2 class="text-xl font-black italic text-white mb-2 uppercase">YAKIN MAU KELUAR PAK BOSS?</h2>
+            <p class="text-[10px] text-zinc-500 font-bold mb-4">Aplikasi akan ditutup paksa</p>
             <button onclick="exitApp()" class="w-full bg-red-600 text-white font-bold py-4 rounded-xl mt-4 uppercase">YA, KELUAR</button>
             <button onclick="closeExitModal()" class="w-full text-zinc-500 font-bold py-4 uppercase">TIDAK</button>
         </div>
@@ -218,9 +219,23 @@
 
         // ANTI-EXIT (BACK BUTTON)
         history.pushState(null, null, location.href);
-        window.onpopstate = () => { document.getElementById('modal-exit').classList.add('show'); history.pushState(null, null, location.href); };
-        function closeExitModal() { document.getElementById('modal-exit').classList.remove('show'); }
-        function exitApp() { window.location.href = "about:blank"; }
+        window.onpopstate = () => { 
+            document.getElementById('modal-exit').classList.add('show'); 
+            history.pushState(null, null, location.href); 
+        };
+
+        function closeExitModal() { 
+            document.getElementById('modal-exit').classList.remove('show'); 
+        }
+
+        function exitApp() { 
+            // Teknik menutup aplikasi di HP (Memaksa layar hitam / kosong total)
+            document.body.innerHTML = "<div style='background:black;height:100vh;display:flex;align-items:center;justify-content:center;color:#333;font-weight:bold;text-align:center;padding:20px;'>APLIKASI DITUTUP.<br>SILAKAN TEKAN TOMBOL HOME HP ANDA.</div>";
+            window.close();
+            setTimeout(() => {
+                window.location.href = "about:blank";
+            }, 100);
+        }
 
         function handleLogin() {
             document.getElementById('login-content').style.display = 'none';
