@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>SUPER ADMIN MACCA - FULL SYSTEM</title>
+    <title>SUPER ADMIN MACCA - SYNC FIX</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -17,7 +17,7 @@
         body { background-color: var(--dark); color: #ffffff; font-family: 'Plus Jakarta Sans', sans-serif; overflow-x: hidden; }
         .nav-active { color: var(--gold); background: rgba(212, 175, 55, 0.1); border-top: 2px solid var(--gold); }
         .page-content { display: none; }
-        .page-content.active { display: block; animation: fadeIn 0.3s ease-out; }
+        .page-content.active { display: block; animation: fadeIn 0.3s ease; }
         .stat-card { background: var(--card); border: 1px solid rgba(255,255,255,0.05); border-radius: 20px; padding: 20px; }
         .tab-btn { flex: 1; padding: 12px; font-size: 10px; font-weight: 800; color: #555; border-radius: 12px; }
         .tab-btn.active { color: var(--gold); background: rgba(212, 175, 55, 0.1); border: 1px solid rgba(212,175,55,0.2); }
@@ -28,7 +28,7 @@
 <body class="antialiased pb-28">
 
     <header class="p-6 flex justify-between items-center sticky top-0 bg-black/90 backdrop-blur-md z-50 border-b border-white/5">
-        <h1 class="text-xl font-extrabold italic uppercase">MACCA <span style="color:var(--gold)">ADMIN</span></h1>
+        <h1 class="text-xl font-black italic uppercase">MACCA <span style="color:var(--gold)">ADMIN</span></h1>
         <button onclick="location.reload()" class="text-gold bg-zinc-900 w-10 h-10 rounded-full border border-white/10 flex items-center justify-center">
             <i class="fas fa-sync-alt"></i>
         </button>
@@ -36,37 +36,38 @@
 
     <main id="page-dashboard" class="page-content active p-6 space-y-6">
         <div class="stat-card border-l-4 border-gold">
-            <p class="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-1">Total Kopi (2025)</p>
+            <p class="text-[10px] font-black text-slate-500 uppercase mb-1">Total Kopi (2025)</p>
             <h2 id="dash-kopi-total" class="text-4xl font-black italic text-gold">Rp 0</h2>
         </div>
 
         <div class="grid grid-cols-2 gap-4">
-            <div class="stat-card text-center">
-                <p class="text-[9px] font-bold text-slate-500 uppercase mb-1">Stok Ayam</p>
-                <h4 id="dash-ayam" class="text-3xl font-black italic">0</h4>
+            <div class="stat-card text-center border-t-2 border-white/10">
+                <p class="text-[9px] font-bold text-slate-500 uppercase mb-1">Persediaan Ayam</p>
+                <h4 id="dash-ayam" class="text-3xl font-black italic">--</h4>
+                <p class="text-[8px] text-zinc-500 mt-1">Sisa Stok</p>
             </div>
-            <div class="stat-card text-center">
-                <p class="text-[9px] font-bold text-slate-500 uppercase mb-1">Stok Ikan</p>
-                <h4 id="dash-ikan" class="text-3xl font-black italic text-emerald-500">0</h4>
+            <div class="stat-card text-center border-t-2 border-white/10">
+                <p class="text-[9px] font-bold text-slate-500 uppercase mb-1">Persediaan Ikan</p>
+                <h4 id="dash-ikan" class="text-3xl font-black italic text-emerald-500">--</h4>
+                <p class="text-[8px] text-zinc-500 mt-1">Sisa Stok</p>
             </div>
         </div>
 
         <div class="stat-card border-l-4 border-blue-500 flex justify-between items-center">
             <div>
-                <p class="text-[10px] font-black text-slate-500 uppercase mb-1">Laundry Activities</p>
-                <h4 id="dash-laundry-count" class="text-2xl font-black italic">0 Orders</h4>
+                <p class="text-[10px] font-black text-slate-500 uppercase mb-1">Total Order Laundry</p>
+                <h4 id="dash-laundry-count" class="text-2xl font-black italic">0</h4>
             </div>
-            <i class="fas fa-motorcycle text-blue-500 text-2xl opacity-20"></i>
+            <i class="fas fa-truck-loading text-blue-500 text-2xl opacity-20"></i>
         </div>
     </main>
 
     <main id="page-kopi" class="page-content p-6 space-y-6">
         <div class="flex bg-zinc-900/50 p-1 rounded-xl">
-            <button onclick="setModeKopi('hari')" id="k-tab-hari" class="tab-btn active">HARIAN</button>
-            <button onclick="setModeKopi('bulan')" id="k-tab-bulan" class="tab-btn">BULANAN</button>
-            <button onclick="setModeKopi('tahun')" id="k-tab-tahun" class="tab-btn">TAHUNAN</button>
+            <button onclick="setModeKopi('hari')" id="k-tab-hari" class="tab-btn active uppercase">Harian</button>
+            <button onclick="setModeKopi('bulan')" id="k-tab-bulan" class="tab-btn uppercase">Bulanan</button>
+            <button onclick="setModeKopi('tahun')" id="k-tab-tahun" class="tab-btn uppercase">Tahunan</button>
         </div>
-
         <div class="stat-card">
             <div id="k-wrap-hari"><input type="date" id="k-input-hari" onchange="renderKopi()"></div>
             <div id="k-wrap-bt" class="hidden grid grid-cols-2 gap-2">
@@ -76,38 +77,34 @@
                 <select id="k-input-tahun" onchange="renderKopi()"></select>
             </div>
         </div>
-
-        <div class="text-center">
+        <div class="text-center bg-zinc-900/40 p-5 rounded-2xl border border-white/5">
             <h2 id="k-total-display" class="text-4xl font-black text-gold italic">Rp 0</h2>
-            <p class="text-[10px] font-bold text-slate-500 uppercase">Revenue Terfilter</p>
+            <p class="text-[10px] font-bold text-slate-500 uppercase mt-1">Revenue Kopi</p>
         </div>
-
         <div id="list-kopi" class="space-y-3"></div>
     </main>
 
     <main id="page-laundry" class="page-content p-6 space-y-6">
         <div class="stat-card">
-            <p class="text-[10px] font-black text-slate-500 uppercase mb-2">Filter Tanggal Laundry</p>
+            <p class="text-[10px] font-black text-slate-500 uppercase mb-2">Pilih Tanggal Laporan</p>
             <input type="date" id="l-input-date" onchange="renderLaundry()">
         </div>
-
         <div>
-            <h3 class="text-[10px] font-black text-gold uppercase mb-3 tracking-widest px-1">Rekap Driver Hari Ini</h3>
+            <h3 class="text-[10px] font-black text-gold uppercase mb-3 px-1 tracking-widest">Rekap Kerja Driver</h3>
             <div id="driver-recap" class="grid grid-cols-2 gap-3"></div>
         </div>
-
         <div id="list-laundry" class="space-y-4"></div>
     </main>
 
     <nav class="fixed bottom-0 left-0 right-0 z-50 bg-black/95 border-t border-white/5 flex justify-around p-3 backdrop-blur-xl">
         <button onclick="switchPage('dashboard', this)" class="flex flex-col items-center gap-1 nav-active w-full">
-            <i class="fas fa-th-large"></i><span class="text-[9px] font-bold">HOME</span>
+            <i class="fas fa-home"></i><span class="text-[9px] font-bold uppercase">Home</span>
         </button>
         <button onclick="switchPage('kopi', this)" class="flex flex-col items-center gap-1 text-slate-500 w-full">
-            <i class="fas fa-coffee"></i><span class="text-[9px] font-bold">KOPI</span>
+            <i class="fas fa-coffee"></i><span class="text-[9px] font-bold uppercase">Kopi</span>
         </button>
         <button onclick="switchPage('laundry', this)" class="flex flex-col items-center gap-1 text-slate-500 w-full">
-            <i class="fas fa-tshirt"></i><span class="text-[9px] font-bold">LAUNDRY</span>
+            <i class="fas fa-tshirt"></i><span class="text-[9px] font-bold uppercase">Laundry</span>
         </button>
     </nav>
 
@@ -124,11 +121,8 @@
 
         onSnapshot(query(collection(db, "transactions"), orderBy("tgl", "desc")), (snap) => {
             window.allKopi = snap.docs.map(doc => doc.data());
-            
-            // Update Dash Revenue 2025
             const rev = window.allKopi.filter(t => new Date(t.tgl).getFullYear() === 2025).reduce((a,b) => a+(b.total||0),0);
             document.getElementById('dash-kopi-total').innerText = "Rp " + rev.toLocaleString();
-            
             renderKopi();
         });
 
@@ -171,15 +165,14 @@
     </script>
 
     <script>
-        const configL = { databaseURL: "https://awwabim-laundry-default-rtdb.firebaseio.com" };
-        const configM = { databaseURL: "https://stocklistmacca-default-rtdb.asia-southeast1.firebasedatabase.app" };
+        // Gunakan API Key lengkap jika ada masalah koneksi
+        const configL = { apiKey: "AIzaSyA-1GyDIS77tlL0vpiZS_ZLvx1S71TnkQU", databaseURL: "https://awwabim-laundry-default-rtdb.firebaseio.com" };
+        const configM = { apiKey: "AIzaSyCCmKgOnBFpluEKuycYjrBRm4zbxrHI1P8", databaseURL: "https://stocklistmacca-default-rtdb.asia-southeast1.firebasedatabase.app" };
         
         firebase.initializeApp(configL, "L");
         firebase.initializeApp(configM, "M");
         const dbL = firebase.app("L").database();
         const dbM = firebase.app("M").database();
-
-        let rawLaundry = [];
 
         function switchPage(id, btn) {
             document.querySelectorAll('.page-content').forEach(p => p.classList.remove('active'));
@@ -188,16 +181,27 @@
             btn.classList.add('nav-active');
         }
 
-        dbM.ref('stock').on('value', s => {
-            const d = s.val() || { ayam: 0, ikan: 0 };
-            document.getElementById('dash-ayam').innerText = d.ayam;
-            document.getElementById('dash-ikan').innerText = d.ikan;
+        // SINKRONISASI STOK AYAM & IKAN
+        // Pastikan path 'stock' sesuai dengan yang ada di aplikasi input Anda
+        dbM.ref('stock').on('value', snap => {
+            const data = snap.val();
+            if(data) {
+                document.getElementById('dash-ayam').innerText = data.ayam || 0;
+                document.getElementById('dash-ikan').innerText = data.ikan || 0;
+            } else {
+                document.getElementById('dash-ayam').innerText = "0";
+                document.getElementById('dash-ikan').innerText = "0";
+            }
+        }, error => {
+            console.error("Gagal ambil data stok:", error);
         });
 
+        // LAUNDRY & REKAP DRIVER
+        let rawLaundry = [];
         dbL.ref('Pesanan').on('value', snap => {
             rawLaundry = [];
             snap.forEach(c => { rawLaundry.push(c.val()); });
-            document.getElementById('dash-laundry-count').innerText = rawLaundry.length + " Orders";
+            document.getElementById('dash-laundry-count').innerText = rawLaundry.length;
             renderLaundry();
         });
 
@@ -205,18 +209,15 @@
             const fDate = document.getElementById('l-input-date').value;
             const list = document.getElementById('list-laundry');
             const recap = document.getElementById('driver-recap');
-            list.innerHTML = '';
-            recap.innerHTML = '';
+            list.innerHTML = ''; recap.innerHTML = '';
             
             let stats = {};
-
             const filtered = rawLaundry.filter(o => {
                 if(!fDate) return true;
                 return new Date(o.mulai).toDateString() === new Date(fDate).toDateString();
             }).sort((a,b) => new Date(b.mulai) - new Date(a.mulai));
 
             filtered.forEach(o => {
-                // Stats Driver
                 if(o.driverName) {
                     if(!stats[o.driverName]) stats[o.driverName] = { a:0, j:0 };
                     if(o.layanan === "ANTAR") stats[o.driverName].a++;
@@ -224,10 +225,10 @@
                 }
 
                 const jam = new Date(o.mulai).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
-                const tgl = new Date(o.mulai).toLocaleDateString('id-ID', {day:'2-digit', month:'short'});
+                const tgl = new Date(o.mulai).toLocaleDateString('id-ID', {day:'2-digit', month:'short', year:'numeric'});
 
                 list.innerHTML += `
-                <div class="stat-card border-l-4 ${o.status === 'SELESAI' ? 'border-emerald-500' : 'border-blue-500'}">
+                <div class="stat-card border-l-4 ${o.status === 'SELESAI' ? 'border-emerald-500' : 'border-blue-500'} mb-3">
                     <div class="flex justify-between items-start">
                         <div>
                             <h4 class="text-xs font-black uppercase text-white">${o.nama}</h4>
@@ -236,30 +237,31 @@
                         <span class="text-[8px] font-black px-2 py-1 bg-white/5 rounded ${o.status === 'SELESAI' ? 'text-emerald-500' : 'text-blue-500'}">${o.status}</span>
                     </div>
                     <div class="mt-3 pt-3 border-t border-white/5 flex justify-between items-center">
-                        <p class="text-[10px] font-bold text-slate-300 uppercase"><i class="fas fa-motorcycle mr-1"></i> ${o.layanan || 'ORDER'} : ${o.driverName || '-'}</p>
-                        <p class="text-[9px] font-black text-slate-600 italic">ID: ${Math.random().toString(36).substr(2, 5).toUpperCase()}</p>
+                        <p class="text-[10px] font-bold text-slate-300 uppercase"><i class="fas fa-motorcycle mr-1 text-blue-500"></i> ${o.layanan || 'ORDER'} : ${o.driverName || '-'}</p>
                     </div>
                 </div>`;
             });
 
             Object.keys(stats).forEach(d => {
                 recap.innerHTML += `
-                <div class="bg-zinc-900/80 border border-white/5 p-3 rounded-2xl">
+                <div class="bg-zinc-900 border border-white/5 p-3 rounded-2xl">
                     <p class="text-[10px] font-black text-white uppercase truncate">${d}</p>
                     <div class="flex gap-3 mt-1">
-                        <span class="text-[9px] font-bold text-blue-400">🧺 ${stats[d].j}</span>
-                        <span class="text-[9px] font-bold text-emerald-400">🛵 ${stats[d].a}</span>
+                        <span class="text-[9px] font-bold text-blue-400">🧺 ${stats[d].j} Jemput</span>
+                        <span class="text-[9px] font-bold text-emerald-400">🛵 ${stats[d].a} Antar</span>
                     </div>
                 </div>`;
             });
+            if(filtered.length === 0) list.innerHTML = `<p class="text-center py-10 opacity-20 italic text-xs">Tidak ada data di tanggal ini</p>`;
         }
 
         window.onload = () => {
             const yr = new Date().getFullYear();
             const s = document.getElementById('k-input-tahun');
-            for(let i=yr; i>=2024; i--) s.innerHTML += `<option value="${i}">${i}</option>`;
-            s.value = yr;
-            
+            if(s) {
+                for(let i=yr; i>=2024; i--) s.innerHTML += `<option value="${i}">${i}</option>`;
+                s.value = yr;
+            }
             document.getElementById('k-input-hari').valueAsDate = new Date();
             document.getElementById('l-input-date').valueAsDate = new Date();
             document.getElementById('k-input-bulan').value = new Date().getMonth();
