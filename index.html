@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>SUPER ADMIN MACCA - VISUAL CONTRAST</title>
+    <title>MACCA SUPER ADMIN</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -13,123 +13,171 @@
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
 
     <style>
-        :root { --gold: #FFD700; --dark: #000000; --card: #121212; --cyan: #00E5FF; }
-        body { background-color: var(--dark); color: #ffffff; font-family: 'Plus Jakarta Sans', sans-serif; overflow-x: hidden; }
+        :root { --gold: #FFD700; --dark: #000000; --card: #121212; --cyan: #00E5FF; --red: #FF0000; }
+        body { background-color: var(--dark); color: #ffffff; font-family: 'Plus Jakarta Sans', sans-serif; overflow: hidden; }
         
+        /* LOGIN SYSTEM */
+        #login-overlay { position: fixed; inset: 0; background: var(--dark); z-index: 9999; display: flex; flex-direction: column; align-items: center; justify-content: center; transition: 0.8s cubic-bezier(0.85, 0, 0.15, 1); }
+        .btn-login { background: white; color: black; padding: 16px 50px; border-radius: 50px; font-weight: 800; letter-spacing: 1px; box-shadow: 0 0 20px rgba(255,255,255,0.2); }
+        .welcome-msg { display: none; font-size: 26px; font-weight: 900; color: var(--gold); text-align: center; animation: pulse 1.5s infinite; }
+        @keyframes pulse { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.6; transform: scale(0.95); } }
+
+        /* MAIN APP LAYOUT */
+        #main-app { display: none; height: 100vh; overflow-y: auto; }
         .nav-active { color: var(--gold); background: rgba(255, 215, 0, 0.15); border-top: 3px solid var(--gold); }
         .page-content { display: none; }
         .page-content.active { display: block; }
         
-        /* Kartu Lebih Gelap agar Tulisan Menyala */
-        .stat-card { background: var(--card); border: 1px solid rgba(255,255,255,0.08); border-radius: 18px; padding: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.7); }
-        
-        /* Label Header Kecil */
-        .text-header-small { font-size: 11px; font-weight: 700; color: #888888; letter-spacing: 1px; }
-        
-        /* WARNA KHUSUS UNTUK KONTRAS */
-        .nama-pemesan { font-size: 16px; font-weight: 800; color: var(--cyan); text-shadow: 0 0 10px rgba(0,229,255,0.2); }
+        /* CARD STYLES */
+        .stat-card { background: var(--card); border: 1px solid rgba(255,255,255,0.08); border-radius: 20px; padding: 20px; position: relative; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        .card-icon-bg { position: absolute; right: 15px; bottom: 12px; font-size: 3.5rem; opacity: 0.08; transform: rotate(-15deg); pointer-events: none; }
+
+        /* TEXT STYLES */
+        .text-header-small { font-size: 11px; font-weight: 700; color: #888888; letter-spacing: 1.2px; text-transform: uppercase; }
+        .nama-pemesan { font-size: 16px; font-weight: 800; color: var(--cyan); line-height: 1.2; }
         .text-lantai { font-size: 12px; font-weight: 800; color: var(--gold); }
-        .text-menu-item { font-size: 13px; font-weight: 600; color: #FFFFFF; line-height: 1.6; }
-        .text-price { font-size: 17px; font-weight: 900; color: var(--gold); }
+        .text-menu-item { font-size: 13px; font-weight: 600; color: #FFFFFF; line-height: 1.5; }
+        .text-price { font-size: 18px; font-weight: 900; color: var(--gold); }
         
-        .tab-btn { flex: 1; padding: 12px; font-size: 11px; font-weight: 800; color: #666; border-radius: 12px; transition: 0.2s; text-transform: uppercase; }
+        /* UI ELEMENTS */
+        .tab-btn { flex: 1; padding: 12px; font-size: 11px; font-weight: 800; color: #666; border-radius: 12px; transition: 0.3s; text-transform: uppercase; }
         .tab-btn.active { color: var(--gold); background: rgba(255, 215, 0, 0.1); border: 1px solid rgba(255, 215, 0, 0.3); }
         
-        select, input[type="date"] { background: #1a1a1a; border: 1px solid #333; color: white; border-radius: 12px; padding: 14px; width: 100%; font-size: 14px; font-weight: 600; }
-        
-        .btn-update { position: fixed; bottom: 90px; right: 20px; z-index: 1000; background: #222; color: white; font-size: 10px; font-weight: 800; padding: 10px 15px; border-radius: 50px; border: 1px solid #444; }
+        select, input[type="date"] { background: #1a1a1a; border: 1px solid #333; color: white; border-radius: 14px; padding: 14px; width: 100%; font-size: 14px; font-weight: 600; outline: none; }
+        .btn-update { position: fixed; bottom: 100px; right: 20px; z-index: 1000; background: #222; color: white; font-size: 10px; font-weight: 800; padding: 10px 18px; border-radius: 50px; border: 1px solid #444; box-shadow: 0 4px 15px rgba(0,0,0,0.5); }
     </style>
 </head>
 <body class="antialiased pb-32">
 
-    <button onclick="paksaUpdateSistem()" class="btn-update uppercase"><i class="fas fa-sync-alt mr-1"></i> Update Sistem</button>
-
-    <header class="p-6 flex justify-between items-center sticky top-0 bg-black/90 backdrop-blur-md z-50 border-b border-white/10">
-        <h1 class="text-xl font-black italic uppercase tracking-tighter">MACCA <span style="color:var(--gold)">SUPER ADMIN</span></h1>
-        <div id="sync-indicator" class="w-3 h-3 bg-emerald-500 rounded-full shadow-[0_0_10px_#10b981]"></div>
-    </header>
-
-    <main id="page-dashboard" class="page-content active p-6 space-y-6">
-        <div class="stat-card border-l-4 border-gold">
-            <p class="text-header-small uppercase mb-1">Pendapatan Kopi 2025</p>
-            <h2 id="dash-kopi-total" class="text-4xl font-black italic text-gold">Rp 0</h2>
+    <div id="login-overlay">
+        <div id="login-content" class="text-center">
+            <h1 class="text-3xl font-black italic mb-2 uppercase tracking-tighter">MACCA <span style="color:var(--red)">SUPER</span> ADMIN</h1>
+            <p class="text-zinc-500 font-bold mb-10 text-xs tracking-[0.3em]">APAKAH ANDA ADMIN?</p>
+            <button onclick="handleLogin()" class="btn-login uppercase">YA, SAYA ADMIN</button>
         </div>
-        <div class="grid grid-cols-2 gap-4">
-            <div class="stat-card text-center border-t-2 border-yellow-500/30">
-                <p class="text-header-small uppercase mb-2">Ayam</p>
-                <h4 id="dash-ayam" class="text-4xl font-black italic text-yellow-400">--</h4>
+        <div id="welcome-box" class="welcome-msg italic uppercase tracking-tighter">
+            Selamat Datang Pak Boss
+        </div>
+    </div>
+
+    <div id="main-app">
+        <button onclick="paksaUpdateSistem()" class="btn-update uppercase"><i class="fas fa-sync-alt mr-1"></i> Perbarui</button>
+
+        <header class="p-6 sticky top-0 bg-black/90 backdrop-blur-lg z-50 border-b border-white/10 flex justify-between items-center">
+            <div>
+                <h1 class="text-xl font-black italic uppercase leading-none tracking-tighter">MACCA <span style="color:var(--red)">SUPER</span> ADMIN</h1>
+                <p class="text-[10px] font-extrabold text-zinc-500 uppercase tracking-widest mt-1">Macca Inventory System</p>
             </div>
-            <div class="stat-card text-center border-t-2 border-emerald-500/30">
-                <p class="text-header-small uppercase mb-2">Ikan</p>
-                <h4 id="dash-ikan" class="text-4xl font-black italic text-emerald-400">--</h4>
+            <div id="sync-indicator" class="w-3 h-3 bg-emerald-500 rounded-full shadow-[0_0_10px_#10b981]"></div>
+        </header>
+
+        <main id="page-dashboard" class="page-content active p-6 space-y-6">
+            <div class="stat-card border-l-4 border-gold">
+                <p class="text-header-small mb-1">Pendapatan Kopi 2025</p>
+                <h2 id="dash-kopi-total" class="text-4xl font-black italic text-gold">Rp 0</h2>
+                <i class="fas fa-coffee card-icon-bg text-gold"></i>
             </div>
-        </div>
-        <div class="stat-card border-l-4 border-blue-500 flex justify-between items-center">
-            <div><p class="text-header-small uppercase mb-1">Laundry Order</p><h4 id="dash-laundry-count" class="text-3xl font-black italic text-blue-400">0</h4></div>
-            <i class="fas fa-tshirt text-blue-500 text-3xl opacity-30"></i>
-        </div>
-    </main>
 
-    <main id="page-kopi" class="page-content p-6 space-y-6">
-        <div class="flex bg-zinc-900 p-1 rounded-2xl">
-            <button onclick="setModeKopi('hari')" id="k-tab-hari" class="tab-btn active">Harian</button>
-            <button onclick="setModeKopi('bulan')" id="k-tab-bulan" class="tab-btn">Bulanan</button>
-            <button onclick="setModeKopi('tahun')" id="k-tab-tahun" class="tab-btn">Tahunan</button>
-        </div>
-        
-        <div class="stat-card">
-            <div id="k-wrap-hari"><input type="date" id="k-input-hari" onchange="renderKopi()"></div>
-            <div id="k-wrap-bulan" class="hidden grid grid-cols-2 gap-2">
-                <select id="k-input-bulan" onchange="renderKopi()">
-                    <option value="0">Januari</option><option value="1">Februari</option><option value="2">Maret</option><option value="3">April</option><option value="4">Mei</option><option value="5">Juni</option><option value="6">Juli</option><option value="7">Agustus</option><option value="8">September</option><option value="9">Oktober</option><option value="10">November</option><option value="11">Desember</option>
-                </select>
-                <select id="k-input-bulan-thn" onchange="renderKopi()"></select>
+            <div class="grid grid-cols-2 gap-4">
+                <div class="stat-card text-center border-t-2 border-yellow-500/30">
+                    <p class="text-header-small mb-2">Stok Ayam</p>
+                    <h4 id="dash-ayam-val" class="text-4xl font-black italic text-yellow-400">--</h4>
+                    <i class="fas fa-drumstick-bite card-icon-bg text-yellow-500"></i>
+                </div>
+                <div class="stat-card text-center border-t-2 border-emerald-500/30">
+                    <p class="text-header-small mb-2">Stok Ikan</p>
+                    <h4 id="dash-ikan-val" class="text-4xl font-black italic text-emerald-400">--</h4>
+                    <i class="fas fa-fish card-icon-bg text-emerald-500"></i>
+                </div>
             </div>
-            <div id="k-wrap-tahun" class="hidden">
-                <select id="k-input-tahun" onchange="renderKopi()"></select>
+
+            <div class="stat-card border-l-4 border-blue-500 flex justify-between items-center">
+                <div>
+                    <p class="text-header-small mb-1">Laundry Order</p>
+                    <h4 id="dash-laundry-count" class="text-3xl font-black italic text-blue-400">0</h4>
+                </div>
+                <i class="fas fa-tshirt card-icon-bg text-blue-500"></i>
             </div>
-        </div>
+        </main>
 
-        <div class="text-center bg-zinc-900/50 p-6 rounded-3xl border border-white/5 shadow-inner">
-            <h2 id="k-total-display" class="text-4xl font-black text-gold italic">Rp 0</h2>
-            <p class="text-header-small uppercase mt-1">Total Terkumpul</p>
-        </div>
-
-        <div id="list-kopi" class="space-y-4"></div>
-    </main>
-
-    <main id="page-laundry" class="page-content p-6 space-y-6">
-        <div class="flex bg-zinc-900 p-1 rounded-2xl">
-            <button onclick="setLaundryMode('hari')" id="l-tab-hari" class="tab-btn active">Driver</button>
-            <button onclick="setLaundryMode('bulan')" id="l-tab-bulan" class="tab-btn">Bulan</button>
-        </div>
-        <div class="stat-card">
-            <div id="l-wrap-hari"><input type="date" id="l-input-date" onchange="renderLaundry()"></div>
-            <div id="l-wrap-bulan" class="hidden grid grid-cols-2 gap-2">
-                <select id="l-select-bulan" onchange="renderLaundry()"></select>
-                <select id="l-select-tahun" onchange="renderLaundry()"></select>
+        <main id="page-kopi" class="page-content p-6 space-y-6">
+            <div class="flex bg-zinc-900 p-1 rounded-2xl">
+                <button onclick="setModeKopi('hari')" id="k-tab-hari" class="tab-btn active">Harian</button>
+                <button onclick="setModeKopi('bulan')" id="k-tab-bulan" class="tab-btn">Bulanan</button>
+                <button onclick="setModeKopi('tahun')" id="k-tab-tahun" class="tab-btn">Tahunan</button>
             </div>
-        </div>
+            
+            <div class="stat-card">
+                <div id="k-wrap-hari"><input type="date" id="k-input-hari" onchange="renderKopi()"></div>
+                <div id="k-wrap-bulan" class="hidden grid grid-cols-2 gap-2">
+                    <select id="k-input-bulan" onchange="renderKopi()">
+                        <option value="0">Januari</option><option value="1">Februari</option><option value="2">Maret</option><option value="3">April</option><option value="4">Mei</option><option value="5">Juni</option><option value="6">Juli</option><option value="7">Agustus</option><option value="8">September</option><option value="9">Oktober</option><option value="10">November</option><option value="11">Desember</option>
+                    </select>
+                    <select id="k-input-bulan-thn" onchange="renderKopi()"></select>
+                </div>
+                <div id="k-wrap-tahun" class="hidden"><select id="k-input-tahun" onchange="renderKopi()"></select></div>
+            </div>
 
-        <div id="driver-recap" class="grid grid-cols-1 gap-4"></div>
+            <div class="text-center bg-zinc-900/50 p-6 rounded-3xl border border-white/5 shadow-inner">
+                <h2 id="k-total-display" class="text-4xl font-black text-gold italic">Rp 0</h2>
+                <p class="text-header-small mt-1">Total Pendapatan</p>
+            </div>
 
-        <div id="l-history-section">
-            <h3 class="text-header-small uppercase mb-4 px-1">Riwayat Driver</h3>
-            <div id="list-laundry" class="space-y-4"></div>
-        </div>
-    </main>
+            <div id="list-kopi" class="space-y-4"></div>
+        </main>
 
-    <nav class="fixed bottom-0 left-0 right-0 z-50 bg-black/95 border-t border-white/10 flex justify-around p-4 backdrop-blur-xl">
-        <button onclick="switchPage('dashboard', this)" class="flex flex-col items-center gap-1 nav-active w-full">
-            <i class="fas fa-home text-lg"></i><span class="text-[10px] font-extrabold uppercase">Home</span>
-        </button>
-        <button onclick="switchPage('kopi', this)" class="flex flex-col items-center gap-1 text-zinc-500 w-full">
-            <i class="fas fa-coffee text-lg"></i><span class="text-[10px] font-extrabold uppercase">Kopi</span>
-        </button>
-        <button onclick="switchPage('laundry', this)" class="flex flex-col items-center gap-1 text-zinc-500 w-full">
-            <i class="fas fa-tshirt text-lg"></i><span class="text-[10px] font-extrabold uppercase">Laundry</span>
-        </button>
-    </nav>
+        <main id="page-stok" class="page-content p-6 space-y-6">
+            <div class="grid grid-cols-2 gap-4">
+                <div class="stat-card text-center border-t-2 border-yellow-500/30">
+                    <p class="text-header-small mb-1">Total Ayam</p>
+                    <h4 id="stok-ayam-val" class="text-4xl font-black text-yellow-400">--</h4>
+                </div>
+                <div class="stat-card text-center border-t-2 border-emerald-500/30">
+                    <p class="text-header-small mb-1">Total Ikan</p>
+                    <h4 id="stok-ikan-val" class="text-4xl font-black text-emerald-400">--</h4>
+                </div>
+            </div>
+            <h3 class="text-header-small px-1">Riwayat Lengkap Stok</h3>
+            <div id="list-history-stok" class="space-y-3"></div>
+        </main>
+
+        <main id="page-laundry" class="page-content p-6 space-y-6">
+            <div class="flex bg-zinc-900 p-1 rounded-2xl">
+                <button onclick="setLaundryMode('hari')" id="l-tab-hari" class="tab-btn active">Driver</button>
+                <button onclick="setLaundryMode('bulan')" id="l-tab-bulan" class="tab-btn">Bulan</button>
+            </div>
+            
+            <div class="stat-card">
+                <div id="l-wrap-hari"><input type="date" id="l-input-date" onchange="renderLaundry()"></div>
+                <div id="l-wrap-bulan" class="hidden grid grid-cols-2 gap-2">
+                    <select id="l-select-bulan" onchange="renderLaundry()"></select>
+                    <select id="l-select-tahun" onchange="renderLaundry()"></select>
+                </div>
+            </div>
+
+            <div id="driver-recap" class="space-y-3"></div>
+            
+            <div id="l-history-section" class="space-y-4">
+                <h3 class="text-header-small px-1">Riwayat Pesanan</h3>
+                <div id="list-laundry" class="space-y-4"></div>
+            </div>
+        </main>
+
+        <nav class="fixed bottom-0 left-0 right-0 z-50 bg-black/95 border-t border-white/10 flex justify-around p-4 backdrop-blur-xl">
+            <button onclick="switchPage('dashboard', this)" class="flex flex-col items-center gap-1 nav-active w-full">
+                <i class="fas fa-home text-lg"></i><span class="text-[9px] font-bold uppercase">Home</span>
+            </button>
+            <button onclick="switchPage('kopi', this)" class="flex flex-col items-center gap-1 text-zinc-500 w-full">
+                <i class="fas fa-coffee text-lg"></i><span class="text-[9px] font-bold uppercase">Kopi</span>
+            </button>
+            <button onclick="switchPage('stok', this)" class="flex flex-col items-center gap-1 text-zinc-500 w-full">
+                <i class="fas fa-box text-lg"></i><span class="text-[9px] font-bold uppercase">Stok</span>
+            </button>
+            <button onclick="switchPage('laundry', this)" class="flex flex-col items-center gap-1 text-zinc-500 w-full">
+                <i class="fas fa-tshirt text-lg"></i><span class="text-[9px] font-bold uppercase">Laundry</span>
+            </button>
+        </nav>
+    </div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
@@ -137,6 +185,7 @@
         const conf = { apiKey: "AIzaSyAf4pkzvpCuzmXquzIoCDXLAr6-_l3i8O0", projectId: "kopi-shaka" };
         const app = initializeApp(conf);
         const db = getFirestore(app);
+        
         window.allKopi = [];
         onSnapshot(query(collection(db, "transactions"), orderBy("tgl", "desc")), (snap) => {
             window.allKopi = snap.docs.map(doc => doc.data());
@@ -159,36 +208,53 @@
         let laundryMode = 'hari';
         let modeKopi = 'hari';
 
+        function handleLogin() {
+            document.getElementById('login-content').style.display = 'none';
+            document.getElementById('welcome-box').style.display = 'block';
+            setTimeout(() => {
+                document.getElementById('login-overlay').style.transform = 'translateY(-100%)';
+                document.getElementById('main-app').style.display = 'block';
+                document.body.style.overflow = 'auto';
+            }, 1800);
+        }
+
+        // STOK SYNC
         dbStok.ref('stok_macca_v9').on('value', snap => {
-            let sA = 0, sI = 0;
+            let sA = 0, sI = 0, histArr = [];
             snap.forEach(c => {
                 const i = c.val();
                 const add = (i.status === 'Masuk' || i.status === 'Retur') ? i.qty : -i.qty;
                 i.type === 'Ayam' ? sA += add : sI += add;
+                histArr.push(i);
             });
-            document.getElementById('dash-ayam').innerText = sA;
-            document.getElementById('dash-ikan').innerText = sI;
+            document.getElementById('dash-ayam-val').innerText = sA;
+            document.getElementById('dash-ikan-val').innerText = sI;
+            document.getElementById('stok-ayam-val').innerText = sA;
+            document.getElementById('stok-ikan-val').innerText = sI;
+
+            const hList = document.getElementById('list-history-stok');
+            histArr.sort((a,b) => b.time - a.time);
+            let hHtml = '';
+            histArr.slice(0, 50).forEach(h => {
+                const isK = h.status === 'Keluar';
+                hHtml += `<div class="stat-card border-l-4 ${isK?'border-red-500':'border-emerald-500'} flex justify-between items-center py-4">
+                    <div><p class="text-white font-black text-sm uppercase">${h.type} <span class="text-[10px] ml-2 opacity-50">${h.status}</span></p>
+                    <p class="text-[11px] font-bold text-cyan-400 mt-1 uppercase"><i class="fas fa-user-circle mr-1"></i> ${h.user || 'Admin'}</p>
+                    <p class="text-[9px] text-zinc-500 font-bold mt-1 uppercase">${new Date(h.time).toLocaleString('id-ID')}</p></div>
+                    <p class="text-xl font-black ${isK?'text-red-500':'text-emerald-500'}">${isK?'-':'+'}${h.qty}</p></div>`;
+            });
+            hList.innerHTML = hHtml;
         });
 
+        // LAUNDRY SYNC
         dbLaundry.ref('Pesanan').on('value', snap => {
-            rawLaundry = [];
-            snap.forEach(c => { rawLaundry.push(c.val()); });
+            rawLaundry = []; snap.forEach(c => rawLaundry.push(c.val()));
             document.getElementById('dash-laundry-count').innerText = rawLaundry.length;
             renderLaundry();
         });
 
-        window.setModeKopi = (m) => {
-            modeKopi = m;
-            document.querySelectorAll('#page-kopi .tab-btn').forEach(b => b.classList.remove('active'));
-            document.getElementById('k-tab-'+m).classList.add('active');
-            document.getElementById('k-wrap-hari').classList.toggle('hidden', m !== 'hari');
-            document.getElementById('k-wrap-bulan').classList.toggle('hidden', m !== 'bulan');
-            document.getElementById('k-wrap-tahun').classList.toggle('hidden', m !== 'tahun');
-            renderKopi();
-        };
-
+        // RENDER KOPI (LAPORAN DETAIL)
         window.renderKopi = () => {
-            if(!window.allKopi) return;
             const list = document.getElementById('list-kopi');
             let total = 0; let html = '';
             const h = document.getElementById('k-input-hari').value;
@@ -196,7 +262,7 @@
             const yB = parseInt(document.getElementById('k-input-bulan-thn').value);
             const y = parseInt(document.getElementById('k-input-tahun').value);
 
-            const filtered = window.allKopi.filter(t => {
+            const filtered = (window.allKopi || []).filter(t => {
                 const d = new Date(t.tgl);
                 if (modeKopi === 'hari') return d.toDateString() === new Date(h).toDateString();
                 if (modeKopi === 'bulan') return d.getMonth() === m && d.getFullYear() === yB;
@@ -206,39 +272,18 @@
             filtered.forEach(t => {
                 total += (t.total || 0);
                 const dt = new Date(t.tgl);
-                // Nama Menu tetap putih bersih
-                const menuStr = t.itemDetails ? t.itemDetails.map(i => `<span class="text-white">${i.name}</span> (${i.qty})`).join(', ') : 'Menu Kosong';
-                
-                html += `
-                <div class="stat-card border-l-4 border-gold py-5">
-                    <div class="flex justify-between items-start">
-                        <div class="flex-1">
-                            <p class="nama-pemesan uppercase italic">${t.nama || 'Customer'}</p>
-                            <p class="text-header-small mt-1">
-                                <span class="text-lantai">${t.lokasi || '-'}</span> • ${dt.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'})} • ${dt.toLocaleDateString('id-ID')}
-                            </p>
-                            <div class="mt-3 pt-3 border-t border-white/5 text-menu-item">
-                                ${menuStr}
-                            </div>
-                        </div>
-                        <p class="text-price ml-3 text-right">Rp ${(t.total || 0).toLocaleString()}</p>
-                    </div>
-                </div>`;
+                const menuStr = t.itemDetails ? t.itemDetails.map(i => `<span class="text-white">${i.name}</span> (${i.qty})`).join(', ') : '-';
+                html += `<div class="stat-card border-l-4 border-gold py-5"><div class="flex justify-between items-start"><div class="flex-1">
+                    <p class="nama-pemesan uppercase italic">${t.nama || 'Customer'}</p>
+                    <p class="text-header-small mt-1"><span class="text-lantai">${t.lokasi || '-'}</span> • ${dt.toLocaleTimeString('id-ID')} • ${dt.toLocaleDateString('id-ID')}</p>
+                    <div class="mt-3 pt-3 border-t border-white/5 text-menu-item">${menuStr}</div></div>
+                    <p class="text-price ml-3 text-right">Rp ${(t.total || 0).toLocaleString()}</p></div></div>`;
             });
-            list.innerHTML = html || '<p class="text-center py-10 opacity-40 italic text-sm">Tidak ada transaksi</p>';
+            list.innerHTML = html || '<p class="text-center py-10 opacity-30 italic">Tidak ada transaksi</p>';
             document.getElementById('k-total-display').innerText = "Rp " + total.toLocaleString();
         };
 
-        window.setLaundryMode = (m) => {
-            laundryMode = m;
-            document.querySelectorAll('#page-laundry .tab-btn').forEach(b => b.classList.remove('active'));
-            document.getElementById('l-tab-'+m).classList.add('active');
-            document.getElementById('l-wrap-hari').classList.toggle('hidden', m !== 'hari');
-            document.getElementById('l-wrap-bulan').classList.toggle('hidden', m === 'hari');
-            document.getElementById('l-history-section').classList.toggle('hidden', m === 'bulan');
-            renderLaundry();
-        };
-
+        // RENDER LAUNDRY (LAPORAN DETAIL)
         window.renderLaundry = () => {
             const list = document.getElementById('list-laundry');
             const recap = document.getElementById('driver-recap');
@@ -247,7 +292,7 @@
             const hVal = document.getElementById('l-input-date').value;
             const bVal = parseInt(document.getElementById('l-select-bulan').value);
             const tVal = parseInt(document.getElementById('l-select-tahun').value);
-
+            
             const filtered = rawLaundry.filter(o => {
                 const d = new Date(o.mulai);
                 if (laundryMode === 'hari') return d.toDateString() === new Date(hVal).toDateString();
@@ -255,80 +300,34 @@
             }).sort((a,b) => new Date(b.mulai) - new Date(a.mulai));
 
             filtered.forEach(o => {
-                if(o.driverName) {
-                    if(!stats[o.driverName]) stats[o.driverName] = { a:0, j:0 };
-                    o.layanan === "ANTAR" ? stats[o.driverName].a++ : stats[o.driverName].j++;
-                }
-                
+                if(o.driverName) { if(!stats[o.driverName]) stats[o.driverName] = {a:0, j:0}; o.layanan === "ANTAR" ? stats[o.driverName].a++ : stats[o.driverName].j++; }
                 if(laundryMode === 'hari') {
                     const dt = new Date(o.mulai);
-                    list.innerHTML += `
-                    <div class="stat-card border-l-4 ${o.status === 'SELESAI' ? 'border-emerald-500' : 'border-blue-500'} mb-3">
-                        <div class="flex justify-between items-start">
-                            <div>
-                                <h4 class="nama-pemesan uppercase">${o.nama}</h4>
-                                <p class="text-header-small mt-1 text-zinc-400 font-bold uppercase">${dt.toLocaleDateString('id-ID')} • ${dt.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'})}</p>
-                            </div>
-                            <span class="text-[10px] font-black px-3 py-1 bg-white/10 rounded-lg text-blue-400 uppercase">${o.layanan}</span>
-                        </div>
-                        <div class="mt-3 pt-3 border-t border-white/5 flex justify-between items-center">
-                            <span class="text-header-small uppercase font-bold text-zinc-300"><i class="fas fa-user-circle mr-1 text-gold"></i> ${o.driverName || 'Menunggu Driver'}</span>
-                            <span class="text-[10px] font-black uppercase ${o.status === 'SELESAI' ? 'text-emerald-500' : 'text-blue-500'}">${o.status.replace('_',' ')}</span>
-                        </div>
-                    </div>`;
+                    list.innerHTML += `<div class="stat-card border-l-4 ${o.status==='SELESAI'?'border-emerald-500':'border-blue-500'}">
+                        <div class="flex justify-between items-start"><div><h4 class="nama-pemesan uppercase">${o.nama}</h4><p class="text-header-small mt-1 text-zinc-400 font-bold uppercase">${dt.toLocaleDateString('id-ID')} • ${dt.toLocaleTimeString('id-ID')}</p></div><span class="text-[10px] font-black px-3 py-1 bg-white/10 rounded-lg text-blue-400 uppercase">${o.layanan}</span></div>
+                        <div class="mt-3 pt-3 border-t border-white/5 flex justify-between items-center text-header-small font-bold text-zinc-300"><span><i class="fas fa-user-circle mr-1 text-gold"></i> ${o.driverName || 'No Driver'}</span><span class="${o.status==='SELESAI'?'text-emerald-500':'text-blue-500'}">${o.status.replace('_',' ')}</span></div></div>`;
                 }
             });
-
             Object.keys(stats).forEach(name => {
-                recap.innerHTML += `<div class="stat-card flex justify-between items-center border-l-4 border-gold bg-zinc-900">
-                    <div class="flex items-center gap-4">
-                        <div class="w-12 h-12 rounded-full bg-gold/20 flex items-center justify-center text-gold text-xl"><i class="fas fa-motorcycle"></i></div>
-                        <div>
-                            <p class="nama-pemesan uppercase" style="color:#FFF">${name}</p>
-                            <p class="text-header-small uppercase">${laundryMode === 'hari' ? 'Hari Ini' : 'Bulan Ini'}</p>
-                        </div>
-                    </div>
-                    <div class="text-right">
-                        <p class="text-2xl font-black italic text-white">${stats[name].a + stats[name].j}</p>
-                        <div class="flex gap-3 text-[10px] font-extrabold uppercase mt-1">
-                            <span class="text-emerald-500">A:${stats[name].a}</span>
-                            <span class="text-blue-500">J:${stats[name].j}</span>
-                        </div>
-                    </div>
-                </div>`;
+                recap.innerHTML += `<div class="stat-card flex justify-between items-center border-l-4 border-gold bg-zinc-900"><div class="flex items-center gap-4"><div class="w-12 h-12 rounded-full bg-gold/20 flex items-center justify-center text-gold text-xl"><i class="fas fa-motorcycle"></i></div><div><p class="nama-pemesan uppercase" style="color:#FFF">${name}</p><p class="text-header-small uppercase">Recap Driver</p></div></div><div class="text-right"><p class="text-2xl font-black italic text-white">${stats[name].a + stats[name].j}</p><div class="flex gap-3 text-[10px] font-extrabold uppercase mt-1"><span class="text-emerald-500">A:${stats[name].a}</span><span class="text-blue-500">J:${stats[name].j}</span></div></div></div>`;
             });
         };
 
-        window.switchPage = (id, btn) => {
-            document.querySelectorAll('.page-content').forEach(p => p.classList.remove('active'));
-            document.querySelectorAll('nav button').forEach(b => b.classList.remove('nav-active', 'text-zinc-500'));
-            document.getElementById('page-'+id).classList.add('active');
-            btn.classList.add('nav-active');
-        };
-
-        window.paksaUpdateSistem = () => {
-            if (confirm("Perbarui tampilan?")) window.location.href = window.location.pathname + '?v=' + new Date().getTime();
-        };
+        window.setModeKopi = (m) => { modeKopi = m; document.querySelectorAll('#page-kopi .tab-btn').forEach(b => b.classList.remove('active')); document.getElementById('k-tab-'+m).classList.add('active'); document.getElementById('k-wrap-hari').classList.toggle('hidden', m !== 'hari'); document.getElementById('k-wrap-bulan').classList.toggle('hidden', m !== 'bulan'); document.getElementById('k-wrap-tahun').classList.toggle('hidden', m !== 'tahun'); renderKopi(); };
+        window.setLaundryMode = (m) => { laundryMode = m; document.querySelectorAll('#page-laundry .tab-btn').forEach(b => b.classList.remove('active')); document.getElementById('l-tab-'+m).classList.add('active'); document.getElementById('l-wrap-hari').classList.toggle('hidden', m !== 'hari'); document.getElementById('l-wrap-bulan').classList.toggle('hidden', m === 'hari'); document.getElementById('l-history-section').classList.toggle('hidden', m === 'bulan'); renderLaundry(); };
+        window.switchPage = (id, btn) => { document.querySelectorAll('.page-content').forEach(p => p.classList.remove('active')); document.querySelectorAll('nav button').forEach(b => b.classList.remove('nav-active', 'text-zinc-500')); document.getElementById('page-'+id).classList.add('active'); btn.classList.add('nav-active'); };
+        window.paksaUpdateSistem = () => { location.reload(); };
 
         window.onload = () => {
-            const yr = new Date().getFullYear();
-            const sk1 = document.getElementById('k-input-bulan-thn');
-            const sk2 = document.getElementById('k-input-tahun');
+            const yr = new Date().getFullYear(); 
+            const sk1 = document.getElementById('k-input-bulan-thn'); 
+            const sk2 = document.getElementById('k-input-tahun'); 
             const sl = document.getElementById('l-select-tahun');
-            for(let i=yr; i>=2024; i--) {
-                const o = `<option value="${i}">${i}</option>`;
-                sk1.innerHTML += o; sk2.innerHTML += o; sl.innerHTML += o;
-            }
-            document.getElementById('k-input-hari').valueAsDate = new Date();
-            document.getElementById('l-input-date').valueAsDate = new Date();
-            document.getElementById('k-input-bulan').value = new Date().getMonth();
-            
+            for(let i=yr; i>=2024; i--) { const o = `<option value="${i}">${i}</option>`; sk1.innerHTML += o; sk2.innerHTML += o; sl.innerHTML += o; }
+            document.getElementById('k-input-hari').valueAsDate = new Date(); document.getElementById('l-input-date').valueAsDate = new Date();
             const bln = ["Januari","Februari","Maret","April","Mei","Juni","Juli","Agustus","September","Oktober","November","Desember"];
-            const sLB = document.getElementById('l-select-bulan');
-            bln.forEach((b, i) => sLB.innerHTML += `<option value="${i}">${b}</option>`);
-            sLB.value = new Date().getMonth();
-
-            renderKopi(); renderLaundry();
+            const sLB = document.getElementById('l-select-bulan'); bln.forEach((b, i) => sLB.innerHTML += `<option value="${i}">${b}</option>`);
+            document.getElementById('k-input-bulan').value = new Date().getMonth(); sLB.value = new Date().getMonth();
         };
     </script>
 </body>
