@@ -48,7 +48,7 @@
         
         .btn-fab-stok { width: 32px; height: 32px; background: var(--gold); color: black; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 800; box-shadow: 0 4px 10px rgba(255, 215, 0, 0.3); transition: 0.2s; }
 
-        /* CUSTOM MODAL & TOAST */
+        /* MODALS */
         .modal-overlay { display: none; position: fixed; inset: 0; z-index: 10000; background: rgba(0,0,0,0.85); backdrop-filter: blur(8px); align-items: center; justify-content: center; padding: 20px; }
         .modal-overlay.show { display: flex; }
         .modal-content { background: #161616; border: 1px solid var(--gold); border-radius: 25px; width: 100%; max-width: 320px; padding: 25px; transform: scale(0.9); transition: 0.3s; }
@@ -66,7 +66,7 @@
         <div class="modal-content text-center">
             <div class="w-16 h-16 bg-red-500/20 text-red-500 rounded-full flex items-center justify-center mx-auto mb-4 text-2xl"><i class="fas fa-power-off"></i></div>
             <h2 class="text-xl font-black italic text-white mb-2 uppercase">YAKIN MAU KELUAR PAK BOSS?</h2>
-            <p class="text-[10px] text-zinc-500 font-bold mb-4">Aplikasi akan ditutup paksa</p>
+            <p class="text-[10px] text-zinc-500 font-bold mb-4 uppercase">Akses Admin Akan Dikunci</p>
             <button onclick="exitApp()" class="w-full bg-red-600 text-white font-bold py-4 rounded-xl mt-4 uppercase">YA, KELUAR</button>
             <button onclick="closeExitModal()" class="w-full text-zinc-500 font-bold py-4 uppercase">TIDAK</button>
         </div>
@@ -220,8 +220,14 @@
         // ANTI-EXIT (BACK BUTTON)
         history.pushState(null, null, location.href);
         window.onpopstate = () => { 
-            document.getElementById('modal-exit').classList.add('show'); 
-            history.pushState(null, null, location.href); 
+            // Jika ada di halaman dashboard/aplikasi, tampilkan modal
+            if(document.getElementById('main-app').style.display === 'block') {
+                document.getElementById('modal-exit').classList.add('show'); 
+                history.pushState(null, null, location.href); 
+            } else {
+                // Jika masih di login, biarkan back default browser
+                history.back();
+            }
         };
 
         function closeExitModal() { 
@@ -229,12 +235,17 @@
         }
 
         function exitApp() { 
-            // Teknik menutup aplikasi di HP (Memaksa layar hitam / kosong total)
-            document.body.innerHTML = "<div style='background:black;height:100vh;display:flex;align-items:center;justify-content:center;color:#333;font-weight:bold;text-align:center;padding:20px;'>APLIKASI DITUTUP.<br>SILAKAN TEKAN TOMBOL HOME HP ANDA.</div>";
+            // 1. Ganti history agar tidak bisa di-back
+            window.history.replaceState(null, null, "/exit");
+            // 2. Kosongkan layar total
+            document.body.innerHTML = `
+                <div style="background:#000; height:100vh; display:flex; flex-direction:column; align-items:center; justify-content:center; color:white; font-family:sans-serif; text-align:center;">
+                    <div style="font-size:50px; margin-bottom:20px;">🔒</div>
+                    <div style="font-weight:900; font-style:italic; font-size:20px; color:#FFD700;">MACCA SYSTEM LOCKED</div>
+                    <div style="font-size:12px; color:#666; margin-top:10px; font-weight:bold; letter-spacing:2px;">SILAKAN TUTUP TAB BROWSER ANDA</div>
+                </div>`;
+            // 3. Coba tutup jendela (hanya bekerja jika dibuka via script tertentu)
             window.close();
-            setTimeout(() => {
-                window.location.href = "about:blank";
-            }, 100);
         }
 
         function handleLogin() {
@@ -243,6 +254,8 @@
             setTimeout(() => { 
                 document.getElementById('login-overlay').style.transform = 'translateY(-100%)'; 
                 document.getElementById('main-app').style.display = 'block'; 
+                // Kunci history setelah login agar back button memicu modal exit
+                history.pushState(null, null, location.href);
             }, 1800);
         }
 
