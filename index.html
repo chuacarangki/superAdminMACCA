@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>SUPER ADMIN MACCA - DRIVER REPORT READY</title>
+    <title>SUPER ADMIN MACCA - AUTO UPDATE READY</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -22,16 +22,24 @@
         .tab-btn { flex: 1; padding: 10px; font-size: 9px; font-weight: 800; color: #555; border-radius: 10px; transition: 0.3s; }
         .tab-btn.active { color: var(--gold); background: rgba(212, 175, 55, 0.1); border: 1px solid rgba(212,175,55,0.2); }
         select, input[type="date"] { background: #1a1a1a; border: 1px solid #333; color: white; border-radius: 12px; padding: 12px; width: 100%; outline: none; font-size: 13px; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        
+        /* Floating Update Button */
+        .btn-update { position: fixed; bottom: 85px; right: 20px; z-index: 1000; background: rgba(255,255,255,0.1); backdrop-blur: md; color: white; font-size: 8px; font-weight: 800; padding: 8px 12px; border-radius: 50px; border: 1px solid rgba(255,255,255,0.1); opacity: 0.4; }
+        .btn-update:active { opacity: 1; background: var(--gold); color: black; }
     </style>
 </head>
 <body class="antialiased pb-28">
 
+    <button onclick="paksaUpdateSistem()" class="btn-update uppercase">
+        <i class="fas fa-sync-alt mr-1"></i> Update Sistem
+    </button>
+
     <header class="p-6 flex justify-between items-center sticky top-0 bg-black/90 backdrop-blur-md z-50 border-b border-white/5">
         <h1 class="text-xl font-black italic uppercase">MACCA <span style="color:var(--gold)">ADMIN</span></h1>
-        <button onclick="location.reload()" class="text-gold bg-zinc-900 w-10 h-10 rounded-full border border-white/10 flex items-center justify-center">
-            <i class="fas fa-sync-alt"></i>
-        </button>
+        <div class="flex gap-3">
+            <span id="sync-indicator" class="w-2 h-2 bg-emerald-500 rounded-full animate-pulse mt-2"></span>
+        </div>
     </header>
 
     <main id="page-dashboard" class="page-content active p-6 space-y-6">
@@ -92,7 +100,6 @@
 
         <div class="stat-card">
             <div id="l-wrap-hari">
-                <p class="text-[10px] font-black text-slate-500 uppercase mb-2">Pilih Tanggal</p>
                 <input type="date" id="l-input-date" onchange="renderLaundry()">
             </div>
             <div id="l-wrap-bulan" class="hidden grid grid-cols-2 gap-2">
@@ -104,9 +111,8 @@
         </div>
 
         <div>
-            <h3 id="driver-title" class="text-[10px] font-black text-gold uppercase mb-3 px-1 tracking-widest">Performansi Driver</h3>
-            <div id="driver-recap" class="grid grid-cols-1 gap-3">
-                </div>
+            <h3 class="text-[10px] font-black text-gold uppercase mb-3 px-1 tracking-widest">Performansi Driver</h3>
+            <div id="driver-recap" class="grid grid-cols-1 gap-3"></div>
         </div>
 
         <div id="l-history-section">
@@ -143,6 +149,7 @@
     </script>
 
     <script>
+        // CONFIG & INITIALIZATION
         const configStok = { apiKey: "AIzaSyCCmKgOnBFpluEKuycYjrBRm4zbxrHI1P8", databaseURL: "https://stocklistmacca-default-rtdb.asia-southeast1.firebasedatabase.app" };
         const configLaundry = { apiKey: "AIzaSyA-1GyDIS77tlL0vpiZS_ZLvx1S71TnkQU", databaseURL: "https://awwabim-laundry-default-rtdb.firebaseio.com" };
         
@@ -154,7 +161,7 @@
         let rawLaundry = [];
         let laundryMode = 'hari';
 
-        // SYNC STOK (TETAP SAMA)
+        // 1. STOK V13.4 INTEGRATION
         dbStok.ref('stok_macca_v9').on('value', snap => {
             let sA = 0, sI = 0;
             snap.forEach(c => {
@@ -166,7 +173,7 @@
             document.getElementById('dash-ikan').innerText = sI;
         });
 
-        // SYNC LAUNDRY
+        // 2. LAUNDRY INTEGRATION
         dbLaundry.ref('Pesanan').on('value', snap => {
             rawLaundry = [];
             snap.forEach(c => { rawLaundry.push(c.val()); });
@@ -174,7 +181,7 @@
             renderLaundry();
         });
 
-        function setLaundryMode(m) {
+        window.setLaundryMode = (m) => {
             laundryMode = m;
             document.querySelectorAll('#page-laundry .tab-btn').forEach(b => b.classList.remove('active'));
             document.getElementById('l-tab-'+m).classList.add('active');
@@ -182,9 +189,9 @@
             document.getElementById('l-wrap-bulan').classList.toggle('hidden', m === 'hari');
             document.getElementById('l-history-section').classList.toggle('hidden', m === 'bulan');
             renderLaundry();
-        }
+        };
 
-        function renderLaundry() {
+        window.renderLaundry = () => {
             const list = document.getElementById('list-laundry');
             const recap = document.getElementById('driver-recap');
             list.innerHTML = ''; recap.innerHTML = '';
@@ -206,51 +213,38 @@
                     if(o.layanan === "ANTAR") stats[o.driverName].a++;
                     if(o.layanan === "JEMPUT") stats[o.driverName].j++;
                 }
-
-                // Render History (Hanya tampil di mode Harian agar tidak terlalu panjang)
                 if(laundryMode === 'hari') {
                     const jam = new Date(o.mulai).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
                     list.innerHTML += `
                     <div class="stat-card border-l-4 ${o.status === 'SELESAI' ? 'border-emerald-500' : 'border-blue-500'} mb-3">
                         <div class="flex justify-between items-start">
-                            <div><h4 class="text-xs font-black text-white uppercase">${o.nama}</h4><p class="text-[9px] text-slate-500 font-bold">${jam}</p></div>
+                            <div><h4 class="text-xs font-black text-white uppercase">${o.nama}</h4><p class="text-[9px] text-slate-500 font-bold uppercase">${o.status.replace('_',' ')} | ${jam}</p></div>
                             <span class="text-[8px] font-black px-2 py-1 bg-white/5 rounded text-blue-500">${o.layanan}</span>
                         </div>
                     </div>`;
                 }
             });
 
-            // RENDER REKAP DRIVER (Sesuai mode Harian/Bulanan)
-            const driverNames = Object.keys(stats);
-            if(driverNames.length === 0) {
-                recap.innerHTML = `<p class="text-center py-5 opacity-20 italic text-xs">Tidak ada data driver</p>`;
-            }
-
-            driverNames.forEach(name => {
-                const total = stats[name].a + stats[name].j;
+            Object.keys(stats).forEach(name => {
                 recap.innerHTML += `
                 <div class="stat-card flex justify-between items-center border-l-2 border-gold">
                     <div class="flex items-center gap-3">
-                        <div class="w-10 h-10 rounded-full bg-gold/10 flex items-center justify-center text-gold">
-                            <i class="fas fa-user-tie"></i>
-                        </div>
-                        <div>
-                            <p class="text-xs font-black text-white uppercase">${name}</p>
-                            <p class="text-[9px] text-slate-500 font-bold uppercase">${laundryMode === 'hari' ? 'Hari Ini' : 'Bulan Ini'}</p>
-                        </div>
+                        <div class="w-10 h-10 rounded-full bg-gold/10 flex items-center justify-center text-gold"><i class="fas fa-user-tie"></i></div>
+                        <div><p class="text-xs font-black text-white uppercase">${name}</p><p class="text-[9px] text-slate-500 font-bold uppercase">${laundryMode === 'hari' ? 'Hari Ini' : 'Bulan Ini'}</p></div>
                     </div>
                     <div class="text-right">
-                        <p class="text-xl font-black text-white italic">${total} <span class="text-[9px] font-normal text-slate-400 not-italic">TRX</span></p>
+                        <p class="text-xl font-black text-white italic">${stats[name].a + stats[name].j} <span class="text-[9px] font-normal text-slate-400 not-italic">TRX</span></p>
                         <div class="flex gap-2 justify-end mt-1">
-                            <span class="text-[8px] font-bold text-emerald-500">🛵 ${stats[name].a} ANTAR</span>
-                            <span class="text-[8px] font-bold text-blue-500">🧺 ${stats[name].j} JEMPUT</span>
+                            <span class="text-[8px] font-bold text-emerald-500">🛵 ${stats[name].a}</span>
+                            <span class="text-[8px] font-bold text-blue-500">🧺 ${stats[name].j}</span>
                         </div>
                     </div>
                 </div>`;
             });
-        }
+            if(Object.keys(stats).length === 0) recap.innerHTML = '<p class="text-center py-5 opacity-20 italic text-xs">Tidak ada data driver</p>';
+        };
 
-        // FUNGSI LAIN (TETAP SAMA)
+        // UI & NAVIGATION
         window.switchPage = (id, btn) => {
             document.querySelectorAll('.page-content').forEach(p => p.classList.remove('active'));
             document.querySelectorAll('nav button').forEach(b => b.classList.remove('nav-active', 'text-slate-500'));
@@ -288,6 +282,19 @@
                 </div>`;
             });
             document.getElementById('k-total-display').innerText = "Rp " + total.toLocaleString();
+        };
+
+        // PAKSA UPDATE SISTEM (Anti Cache)
+        window.paksaUpdateSistem = () => {
+            if (confirm("Perbarui aplikasi ke versi terbaru?")) {
+                if ('serviceWorker' in navigator) {
+                    navigator.serviceWorker.getRegistrations().then(registrations => {
+                        for(let registration of registrations) { registration.unregister(); }
+                    });
+                }
+                // Reload dengan cache busting
+                window.location.href = window.location.pathname + '?v=' + new Date().getTime();
+            }
         };
 
         window.onload = () => {
