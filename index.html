@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>SUPER ADMIN MACCA - DRIVER HISTORY READY</title>
+    <title>SUPER ADMIN MACCA - FINAL VERSION</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -36,9 +36,7 @@
 
     <header class="p-6 flex justify-between items-center sticky top-0 bg-black/90 backdrop-blur-md z-50 border-b border-white/5">
         <h1 class="text-xl font-black italic uppercase">MACCA <span style="color:var(--gold)">ADMIN</span></h1>
-        <div class="flex gap-3">
-            <span id="sync-indicator" class="w-2 h-2 bg-emerald-500 rounded-full animate-pulse mt-2"></span>
-        </div>
+        <div id="sync-indicator" class="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></div>
     </header>
 
     <main id="page-dashboard" class="page-content active p-6 space-y-6">
@@ -75,6 +73,7 @@
             <button onclick="setModeKopi('bulan')" id="k-tab-bulan" class="tab-btn uppercase">Bulanan</button>
             <button onclick="setModeKopi('tahun')" id="k-tab-tahun" class="tab-btn uppercase">Tahunan</button>
         </div>
+        
         <div class="stat-card">
             <div id="k-wrap-hari"><input type="date" id="k-input-hari" onchange="renderKopi()"></div>
             <div id="k-wrap-bt" class="hidden grid grid-cols-2 gap-2">
@@ -84,11 +83,14 @@
                 <select id="k-input-tahun" onchange="renderKopi()"></select>
             </div>
         </div>
+
         <div class="text-center bg-zinc-900/40 p-5 rounded-2xl border border-white/5">
             <h2 id="k-total-display" class="text-4xl font-black text-gold italic">Rp 0</h2>
-            <p class="text-[10px] font-bold text-slate-500 uppercase mt-1">Revenue Kopi</p>
+            <p class="text-[10px] font-bold text-slate-500 uppercase mt-1">Total Pendapatan</p>
         </div>
-        <div id="list-kopi" class="space-y-3"></div>
+
+        <div id="list-kopi" class="space-y-3">
+            </div>
     </main>
 
     <main id="page-laundry" class="page-content p-6 space-y-6">
@@ -96,11 +98,8 @@
             <button onclick="setLaundryMode('hari')" id="l-tab-hari" class="tab-btn active uppercase">Rekap Hari Ini</button>
             <button onclick="setLaundryMode('bulan')" id="l-tab-bulan" class="tab-btn uppercase">Laporan Bulanan</button>
         </div>
-
         <div class="stat-card">
-            <div id="l-wrap-hari">
-                <input type="date" id="l-input-date" onchange="renderLaundry()">
-            </div>
+            <div id="l-wrap-hari"><input type="date" id="l-input-date" onchange="renderLaundry()"></div>
             <div id="l-wrap-bulan" class="hidden grid grid-cols-2 gap-2">
                 <select id="l-select-bulan" onchange="renderLaundry()">
                     <option value="0">Januari</option><option value="1">Februari</option><option value="2">Maret</option><option value="3">April</option><option value="4">Mei</option><option value="5">Juni</option><option value="6">Juli</option><option value="7">Agustus</option><option value="8">September</option><option value="9">Oktober</option><option value="10">November</option><option value="11">Desember</option>
@@ -108,12 +107,10 @@
                 <select id="l-select-tahun" onchange="renderLaundry()"></select>
             </div>
         </div>
-
         <div>
             <h3 class="text-[10px] font-black text-gold uppercase mb-3 px-1 tracking-widest">Performansi Driver</h3>
             <div id="driver-recap" class="grid grid-cols-1 gap-3"></div>
         </div>
-
         <div id="l-history-section">
             <h3 class="text-[10px] font-black text-slate-500 uppercase mb-3 px-1 tracking-widest">Riwayat Driver</h3>
             <div id="list-laundry" class="space-y-4"></div>
@@ -158,6 +155,7 @@
 
         let rawLaundry = [];
         let laundryMode = 'hari';
+        let modeKopi = 'hari';
 
         dbStok.ref('stok_macca_v9').on('value', snap => {
             let sA = 0, sI = 0;
@@ -177,6 +175,56 @@
             renderLaundry();
         });
 
+        // KOPI LOGIC (IMPROVED)
+        window.setModeKopi = (m) => {
+            modeKopi = m;
+            document.querySelectorAll('#page-kopi .tab-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById('k-tab-'+m).classList.add('active');
+            document.getElementById('k-wrap-hari').classList.toggle('hidden', m !== 'hari');
+            document.getElementById('k-wrap-bt').classList.toggle('hidden', m === 'hari');
+            renderKopi();
+        };
+
+        window.renderKopi = () => {
+            if(!window.allKopi) return;
+            const h = document.getElementById('k-input-hari').value;
+            const m = parseInt(document.getElementById('k-input-bulan').value);
+            const y = parseInt(document.getElementById('k-input-tahun').value);
+            const list = document.getElementById('list-kopi');
+            let total = 0; list.innerHTML = '';
+
+            const filtered = window.allKopi.filter(t => {
+                const d = new Date(t.tgl);
+                if (modeKopi === 'hari') return d.toDateString() === new Date(h).toDateString();
+                if (modeKopi === 'bulan') return d.getMonth() === m && d.getFullYear() === y;
+                return d.getFullYear() === y;
+            });
+
+            filtered.forEach(t => {
+                total += (t.total || 0);
+                const dt = new Date(t.tgl);
+                const jam = dt.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
+                const tgl = dt.toLocaleDateString('id-ID', {day:'2-digit', month:'short'});
+                
+                list.innerHTML += `
+                <div class="stat-card border-l-2 border-gold mb-2 py-3">
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <p class="text-xs font-black text-white uppercase">${t.nama || 'Customer'}</p>
+                            <p class="text-[9px] text-slate-500 font-bold uppercase mt-1">Lantai ${t.lantai || '-'} | ${tgl} ${jam}</p>
+                        </div>
+                        <p class="text-gold font-black text-sm">Rp ${(t.total || 0).toLocaleString()}</p>
+                    </div>
+                    <div class="mt-2 pt-2 border-t border-white/5">
+                        <p class="text-[9px] text-slate-400 italic">${t.items ? t.items.map(i => i.nama + ' ('+i.qty+')').join(', ') : 'Menu tidak tercatat'}</p>
+                    </div>
+                </div>`;
+            });
+            document.getElementById('k-total-display').innerText = "Rp " + total.toLocaleString();
+            if(filtered.length === 0) list.innerHTML = '<p class="text-center py-10 opacity-20 italic text-xs">Tidak ada data transaksi</p>';
+        };
+
+        // LAUNDRY LOGIC
         window.setLaundryMode = (m) => {
             laundryMode = m;
             document.querySelectorAll('#page-laundry .tab-btn').forEach(b => b.classList.remove('active'));
@@ -191,7 +239,6 @@
             const list = document.getElementById('list-laundry');
             const recap = document.getElementById('driver-recap');
             list.innerHTML = ''; recap.innerHTML = '';
-            
             let stats = {};
             const hVal = document.getElementById('l-input-date').value;
             const bVal = parseInt(document.getElementById('l-select-bulan').value);
@@ -209,26 +256,16 @@
                     if(o.layanan === "ANTAR") stats[o.driverName].a++;
                     if(o.layanan === "JEMPUT") stats[o.driverName].j++;
                 }
-                
-                // --- UPDATE RIWAYAT DRIVER DENGAN TANGGAL & JAM ---
                 if(laundryMode === 'hari') {
                     const dt = new Date(o.mulai);
-                    const jam = dt.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
-                    const tgl = dt.toLocaleDateString('id-ID', {day:'2-digit', month:'short', year:'numeric'});
-                    
                     list.innerHTML += `
                     <div class="stat-card border-l-4 ${o.status === 'SELESAI' ? 'border-emerald-500' : 'border-blue-500'} mb-3">
                         <div class="flex justify-between items-start">
-                            <div>
-                                <h4 class="text-xs font-black text-white uppercase">${o.nama}</h4>
-                                <p class="text-[9px] text-slate-500 font-bold uppercase mt-1">
-                                    <i class="far fa-calendar-alt mr-1"></i> ${tgl} | <i class="far fa-clock mr-1"></i> ${jam}
-                                </p>
-                            </div>
+                            <div><h4 class="text-xs font-black text-white uppercase">${o.nama}</h4><p class="text-[9px] text-slate-500 font-bold uppercase mt-1">${dt.toLocaleDateString('id-ID')} | ${dt.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'})}</p></div>
                             <span class="text-[8px] font-black px-2 py-1 bg-white/5 rounded text-blue-500">${o.layanan}</span>
                         </div>
                         <div class="mt-2 pt-2 border-t border-white/5 flex justify-between items-center text-[9px] font-bold text-slate-300">
-                            <span>DRIVER: ${o.driverName || 'PENDING'}</span>
+                            <span>DRIVER: ${o.driverName || '-'}</span>
                             <span class="${o.status === 'SELESAI' ? 'text-emerald-500' : 'text-blue-500'}">${o.status.replace('_',' ')}</span>
                         </div>
                     </div>`;
@@ -236,22 +273,17 @@
             });
 
             Object.keys(stats).forEach(name => {
-                recap.innerHTML += `
-                <div class="stat-card flex justify-between items-center border-l-2 border-gold">
+                recap.innerHTML += `<div class="stat-card flex justify-between items-center border-l-2 border-gold">
                     <div class="flex items-center gap-3">
                         <div class="w-10 h-10 rounded-full bg-gold/10 flex items-center justify-center text-gold"><i class="fas fa-user-tie"></i></div>
                         <div><p class="text-xs font-black text-white uppercase">${name}</p><p class="text-[9px] text-slate-500 font-bold uppercase">${laundryMode === 'hari' ? 'Hari Ini' : 'Bulan Ini'}</p></div>
                     </div>
                     <div class="text-right">
                         <p class="text-xl font-black text-white italic">${stats[name].a + stats[name].j} <span class="text-[9px] font-normal text-slate-400 not-italic">TRX</span></p>
-                        <div class="flex gap-2 justify-end mt-1">
-                            <span class="text-[8px] font-bold text-emerald-500">🛵 ${stats[name].a}</span>
-                            <span class="text-[8px] font-bold text-blue-500">🧺 ${stats[name].j}</span>
-                        </div>
+                        <div class="flex gap-2 justify-end mt-1"><span class="text-[8px] font-bold text-emerald-500">🛵 ${stats[name].a}</span><span class="text-[8px] font-bold text-blue-500">🧺 ${stats[name].j}</span></div>
                     </div>
                 </div>`;
             });
-            if(Object.keys(stats).length === 0) recap.innerHTML = '<p class="text-center py-5 opacity-20 italic text-xs">Tidak ada data driver</p>';
         };
 
         window.switchPage = (id, btn) => {
@@ -259,38 +291,6 @@
             document.querySelectorAll('nav button').forEach(b => b.classList.remove('nav-active', 'text-slate-500'));
             document.getElementById('page-'+id).classList.add('active');
             btn.classList.add('nav-active');
-        };
-
-        window.setModeKopi = (m) => {
-            window.modeKopi = m;
-            document.querySelectorAll('#page-kopi .tab-btn').forEach(b => b.classList.remove('active'));
-            document.getElementById('k-tab-'+m).classList.add('active');
-            document.getElementById('k-wrap-hari').classList.toggle('hidden', m !== 'hari');
-            document.getElementById('k-wrap-bt').classList.toggle('hidden', m === 'hari');
-            renderKopi();
-        };
-
-        window.renderKopi = () => {
-            if(!window.allKopi) return;
-            const h = document.getElementById('k-input-hari').value;
-            const m = parseInt(document.getElementById('k-input-bulan').value);
-            const y = parseInt(document.getElementById('k-input-tahun').value);
-            const list = document.getElementById('list-kopi');
-            let total = 0; list.innerHTML = '';
-            const filtered = window.allKopi.filter(t => {
-                const d = new Date(t.tgl);
-                if (window.modeKopi === 'hari') return d.toDateString() === new Date(h).toDateString();
-                if (window.modeKopi === 'bulan') return d.getMonth() === m && d.getFullYear() === y;
-                return d.getFullYear() === y;
-            });
-            filtered.forEach(t => {
-                total += (t.total || 0);
-                list.innerHTML += `<div class="stat-card flex justify-between items-center border-l-2 border-gold mb-2 py-3">
-                    <div><p class="text-xs font-bold uppercase text-white">${t.nama || 'Customer'}</p><p class="text-[9px] text-slate-500">${new Date(t.tgl).toLocaleTimeString()}</p></div>
-                    <p class="text-gold font-black">Rp ${(t.total || 0).toLocaleString()}</p>
-                </div>`;
-            });
-            document.getElementById('k-total-display').innerText = "Rp " + total.toLocaleString();
         };
 
         window.paksaUpdateSistem = () => {
@@ -317,8 +317,7 @@
             document.getElementById('l-input-date').valueAsDate = new Date();
             document.getElementById('k-input-bulan').value = new Date().getMonth();
             document.getElementById('l-select-bulan').value = new Date().getMonth();
-            window.modeKopi = 'hari';
-            renderLaundry();
+            renderKopi(); renderLaundry();
         };
     </script>
 </body>
