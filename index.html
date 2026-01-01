@@ -53,10 +53,16 @@
     <div id="modal-stok" class="modal-overlay">
         <div class="modal-content">
             <p id="modal-title-type" class="text-header-small mb-1">TAMBAH STOK</p>
-            <h2 class="text-xl font-black italic text-white mb-4 uppercase">Update Stok Baru</h2>
+            <h2 id="modal-title-main" class="text-xl font-black italic text-white mb-4 uppercase">Update Stok Baru</h2>
+            
+            <select id="modal-admin-action" class="mb-4" onchange="updateModalLabel()">
+                <option value="Masuk">TAMBAH STOK (BELI/BARU)</option>
+                <option value="Proses">PROSES UNGKEP (KURANGI MENTAH)</option>
+            </select>
+
             <input type="number" id="modal-qty-input" placeholder="0" autofocus>
-            <button onclick="prosesSimpanFAB()" class="w-full bg-yellow-400 text-black font-bold py-4 rounded-xl mt-4 uppercase">SIMPAN KE DATABASE</button>
-            <button onclick="closeModal()" class="w-full text-zinc-500 font-bold py-4 uppercase">BATAL</button>
+            <button onclick="prosesSimpanAdmin()" class="w-full bg-yellow-400 text-black font-bold py-4 rounded-xl mt-4 uppercase">SIMPAN KE DATABASE</button>
+            <button onclick="closeModal()" class="w-full text-zinc-500 font-bold py-4 uppercase text-xs">BATAL</button>
         </div>
     </div>
 
@@ -79,22 +85,22 @@
 
         <main id="page-dashboard" class="page-content active p-6 space-y-6">
             <div class="stat-card border-l-4 border-gold">
-                <p class="text-header-small mb-1">Pendapatan Kopi 2025</p>
+                <p class="text-header-small mb-1">Pendapatan Kopi 2026</p>
                 <h2 id="dash-kopi-total" class="text-4xl font-black italic text-gold">Rp 0</h2>
                 <i class="fas fa-coffee card-icon-bg text-gold"></i>
             </div>
             <div class="grid grid-cols-3 gap-3">
                 <div class="stat-card text-center border-t-2 border-orange-500 px-2">
                     <p class="text-[9px] font-bold text-zinc-500 mb-1 uppercase">A. Mentah</p>
-                    <h4 id="dash-mentah-val" class="text-2xl font-black italic text-orange-400">--</h4>
+                    <h4 id="dash-mentah-val" class="text-2xl font-black italic text-orange-400">0</h4>
                 </div>
                 <div class="stat-card text-center border-t-2 border-yellow-500 px-2">
                     <p class="text-[9px] font-bold text-zinc-500 mb-1 uppercase">A. Ungkep</p>
-                    <h4 id="dash-ungkep-val" class="text-2xl font-black italic text-yellow-400">--</h4>
+                    <h4 id="dash-ungkep-val" class="text-2xl font-black italic text-yellow-400">0</h4>
                 </div>
                 <div class="stat-card text-center border-t-2 border-emerald-500 px-2">
                     <p class="text-[9px] font-bold text-zinc-500 mb-1 uppercase">Ikan</p>
-                    <h4 id="dash-ikan-val" class="text-2xl font-black italic text-emerald-400">--</h4>
+                    <h4 id="dash-ikan-val" class="text-2xl font-black italic text-emerald-400">0</h4>
                 </div>
             </div>
             <div class="stat-card border-l-4 border-blue-500 flex justify-between items-center">
@@ -133,10 +139,11 @@
 
         <main id="page-stok" class="page-content p-6 space-y-6">
             <div class="grid grid-cols-3 gap-2">
-                <div class="stat-card p-3 border-t-2 border-orange-500" onclick="openModalFAB('Mentah')"><p class="text-[10px] text-zinc-500 font-bold uppercase">Mentah</p><h4 id="stok-mentah-val" class="text-2xl font-black italic text-orange-400">--</h4></div>
-                <div class="stat-card p-3 border-t-2 border-yellow-500" onclick="openModalFAB('Ungkep')"><p class="text-[10px] text-zinc-500 font-bold uppercase">Ungkep</p><h4 id="stok-ungkep-val" class="text-2xl font-black italic text-yellow-400">--</h4></div>
-                <div class="stat-card p-3 border-t-2 border-emerald-500" onclick="openModalFAB('Ikan')"><p class="text-[10px] text-zinc-500 font-bold uppercase">Ikan</p><h4 id="stok-ikan-val" class="text-2xl font-black italic text-emerald-400">--</h4></div>
+                <div class="stat-card p-3 border-t-2 border-orange-500" onclick="openModalFAB('Mentah')"><p class="text-[10px] text-zinc-500 font-bold uppercase">Mentah</p><h4 id="stok-mentah-val" class="text-2xl font-black italic text-orange-400">0</h4></div>
+                <div class="stat-card p-3 border-t-2 border-yellow-500" onclick="openModalFAB('Ungkep')"><p class="text-[10px] text-zinc-500 font-bold uppercase">Ungkep</p><h4 id="stok-ungkep-val" class="text-2xl font-black italic text-yellow-400">0</h4></div>
+                <div class="stat-card p-3 border-t-2 border-emerald-500" onclick="openModalFAB('Ikan')"><p class="text-[10px] text-zinc-500 font-bold uppercase">Ikan</p><h4 id="stok-ikan-val" class="text-2xl font-black italic text-emerald-400">0</h4></div>
             </div>
+            <div class="flex justify-between items-center px-1"><h3 class="text-header-small font-black">Riwayat Aktivitas Dapur</h3></div>
             <div id="list-history-stok" class="space-y-3"></div>
         </main>
 
@@ -162,7 +169,7 @@
         window.allKopi = [];
         onSnapshot(query(collection(db, "transactions"), orderBy("tgl", "desc")), (snap) => {
             window.allKopi = snap.docs.map(doc => doc.data());
-            const rev = window.allKopi.filter(t => new Date(t.tgl).getFullYear() === 2025).reduce((a,b) => a+(b.total||0),0);
+            const rev = window.allKopi.filter(t => new Date(t.tgl).getFullYear() === 2026).reduce((a,b) => a+(b.total||0),0);
             document.getElementById('dash-kopi-total').innerText = "Rp " + rev.toLocaleString();
             if(window.renderKopi) window.renderKopi();
         });
@@ -189,11 +196,13 @@
             setTimeout(() => { document.getElementById('login-overlay').style.transform = 'translateY(-100%)'; document.getElementById('main-app').style.display = 'block'; }, 1500);
         }
 
-        // --- DATABASE LISTENERS ---
-        dbStok.ref('stok_macca_v14').on('value', snap => {
+        // --- SINKRONISASI STOK DENGAN PATH v14_flow (Dapur) ---
+        dbStok.ref('stok_macca_v14_flow').on('value', snap => {
             let sM = 0, sU = 0, sI = 0, hArr = [];
             snap.forEach(c => {
-                const i = c.val(); const add = (i.status==='Masuk') ? i.qty : -i.qty;
+                const i = c.val(); 
+                const isKeluar = i.status === 'Keluar' || i.note?.includes('KELUAR') || i.note?.includes('PENJUALAN');
+                const add = isKeluar ? -i.qty : i.qty;
                 if(i.type === 'Mentah') sM += add; else if(i.type === 'Ungkep') sU += add; else if(i.type === 'Ikan') sI += add;
                 hArr.push(i);
             });
@@ -202,14 +211,24 @@
                 document.getElementById(p+'-ungkep-val').innerText = sU; 
                 document.getElementById(p+'-ikan-val').innerText = sI; 
             });
-            let hH = ''; hArr.sort((a,b)=>b.time-a.time).slice(0,15).forEach(h => {
-                hH += `<div class="stat-card border-l-4 ${h.status==='Keluar'?'border-red-500':'border-emerald-500'} py-4 mb-2">
-                <p class="text-white font-black text-sm uppercase">${h.type} <span class="text-[10px] opacity-50">${h.status}</span></p>
-                <p class="text-xl font-black ${h.status==='Keluar'?'text-red-500':'text-emerald-500'}">${h.status==='Keluar'?'-':'+'}${h.qty}</p></div>`;
+            
+            let hH = ''; 
+            hArr.sort((a,b)=> (b.time||0) - (a.time||0)).slice(0,15).forEach(h => {
+                const isKeluar = h.status === 'Keluar' || h.note?.includes('KELUAR');
+                hH += `<div class="stat-card border-l-4 ${isKeluar?'border-red-500':'border-emerald-500'} py-4 mb-2">
+                    <div class="flex justify-between">
+                        <div>
+                            <p class="text-white font-black text-sm uppercase">${h.type}</p>
+                            <p class="text-[9px] text-zinc-500 font-bold uppercase">${h.note || h.status}</p>
+                        </div>
+                        <p class="text-xl font-black ${isKeluar?'text-red-500':'text-emerald-500'}">${isKeluar?'-':'+'}${h.qty}</p>
+                    </div>
+                </div>`;
             });
             document.getElementById('list-history-stok').innerHTML = hH;
         });
 
+        // --- LAUNDRY & DELIVERY ---
         dbLaundry.ref('Pesanan').on('value', snap => {
             rawLaundry = []; let wait = 0;
             snap.forEach(c => { const o = c.val(); rawLaundry.push(o); if(o.status === "MENUNGGU_DRIVER") wait++; });
@@ -223,14 +242,57 @@
             renderDriverPerformance();
         });
 
-        // --- RENDER FUNCTIONS ---
+        // --- ADMIN ACTION FUNCTIONS ---
+        function updateModalLabel() {
+            const mode = document.getElementById('modal-admin-action').value;
+            if(mode === 'Proses') {
+                document.getElementById('modal-title-main').innerText = "Proses Masak";
+                document.getElementById('modal-title-type').innerText = "Kurangi Mentah -> Masuk Ungkep";
+            } else {
+                document.getElementById('modal-title-main').innerText = "Update Stok Baru";
+                document.getElementById('modal-title-type').innerText = "TAMBAH "+currentTypeFAB.toUpperCase();
+            }
+        }
+
+        function openModalFAB(type) { 
+            currentTypeFAB = type; 
+            document.getElementById('modal-admin-action').value = "Masuk";
+            updateModalLabel();
+            document.getElementById('modal-stok').classList.add('show'); 
+        }
+
+        function closeModal() { document.getElementById('modal-stok').classList.remove('show'); }
+
+        function prosesSimpanAdmin() {
+            const q = parseInt(document.getElementById('modal-qty-input').value);
+            const mode = document.getElementById('modal-admin-action').value;
+            if(!q) return;
+
+            const time = Date.now();
+            const ref = dbStok.ref('stok_macca_v14_flow');
+
+            if(mode === 'Proses') {
+                // Kurangi Mentah, Masukkan Ungkep
+                ref.push({ type: 'Mentah', qty: q, status: "Keluar", note: "PROSES UNGKEP (ADMIN)", time: time, user: "SUPER ADMIN" });
+                ref.push({ type: 'Ungkep', qty: q, status: "Masuk", note: "HASIL UNGKEP (ADMIN)", time: time, user: "SUPER ADMIN" }).then(onDone);
+            } else {
+                ref.push({ type: currentTypeFAB, qty: q, status: "Masuk", note: "STOK MASUK (ADMIN)", time: time, user: "SUPER ADMIN" }).then(onDone);
+            }
+        }
+
+        function onDone() {
+            closeModal(); 
+            document.getElementById('modal-qty-input').value = '';
+            document.getElementById('toast-notif').classList.add('show'); 
+            setTimeout(()=>document.getElementById('toast-notif').classList.remove('show'), 2000);
+        }
+
+        // --- RENDER FUNCTIONS (TETAP SAMA) ---
         function renderDriverPerformance() {
             const list = document.getElementById('driver-performance-list');
             const selB = parseInt(document.getElementById('d-select-bulan').value);
             const selT = parseInt(document.getElementById('d-select-tahun').value);
             let stats = {};
-
-            // Hitung Laundry
             rawLaundry.forEach(o => {
                 if(o.status === "SELESAI" && o.selesai) {
                     const dt = new Date(o.selesai);
@@ -241,8 +303,6 @@
                     }
                 }
             });
-
-            // Hitung Delivery
             rawDelivery.forEach(o => {
                 if(o.status === "delivered" && o.timestamp) {
                     const dt = new Date(o.timestamp);
@@ -253,10 +313,8 @@
                     }
                 }
             });
-
             let html = '';
             const sortedKeys = Object.keys(stats).sort((a,b) => (stats[b].laundry + stats[b].delivery) - (stats[a].laundry + stats[a].delivery));
-            
             sortedKeys.forEach(name => {
                 const total = stats[name].laundry + stats[name].delivery;
                 html += `<div class="stat-card border-l-4 border-gold">
@@ -270,7 +328,7 @@
                     </div>
                 </div>`;
             });
-            list.innerHTML = html || '<p class="text-center py-10 opacity-30 italic font-bold">TIDAK ADA DATA BULAN INI</p>';
+            list.innerHTML = html || '<p class="text-center py-10 opacity-30 italic font-bold">TIDAK ADA DATA</p>';
         }
 
         function renderLaundry() {
@@ -300,7 +358,6 @@
             list.innerHTML = html; document.getElementById('k-total-display').innerText = "Rp " + total.toLocaleString();
         };
 
-        // --- HELPER FUNCTIONS ---
         window.switchPage = (id, btn) => {
             document.querySelectorAll('.page-content').forEach(p => p.classList.remove('active'));
             document.querySelectorAll('nav button').forEach(b => b.classList.remove('nav-active', 'text-zinc-500'));
@@ -316,15 +373,6 @@
             document.getElementById('k-wrap-bulan').classList.toggle('hidden', m!=='bulan'); 
             renderKopi(); 
         };
-
-        function openModalFAB(type) { currentTypeFAB = type; document.getElementById('modal-title-type').innerText = "TAMBAH "+type; document.getElementById('modal-stok').classList.add('show'); }
-        function closeModal() { document.getElementById('modal-stok').classList.remove('show'); }
-        function prosesSimpanFAB() {
-            const q = document.getElementById('modal-qty-input').value;
-            if(!q) return;
-            dbStok.ref('stok_macca_v14').push({ type: currentTypeFAB, qty: parseInt(q), status: "Masuk", time: Date.now(), user: "SUPER ADMIN" })
-            .then(() => { closeModal(); document.getElementById('toast-notif').classList.add('show'); setTimeout(()=>document.getElementById('toast-notif').classList.remove('show'), 2000); });
-        }
 
         window.onload = () => {
             const yr = new Date().getFullYear(), m = new Date().getMonth();
