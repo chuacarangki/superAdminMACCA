@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>MACCA SUPER ADMIN</title>
+    <title>MACCA SUPER ADMIN v20.1</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -13,7 +13,7 @@
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
 
     <style>
-        :root { --gold: #FFD700; --dark: #000000; --card: #121212; --cyan: #00E5FF; --red: #FF0000; --orange: #FF8C00; --blue: #3b82f6; }
+        :root { --gold: #FFD700; --dark: #000000; --card: #121212; --cyan: #00E5FF; --red: #FF0000; --orange: #FF8C00; --blue: #3b82f6; --emerald: #10b981; --purple: #a855f7; }
         body { background-color: var(--dark); color: #ffffff; font-family: 'Plus Jakarta Sans', sans-serif; overflow: hidden; }
         
         #login-overlay { position: fixed; inset: 0; background: var(--dark); z-index: 9999; display: flex; flex-direction: column; align-items: center; justify-content: center; transition: 0.8s cubic-bezier(0.85, 0, 0.15, 1); }
@@ -31,7 +31,6 @@
 
         .text-header-small { font-size: 11px; font-weight: 700; color: #888888; letter-spacing: 1.2px; text-transform: uppercase; }
         .nama-pemesan { font-size: 16px; font-weight: 800; color: var(--cyan); line-height: 1.2; }
-        .text-price { font-size: 18px; font-weight: 900; color: var(--gold); }
         
         .tab-btn { flex: 1; padding: 12px; font-size: 11px; font-weight: 800; color: #666; border-radius: 12px; transition: 0.3s; text-transform: uppercase; }
         .tab-btn.active { color: var(--gold); background: rgba(255, 215, 0, 0.1); border: 1px solid rgba(255, 215, 0, 0.3); }
@@ -57,7 +56,7 @@
             
             <select id="modal-admin-action" class="mb-4" onchange="updateModalLabel()">
                 <option value="Masuk">TAMBAH STOK (BELI/BARU)</option>
-                <option value="Proses">PROSES UNGKEP (KURANGI MENTAH)</option>
+                <option value="Proses" id="opt-proses">PROSES UNGKEP (KURANGI MENTAH)</option>
             </select>
 
             <input type="number" id="modal-qty-input" placeholder="0" autofocus>
@@ -89,24 +88,59 @@
                 <h2 id="dash-kopi-total" class="text-4xl font-black italic text-gold">Rp 0</h2>
                 <i class="fas fa-coffee card-icon-bg text-gold"></i>
             </div>
-            <div class="grid grid-cols-3 gap-3">
-                <div class="stat-card text-center border-t-2 border-orange-500 px-2">
+
+            <div class="stat-card border-l-4 border-purple">
+                <p class="text-header-small mb-1">Omzet Gerai Depan (Hari Ini)</p>
+                <h2 id="dash-gerai-total" class="text-4xl font-black italic text-purple-400">Rp 0</h2>
+                <i class="fas fa-store card-icon-bg text-purple-500"></i>
+            </div>
+
+            <div class="grid grid-cols-2 gap-3">
+                <div class="stat-card border-t-2 border-orange-500 px-4">
                     <p class="text-[9px] font-bold text-zinc-500 mb-1 uppercase">A. Mentah</p>
                     <h4 id="dash-mentah-val" class="text-2xl font-black italic text-orange-400">0</h4>
                 </div>
-                <div class="stat-card text-center border-t-2 border-yellow-500 px-2">
+                <div class="stat-card border-t-2 border-yellow-500 px-4">
                     <p class="text-[9px] font-bold text-zinc-500 mb-1 uppercase">A. Ungkep</p>
                     <h4 id="dash-ungkep-val" class="text-2xl font-black italic text-yellow-400">0</h4>
                 </div>
-                <div class="stat-card text-center border-t-2 border-emerald-500 px-2">
-                    <p class="text-[9px] font-bold text-zinc-500 mb-1 uppercase">Ikan</p>
+                <div class="stat-card border-t-2 border-emerald-500 px-4">
+                    <p class="text-[9px] font-bold text-zinc-500 mb-1 uppercase">I. Tawar</p>
                     <h4 id="dash-ikan-val" class="text-2xl font-black italic text-emerald-400">0</h4>
                 </div>
+                <div class="stat-card border-t-2 border-cyan-400 px-4">
+                    <p class="text-[9px] font-bold text-zinc-500 mb-1 uppercase">I. Laut</p>
+                    <h4 id="dash-ikanlaut-val" class="text-2xl font-black italic text-cyan-400">0</h4>
+                </div>
             </div>
+
             <div class="stat-card border-l-4 border-blue-500 flex justify-between items-center">
                 <div><p class="text-header-small mb-1">Laundry (Menunggu)</p><h4 id="dash-laundry-count" class="text-3xl font-black italic text-blue-400">0</h4></div>
                 <i class="fas fa-tshirt card-icon-bg text-blue-500"></i>
             </div>
+        </main>
+
+        <main id="page-stok" class="page-content p-6 space-y-6">
+            <div class="grid grid-cols-2 gap-3">
+                <div class="stat-card p-4 border-t-2 border-orange-500" onclick="openModalFAB('Mentah')">
+                    <p class="text-[10px] text-zinc-500 font-bold uppercase">Ayam Mentah</p>
+                    <h4 id="stok-mentah-val" class="text-3xl font-black italic text-orange-400">0</h4>
+                </div>
+                <div class="stat-card p-4 border-t-2 border-yellow-500" onclick="openModalFAB('Ungkep')">
+                    <p class="text-[10px] text-zinc-500 font-bold uppercase">Ayam Ungkep</p>
+                    <h4 id="stok-ungkep-val" class="text-3xl font-black italic text-yellow-400">0</h4>
+                </div>
+                <div class="stat-card p-4 border-t-2 border-emerald-500" onclick="openModalFAB('Ikan')">
+                    <p class="text-[10px] text-zinc-500 font-bold uppercase">Ikan Tawar</p>
+                    <h4 id="stok-ikan-val" class="text-3xl font-black italic text-emerald-400">0</h4>
+                </div>
+                <div class="stat-card p-4 border-t-2 border-cyan-400" onclick="openModalFAB('IkanLaut')">
+                    <p class="text-[10px] text-zinc-500 font-bold uppercase">Ikan Laut</p>
+                    <h4 id="stok-ikanlaut-val" class="text-3xl font-black italic text-cyan-400">0</h4>
+                </div>
+            </div>
+            <div class="flex justify-between items-center px-1"><h3 class="text-header-small font-black">Riwayat Aktivitas Dapur</h3></div>
+            <div id="list-history-stok" class="space-y-3"></div>
         </main>
 
         <main id="page-kopi" class="page-content p-6 space-y-6">
@@ -133,18 +167,7 @@
                     <select id="d-select-tahun" onchange="renderDriverPerformance()"></select>
                 </div>
             </div>
-            <h3 class="text-header-small px-1 font-black">REKAP PERFORMA DRIVER (LAUNDRY & DELIVERY)</h3>
             <div id="driver-performance-list" class="space-y-4"></div>
-        </main>
-
-        <main id="page-stok" class="page-content p-6 space-y-6">
-            <div class="grid grid-cols-3 gap-2">
-                <div class="stat-card p-3 border-t-2 border-orange-500" onclick="openModalFAB('Mentah')"><p class="text-[10px] text-zinc-500 font-bold uppercase">Mentah</p><h4 id="stok-mentah-val" class="text-2xl font-black italic text-orange-400">0</h4></div>
-                <div class="stat-card p-3 border-t-2 border-yellow-500" onclick="openModalFAB('Ungkep')"><p class="text-[10px] text-zinc-500 font-bold uppercase">Ungkep</p><h4 id="stok-ungkep-val" class="text-2xl font-black italic text-yellow-400">0</h4></div>
-                <div class="stat-card p-3 border-t-2 border-emerald-500" onclick="openModalFAB('Ikan')"><p class="text-[10px] text-zinc-500 font-bold uppercase">Ikan</p><h4 id="stok-ikan-val" class="text-2xl font-black italic text-emerald-400">0</h4></div>
-            </div>
-            <div class="flex justify-between items-center px-1"><h3 class="text-header-small font-black">Riwayat Aktivitas Dapur</h3></div>
-            <div id="list-history-stok" class="space-y-3"></div>
         </main>
 
         <main id="page-laundry" class="page-content p-6 space-y-6">
@@ -196,31 +219,49 @@
             setTimeout(() => { document.getElementById('login-overlay').style.transform = 'translateY(-100%)'; document.getElementById('main-app').style.display = 'block'; }, 1500);
         }
 
-        // --- SINKRONISASI STOK DENGAN PATH v14_flow (Dapur) ---
+        // --- SYNC STOK & OMZET GERAI ---
         dbStok.ref('stok_macca_v14_flow').on('value', snap => {
-            let sM = 0, sU = 0, sI = 0, hArr = [];
+            let sM = 0, sU = 0, sI = 0, sIL = 0, omzetGerai = 0, hArr = [];
+            const todayStr = new Date().toDateString();
+
             snap.forEach(c => {
                 const i = c.val(); 
                 const isKeluar = i.status === 'Keluar' || i.note?.includes('KELUAR') || i.note?.includes('PENJUALAN');
                 const add = isKeluar ? -i.qty : i.qty;
-                if(i.type === 'Mentah') sM += add; else if(i.type === 'Ungkep') sU += add; else if(i.type === 'Ikan') sI += add;
+                
+                // Hitung Stok
+                if(i.type === 'Mentah') sM += add; 
+                else if(i.type === 'Ungkep') sU += add; 
+                else if(i.type === 'Ikan') sI += add;
+                else if(i.type === 'IkanLaut') sIL += add;
+
+                // Hitung Omzet Gerai (Status Keluar + Note Penjualan + Tanggal Hari Ini)
+                if(isKeluar && i.note?.includes('PENJUALAN')) {
+                    const itemDate = new Date(i.time).toDateString();
+                    if(itemDate === todayStr) {
+                        omzetGerai += (i.price || 0);
+                    }
+                }
+                
                 hArr.push(i);
             });
-            ['dash','stok'].forEach(p => { 
+
+            document.getElementById('dash-gerai-total').innerText = "Rp " + omzetGerai.toLocaleString();
+            
+            ['dash', 'stok'].forEach(p => { 
                 document.getElementById(p+'-mentah-val').innerText = sM; 
                 document.getElementById(p+'-ungkep-val').innerText = sU; 
                 document.getElementById(p+'-ikan-val').innerText = sI; 
+                document.getElementById(p+'-ikanlaut-val').innerText = sIL; 
             });
             
             let hH = ''; 
-            hArr.sort((a,b)=> (b.time||0) - (a.time||0)).slice(0,15).forEach(h => {
+            hArr.sort((a,b)=> (b.time||0) - (a.time||0)).slice(0,20).forEach(h => {
                 const isKeluar = h.status === 'Keluar' || h.note?.includes('KELUAR');
-                hH += `<div class="stat-card border-l-4 ${isKeluar?'border-red-500':'border-emerald-500'} py-4 mb-2">
-                    <div class="flex justify-between">
-                        <div>
-                            <p class="text-white font-black text-sm uppercase">${h.type}</p>
-                            <p class="text-[9px] text-zinc-500 font-bold uppercase">${h.note || h.status}</p>
-                        </div>
+                const colorBorder = (h.type === 'IkanLaut') ? 'border-cyan-400' : (isKeluar ? 'border-red-500' : 'border-emerald-500');
+                hH += `<div class="stat-card border-l-4 ${colorBorder} py-4 mb-2">
+                    <div class="flex justify-between items-center">
+                        <div><p class="text-white font-black text-sm uppercase">${h.type}</p><p class="text-[9px] text-zinc-500 font-bold uppercase">${h.note || h.status}</p></div>
                         <p class="text-xl font-black ${isKeluar?'text-red-500':'text-emerald-500'}">${isKeluar?'-':'+'}${h.qty}</p>
                     </div>
                 </div>`;
@@ -228,7 +269,49 @@
             document.getElementById('list-history-stok').innerHTML = hH;
         });
 
-        // --- LAUNDRY & DELIVERY ---
+        // --- ADMIN FUNCTIONS ---
+        window.openModalFAB = (type) => { 
+            currentTypeFAB = type; 
+            document.getElementById('modal-admin-action').value = "Masuk";
+            document.getElementById('opt-proses').style.display = (type === 'Ungkep' || type === 'Mentah') ? 'block' : 'none';
+            updateModalLabel();
+            document.getElementById('modal-stok').classList.add('show'); 
+        };
+
+        window.updateModalLabel = () => {
+            const mode = document.getElementById('modal-admin-action').value;
+            if(mode === 'Proses') {
+                document.getElementById('modal-title-main').innerText = "Proses Masak";
+                document.getElementById('modal-title-type').innerText = "Kurangi Mentah -> Masuk Ungkep";
+            } else {
+                document.getElementById('modal-title-main').innerText = "Update Stok Baru";
+                document.getElementById('modal-title-type').innerText = "TAMBAH " + currentTypeFAB.toUpperCase();
+            }
+        };
+
+        window.prosesSimpanAdmin = () => {
+            const q = parseInt(document.getElementById('modal-qty-input').value);
+            const mode = document.getElementById('modal-admin-action').value;
+            if(!q) return;
+            const time = Date.now();
+            const ref = dbStok.ref('stok_macca_v14_flow');
+            if(mode === 'Proses') {
+                ref.push({ type: 'Mentah', qty: q, status: "Keluar", note: "PROSES UNGKEP (ADMIN)", time: time, user: "SUPER ADMIN", price: 0 });
+                ref.push({ type: 'Ungkep', qty: q, status: "Masuk", note: "HASIL UNGKEP (ADMIN)", time: time, user: "SUPER ADMIN", price: 0 }).then(onDone);
+            } else {
+                ref.push({ type: currentTypeFAB, qty: q, status: "Masuk", note: "STOK MASUK (ADMIN)", time: time, user: "SUPER ADMIN", price: 0 }).then(onDone);
+            }
+        };
+
+        function onDone() {
+            closeModal(); document.getElementById('modal-qty-input').value = '';
+            document.getElementById('toast-notif').classList.add('show'); 
+            setTimeout(()=>document.getElementById('toast-notif').classList.remove('show'), 2000);
+        }
+
+        window.closeModal = () => document.getElementById('modal-stok').classList.remove('show');
+
+        // --- OTHER RENDERS ---
         dbLaundry.ref('Pesanan').on('value', snap => {
             rawLaundry = []; let wait = 0;
             snap.forEach(c => { const o = c.val(); rawLaundry.push(o); if(o.status === "MENUNGGU_DRIVER") wait++; });
@@ -237,57 +320,10 @@
         });
 
         dbDelivery.ref('orders').on('value', snap => {
-            rawDelivery = [];
-            snap.forEach(c => { rawDelivery.push(c.val()); });
+            rawDelivery = []; snap.forEach(c => { rawDelivery.push(c.val()); });
             renderDriverPerformance();
         });
 
-        // --- ADMIN ACTION FUNCTIONS ---
-        function updateModalLabel() {
-            const mode = document.getElementById('modal-admin-action').value;
-            if(mode === 'Proses') {
-                document.getElementById('modal-title-main').innerText = "Proses Masak";
-                document.getElementById('modal-title-type').innerText = "Kurangi Mentah -> Masuk Ungkep";
-            } else {
-                document.getElementById('modal-title-main').innerText = "Update Stok Baru";
-                document.getElementById('modal-title-type').innerText = "TAMBAH "+currentTypeFAB.toUpperCase();
-            }
-        }
-
-        function openModalFAB(type) { 
-            currentTypeFAB = type; 
-            document.getElementById('modal-admin-action').value = "Masuk";
-            updateModalLabel();
-            document.getElementById('modal-stok').classList.add('show'); 
-        }
-
-        function closeModal() { document.getElementById('modal-stok').classList.remove('show'); }
-
-        function prosesSimpanAdmin() {
-            const q = parseInt(document.getElementById('modal-qty-input').value);
-            const mode = document.getElementById('modal-admin-action').value;
-            if(!q) return;
-
-            const time = Date.now();
-            const ref = dbStok.ref('stok_macca_v14_flow');
-
-            if(mode === 'Proses') {
-                // Kurangi Mentah, Masukkan Ungkep
-                ref.push({ type: 'Mentah', qty: q, status: "Keluar", note: "PROSES UNGKEP (ADMIN)", time: time, user: "SUPER ADMIN" });
-                ref.push({ type: 'Ungkep', qty: q, status: "Masuk", note: "HASIL UNGKEP (ADMIN)", time: time, user: "SUPER ADMIN" }).then(onDone);
-            } else {
-                ref.push({ type: currentTypeFAB, qty: q, status: "Masuk", note: "STOK MASUK (ADMIN)", time: time, user: "SUPER ADMIN" }).then(onDone);
-            }
-        }
-
-        function onDone() {
-            closeModal(); 
-            document.getElementById('modal-qty-input').value = '';
-            document.getElementById('toast-notif').classList.add('show'); 
-            setTimeout(()=>document.getElementById('toast-notif').classList.remove('show'), 2000);
-        }
-
-        // --- RENDER FUNCTIONS (TETAP SAMA) ---
         function renderDriverPerformance() {
             const list = document.getElementById('driver-performance-list');
             const selB = parseInt(document.getElementById('d-select-bulan').value);
@@ -314,17 +350,10 @@
                 }
             });
             let html = '';
-            const sortedKeys = Object.keys(stats).sort((a,b) => (stats[b].laundry + stats[b].delivery) - (stats[a].laundry + stats[a].delivery));
-            sortedKeys.forEach(name => {
-                const total = stats[name].laundry + stats[name].delivery;
-                html += `<div class="stat-card border-l-4 border-gold">
+            Object.keys(stats).forEach(name => {
+                html += `<div class="stat-card border-l-4 border-gold mb-3">
                     <div class="flex justify-between items-center">
-                        <div><h4 class="nama-pemesan text-white uppercase">${name}</h4><p class="text-[10px] text-zinc-500 font-bold">TOTAL PENGANTARAN</p></div>
-                        <div class="text-right"><h2 class="text-3xl font-black text-gold italic">${total}</h2></div>
-                    </div>
-                    <div class="grid grid-cols-2 gap-2 mt-4 pt-4 border-t border-white/5">
-                        <div class="bg-zinc-900 p-2 rounded-xl text-center"><p class="text-[9px] text-zinc-500 font-bold uppercase">Laundry</p><p class="text-sm font-black text-cyan-400">${stats[name].laundry}</p></div>
-                        <div class="bg-zinc-900 p-2 rounded-xl text-center"><p class="text-[9px] text-zinc-500 font-bold uppercase">Delivery</p><p class="text-sm font-black text-orange-400">${stats[name].delivery}</p></div>
+                        <div><h4 class="nama-pemesan text-white uppercase">${name}</h4><p class="text-[10px] text-zinc-500 font-bold uppercase">Total: ${stats[name].laundry + stats[name].delivery}</p></div>
                     </div>
                 </div>`;
             });
@@ -338,7 +367,6 @@
             rawLaundry.filter(o => new Date(o.mulai).toDateString() === filterDate).reverse().forEach(o => {
                 html += `<div class="stat-card border-l-4 ${o.status==='SELESAI'?'border-emerald-500':'border-blue-500'} mb-3">
                     <div class="flex justify-between"><div><h4 class="nama-pemesan uppercase">${o.nama}</h4><p class="text-header-small">${o.layanan}</p></div><span class="text-[10px] font-bold text-zinc-500">${o.status}</span></div>
-                    <p class="text-[10px] mt-2 font-bold text-zinc-400 italic">Driver: ${o.driverName || 'Pending'}</p>
                 </div>`;
             });
             list.innerHTML = html || '<p class="text-center py-10 opacity-30 italic font-bold">TIDAK ADA PESANAN</p>';
