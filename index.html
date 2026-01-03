@@ -72,17 +72,35 @@
         </header>
 
         <div class="section-title"><i class="fas fa-wallet text-gold"></i> Omzet Penjualan</div>
-        <div class="grid grid-cols-1 gap-4">
-            <div class="stat-card border-l-4 border-gold">
-                <p class="text-white font-bold text-[11px] uppercase opacity-60">Kopi Shaka (2026)</p>
-                <h2 id="total-kopi" class="text-4xl font-black italic text-gold mt-1">Rp 0</h2>
+        <div class="grid grid-cols-1 gap-6">
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="stat-card border-l-4 border-indigo-500">
+                    <p class="text-white font-bold text-[11px] uppercase opacity-60">Kopi Shaka (Hari Ini)</p>
+                    <h2 id="kopi-hari" class="text-4xl font-black italic text-indigo-400 mt-1">Rp 0</h2>
+                </div>
+                <div class="stat-card border-l-4 border-gold">
+                    <p class="text-white font-bold text-[11px] uppercase opacity-60">Kopi Shaka (Bulan Ini)</p>
+                    <h2 id="kopi-bulan" class="text-4xl font-black italic text-gold mt-1">Rp 0</h2>
+                </div>
             </div>
-            <div class="stat-card border-l-4 border-purple-500">
-                <p class="text-white font-bold text-[11px] uppercase opacity-60">Gerai Depan (Hari Ini)</p>
-                <h2 id="total-gerai" class="text-4xl font-black italic text-purple-400 mt-1">Rp 0</h2>
-                <div class="flex gap-4 mt-2 opacity-50 text-[9px] font-black uppercase tracking-tighter">
-                    <span>QRIS: <span id="val-qris">Rp 0</span></span>
-                    <span>CASH: <span id="val-cash">Rp 0</span></span>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="stat-card border-l-4 border-purple-500">
+                    <p class="text-white font-bold text-[11px] uppercase opacity-60">Gerai Depan (Hari Ini)</p>
+                    <h2 id="total-gerai" class="text-4xl font-black italic text-purple-400 mt-1">Rp 0</h2>
+                    <div class="flex gap-4 mt-2 opacity-50 text-[9px] font-black uppercase tracking-tighter">
+                        <span>QRIS: <span id="val-qris">Rp 0</span></span>
+                        <span>CASH: <span id="val-cash">Rp 0</span></span>
+                    </div>
+                </div>
+
+                <div class="stat-card border-l-4 border-emerald-500">
+                    <p class="text-white font-bold text-[11px] uppercase opacity-60">Gerai Depan (Bulan Ini)</p>
+                    <h2 id="total-gerai-bulan" class="text-4xl font-black italic text-emerald-400 mt-1">Rp 0</h2>
+                    <div class="flex gap-4 mt-2 opacity-50 text-[9px] font-black uppercase tracking-tighter">
+                        <span id="label-bulan" class="bg-emerald-500/20 text-emerald-400 px-2 py-0.5 rounded">JANUARI 2026</span>
+                    </div>
                 </div>
             </div>
         </div>
@@ -121,9 +139,25 @@
         const dbDeliv = getFirestore(appDeliv);
 
         onSnapshot(collection(dbKopi, "transactions"), (snap) => {
-            let total = 0;
-            snap.forEach(doc => { if(new Date(doc.data().tgl).getFullYear() === 2026) total += (doc.data().total || 0); });
-            document.getElementById('total-kopi').innerText = "Rp " + total.toLocaleString();
+            let hariIni = 0;
+            let bulanIni = 0;
+            const now = new Date();
+            const startToday = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
+            const startMonth = new Date(now.getFullYear(), now.getMonth(), 1).getTime();
+
+            snap.forEach(doc => {
+                const data = doc.data();
+                if(!data.tgl) return;
+                
+                const tglTrans = new Date(data.tgl).getTime();
+                const total = Number(data.total) || 0;
+
+                if(tglTrans >= startToday) hariIni += total;
+                if(tglTrans >= startMonth) bulanIni += total;
+            });
+            
+            document.getElementById('kopi-hari').innerText = "Rp " + hariIni.toLocaleString();
+            document.getElementById('kopi-bulan').innerText = "Rp " + bulanIni.toLocaleString();
         });
 
         onSnapshot(collection(dbDeliv, "orders"), (snap) => {
@@ -150,10 +184,16 @@
         let dataLaundry = [];
 
         dbStok.ref('stok_macca_v14_flow').on('value', snap => {
-            let m=0, u=0, i=0, il=0, qrisGerai=0, cashGerai=0;
+            let m=0, u=0, i=0, il=0;
+            let qrisGerai=0, cashGerai=0;
+            let totalBulanIni = 0;
             
             const now = new Date();
             const startToday = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
+            const startMonth = new Date(now.getFullYear(), now.getMonth(), 1).getTime();
+            
+            const monthNames = ["JANUARI", "FEBRUARI", "MARET", "APRIL", "MEI", "JUNI", "JULI", "AGUSTUS", "SEPTEMBER", "OKTOBER", "NOVEMBER", "DESEMBER"];
+            document.getElementById('label-bulan').innerText = monthNames[now.getMonth()] + " " + now.getFullYear();
 
             snap.forEach(c => {
                 const v = c.val();
@@ -164,34 +204,31 @@
                 const note = (v.note || "").toUpperCase();
                 const time = v.time || 0;
 
-                // 1. LOGIKA STOK (SEMUA WAKTU)
                 const flow = (v.status === 'Masuk' || v.status === 'TAMBAH') ? qty : -qty;
                 if(v.type === 'Mentah') m+=flow; 
                 else if(v.type === 'Ungkep') u+=flow; 
                 else if(v.type === 'Ikan') i+=flow; 
                 else if(v.type === 'IkanLaut') il+=flow;
 
-                // 2. LOGIKA PENJUALAN GERAI DEPAN (HANYA HARI INI)
-                if(time >= startToday && price > 0 && note.includes("GERAI DEPAN")) {
+                if(price > 0 && note.includes("GERAI DEPAN")) {
                     const subtotal = qty * price;
-                    if(note.includes("QRIS")) {
-                        qrisGerai += subtotal;
-                    } else {
-                        cashGerai += subtotal;
+                    if(time >= startToday) {
+                        if(note.includes("QRIS")) qrisGerai += subtotal;
+                        else cashGerai += subtotal;
                     }
+                    if(time >= startMonth) totalBulanIni += subtotal;
                 }
             });
-
-            const totalGerai = qrisGerai + cashGerai;
 
             document.getElementById('stok-mentah').innerText = m;
             document.getElementById('stok-ungkep').innerText = u;
             document.getElementById('stok-ikan').innerText = i;
             document.getElementById('stok-ikanlaut').innerText = il;
             
-            document.getElementById('total-gerai').innerText = "Rp " + totalGerai.toLocaleString();
+            document.getElementById('total-gerai').innerText = "Rp " + (qrisGerai + cashGerai).toLocaleString();
             document.getElementById('val-qris').innerText = "Rp " + qrisGerai.toLocaleString();
             document.getElementById('val-cash').innerText = "Rp " + cashGerai.toLocaleString();
+            document.getElementById('total-gerai-bulan').innerText = "Rp " + totalBulanIni.toLocaleString();
         });
 
         dbLaundry.ref('Pesanan').on('value', snap => {
@@ -222,7 +259,7 @@
 
             sorted.forEach((name, index) => {
                 const total = stats[name].l + stats[name].d;
-                const point = total * 500; // Poin disesuaikan ke 500
+                const point = total * 500;
                 const colorIdx = index % 5;
 
                 html += `
