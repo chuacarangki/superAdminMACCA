@@ -17,7 +17,7 @@
         
         body { margin: 0; font-family: 'Plus Jakarta Sans', sans-serif; background-color: #ffffff; transition: background-color 0.5s ease; }
         
-        /* LOGIN OVERLAY - TETAP PUTIH BERSIH */
+        /* LOGIN OVERLAY */
         #login-screen { 
             position: fixed; inset: 0; background: #ffffff; z-index: 9999; 
             display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px; 
@@ -28,7 +28,7 @@
             box-shadow: 0 20px 50px rgba(0,0,0,0.1);
         }
         
-        /* DASHBOARD - KEMBALI HITAM PREMIUM */
+        /* DASHBOARD */
         #main-dashboard { display: none; background-color: var(--dark); min-height: 100vh; color: #ffffff; }
         .stat-card { background: var(--card); border: 1px solid rgba(255,255,255,0.1); border-radius: 24px; padding: 22px; position: relative; overflow: hidden; }
         
@@ -80,6 +80,10 @@
             <div class="stat-card border-l-4 border-purple-500">
                 <p class="text-white font-bold text-[11px] uppercase opacity-60">Gerai Depan (Hari Ini)</p>
                 <h2 id="total-gerai" class="text-4xl font-black italic text-purple-400 mt-1">Rp 0</h2>
+                <div class="flex gap-4 mt-2 opacity-50 text-[9px] font-black uppercase tracking-tighter">
+                    <span>QRIS: <span id="val-qris">Rp 0</span></span>
+                    <span>CASH: <span id="val-cash">Rp 0</span></span>
+                </div>
             </div>
         </div>
 
@@ -104,8 +108,7 @@
         </div>
 
         <div class="section-title"><i class="fas fa-motorcycle text-cyan"></i> Rekap Poin Driver</div>
-        <div id="driver-list" class="space-y-4">
-            </div>
+        <div id="driver-list" class="space-y-4"></div>
     </div>
 
     <script type="module">
@@ -131,11 +134,8 @@
 
     <script>
         function unlockDashboard() {
-            // Hilangkan login screen
             document.getElementById('login-screen').style.display = 'none';
-            // Tampilkan dashboard
             document.getElementById('main-dashboard').style.display = 'block';
-            // Ubah background body ke hitam agar smooth
             document.body.style.backgroundColor = "#000000";
         }
 
@@ -150,19 +150,48 @@
         let dataLaundry = [];
 
         dbStok.ref('stok_macca_v14_flow').on('value', snap => {
-            let m=0, u=0, i=0, il=0, gerai=0;
-            const today = new Date().toDateString();
+            let m=0, u=0, i=0, il=0, qrisGerai=0, cashGerai=0;
+            
+            const now = new Date();
+            const startToday = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
+
             snap.forEach(c => {
                 const v = c.val();
-                const q = (v.status === 'Masuk' || v.status === 'TAMBAH') ? v.qty : -v.qty;
-                if(v.type === 'Mentah') m+=q; else if(v.type === 'Ungkep') u+=q; else if(v.type === 'Ikan') i+=q; else if(v.type === 'IkanLaut') il+=q;
-                if(v.status === 'Keluar' && v.note?.includes('PENJUALAN') && new Date(v.time).toDateString() === today) gerai += (v.price * v.qty || 0);
+                if(!v) return;
+
+                const qty = Number(v.qty) || 0;
+                const price = Number(v.price) || 0;
+                const note = (v.note || "").toUpperCase();
+                const time = v.time || 0;
+
+                // 1. LOGIKA STOK (SEMUA WAKTU)
+                const flow = (v.status === 'Masuk' || v.status === 'TAMBAH') ? qty : -qty;
+                if(v.type === 'Mentah') m+=flow; 
+                else if(v.type === 'Ungkep') u+=flow; 
+                else if(v.type === 'Ikan') i+=flow; 
+                else if(v.type === 'IkanLaut') il+=flow;
+
+                // 2. LOGIKA PENJUALAN GERAI DEPAN (HANYA HARI INI)
+                if(time >= startToday && price > 0 && note.includes("GERAI DEPAN")) {
+                    const subtotal = qty * price;
+                    if(note.includes("QRIS")) {
+                        qrisGerai += subtotal;
+                    } else {
+                        cashGerai += subtotal;
+                    }
+                }
             });
+
+            const totalGerai = qrisGerai + cashGerai;
+
             document.getElementById('stok-mentah').innerText = m;
             document.getElementById('stok-ungkep').innerText = u;
             document.getElementById('stok-ikan').innerText = i;
             document.getElementById('stok-ikanlaut').innerText = il;
-            document.getElementById('total-gerai').innerText = "Rp " + gerai.toLocaleString();
+            
+            document.getElementById('total-gerai').innerText = "Rp " + totalGerai.toLocaleString();
+            document.getElementById('val-qris').innerText = "Rp " + qrisGerai.toLocaleString();
+            document.getElementById('val-cash').innerText = "Rp " + cashGerai.toLocaleString();
         });
 
         dbLaundry.ref('Pesanan').on('value', snap => {
@@ -193,7 +222,7 @@
 
             sorted.forEach((name, index) => {
                 const total = stats[name].l + stats[name].d;
-                const point = total * 500;
+                const point = total * 500; // Poin disesuaikan ke 500
                 const colorIdx = index % 5;
 
                 html += `
