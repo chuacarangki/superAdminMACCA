@@ -13,9 +13,21 @@
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
 
     <style>
-        :root { --gold: #FFD700; --dark: #000000; --card: #141414; --emerald: #10b981; --cyan: #00E5FF; }
+        :root { 
+            --gold: #FFD700; 
+            --deep-blue: #0A192F; 
+            --card-glass: rgba(20, 20, 20, 0.7); 
+            --emerald: #10b981; 
+            --cyan: #00E5FF; 
+            --crispy: #ff6b6b;
+        }
         
-        body { margin: 0; font-family: 'Plus Jakarta Sans', sans-serif; background-color: #ffffff; transition: background-color 0.5s ease; }
+        body { 
+            margin: 0; 
+            font-family: 'Plus Jakarta Sans', sans-serif; 
+            background-color: #ffffff; 
+            transition: background-color 0.5s ease; 
+        }
         
         /* LOGIN OVERLAY */
         #login-screen { 
@@ -29,11 +41,43 @@
         }
         
         /* DASHBOARD */
-        #main-dashboard { display: none; background-color: var(--dark); min-height: 100vh; color: #ffffff; }
-        .stat-card { background: var(--card); border: 1px solid rgba(255,255,255,0.1); border-radius: 24px; padding: 22px; position: relative; overflow: hidden; }
+        #main-dashboard { 
+            display: none; 
+            background: radial-gradient(circle at top right, #112240, #0A192F); 
+            min-height: 100vh; 
+            color: #ffffff; 
+        }
         
-        .section-title { font-size: 13px; font-weight: 800; color: #FFFFFF; letter-spacing: 1.5px; text-transform: uppercase; margin: 30px 0 15px 0; display: flex; align-items: center; gap: 10px; }
-        .section-title::after { content: ""; flex: 1; height: 2px; background: linear-gradient(to right, rgba(255,255,255,0.2), transparent); }
+        .stat-card { 
+            background: var(--card-glass); 
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255,255,255,0.1); 
+            border-radius: 24px; 
+            padding: 22px; 
+            position: relative; 
+            overflow: hidden; 
+            transition: transform 0.3s ease;
+        }
+        
+        .section-title { 
+            font-size: 13px; 
+            font-weight: 800; 
+            color: #FFFFFF; 
+            letter-spacing: 1.5px; 
+            text-transform: uppercase; 
+            margin: 30px 0 15px 0; 
+            display: flex; 
+            align-items: center; 
+            gap: 10px; 
+        }
+        .section-title::after { 
+            content: ""; 
+            flex: 1; 
+            height: 2px; 
+            background: linear-gradient(to right, var(--gold), transparent); 
+            opacity: 0.3;
+        }
         
         /* AKSEN DRIVER */
         .border-driver-0 { border-left: 8px solid #3b82f6; } 
@@ -41,6 +85,13 @@
         .border-driver-2 { border-left: 8px solid #f59e0b; } 
         .border-driver-3 { border-left: 8px solid #ec4899; } 
         .border-driver-4 { border-left: 8px solid #06b6d4; }
+
+        /* Animation */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .fade-in { animation: fadeIn 0.5s ease forward; }
     </style>
 </head>
 <body class="antialiased">
@@ -55,7 +106,7 @@
             <h2 class="text-slate-900 text-4xl font-black italic uppercase mb-10">PAK BOSS</h2>
             
             <button onclick="unlockDashboard()" class="w-full bg-slate-900 text-white font-black py-5 rounded-2xl active:scale-95 transition-all uppercase tracking-widest shadow-2xl">
-                MASUK SISTEM <i class="fas fa-arrow-right ml-2 text-yellow-400"></i>
+                <i class="fas fa-unlock-alt mr-2"></i> MASUK SISTEM <i class="fas fa-arrow-right ml-2 text-yellow-400"></i>
             </button>
         </div>
     </div>
@@ -63,17 +114,18 @@
     <div id="main-dashboard" class="p-6 pb-24">
         <header class="flex justify-between items-center mb-10">
             <div>
-                <h1 class="text-3xl font-black italic tracking-tighter uppercase leading-none text-white">MACCA <span class="text-red-500">BOSS</span></h1>
-                <p class="text-[10px] font-extrabold text-white bg-red-600 px-2 py-0.5 rounded mt-1 inline-block uppercase">Authorized Only</p>
+                <h1 class="text-3xl font-black italic tracking-tighter uppercase leading-none text-white">MACCA <span class="text-yellow-400">BOSS</span></h1>
+                <p class="text-[10px] font-extrabold text-white bg-blue-600 px-2 py-0.5 rounded mt-1 inline-block uppercase tracking-wider">
+                    <i class="fas fa-shield-halved mr-1"></i> Authorized Only
+                </p>
             </div>
-            <button onclick="location.reload()" class="bg-zinc-800 p-4 rounded-2xl border border-white/10 text-white">
-                <i class="fas fa-power-off"></i>
+            <button onclick="location.reload()" class="bg-white/10 backdrop-blur-md p-4 rounded-2xl border border-white/20 text-white active:scale-90 transition-all">
+                <i class="fas fa-power-off text-red-400"></i>
             </button>
         </header>
 
         <div class="section-title"><i class="fas fa-wallet text-gold"></i> Omzet Penjualan</div>
-        <div class="grid grid-cols-1 gap-6">
-            
+        <div class="grid grid-cols-1 gap-4 mb-8">
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div class="stat-card border-l-4 border-indigo-500">
                     <p class="text-white font-bold text-[11px] uppercase opacity-60">Kopi Shaka (Hari Ini)</p>
@@ -89,9 +141,9 @@
                 <div class="stat-card border-l-4 border-purple-500">
                     <p class="text-white font-bold text-[11px] uppercase opacity-60">Gerai Depan (Hari Ini)</p>
                     <h2 id="total-gerai" class="text-4xl font-black italic text-purple-400 mt-1">Rp 0</h2>
-                    <div class="flex gap-4 mt-2 opacity-50 text-[9px] font-black uppercase tracking-tighter">
-                        <span>QRIS: <span id="val-qris">Rp 0</span></span>
-                        <span>CASH: <span id="val-cash">Rp 0</span></span>
+                    <div class="flex gap-4 mt-2 opacity-70 text-[10px] font-black uppercase tracking-tighter">
+                        <span class="text-cyan-400">QRIS: <span id="val-qris">Rp 0</span></span>
+                        <span class="text-emerald-400">CASH: <span id="val-cash">Rp 0</span></span>
                     </div>
                 </div>
 
@@ -99,28 +151,32 @@
                     <p class="text-white font-bold text-[11px] uppercase opacity-60">Gerai Depan (Bulan Ini)</p>
                     <h2 id="total-gerai-bulan" class="text-4xl font-black italic text-emerald-400 mt-1">Rp 0</h2>
                     <div class="flex gap-4 mt-2 opacity-50 text-[9px] font-black uppercase tracking-tighter">
-                        <span id="label-bulan" class="bg-emerald-500/20 text-emerald-400 px-2 py-0.5 rounded">JANUARI 2026</span>
+                        <span id="label-bulan" class="bg-emerald-500/20 text-emerald-400 px-2 py-0.5 rounded">---</span>
                     </div>
                 </div>
             </div>
         </div>
 
         <div class="section-title"><i class="fas fa-boxes text-orange-500"></i> Status Stok Dapur</div>
-        <div class="grid grid-cols-2 gap-3">
+        <div class="grid grid-cols-2 md:grid-cols-3 gap-3 mb-8">
             <div class="stat-card border-t-4 border-orange-500 text-center py-5">
-                <p class="text-[11px] font-black text-white uppercase mb-1">A. Mentah</p>
+                <p class="text-[11px] font-black text-white uppercase mb-1"><i class="fas fa-drumstick-bite mr-1"></i> A. Mentah</p>
                 <h4 id="stok-mentah" class="text-4xl font-black italic text-orange-400">0</h4>
             </div>
             <div class="stat-card border-t-4 border-yellow-500 text-center py-5">
-                <p class="text-[11px] font-black text-white uppercase mb-1">A. Ungkep</p>
+                <p class="text-[11px] font-black text-white uppercase mb-1"><i class="fas fa-fire-alt mr-1"></i> A. Ungkep</p>
                 <h4 id="stok-ungkep" class="text-4xl font-black italic text-yellow-400">0</h4>
             </div>
+            <div class="stat-card border-t-4 border-red-500 text-center py-5">
+                <p class="text-[11px] font-black text-white uppercase mb-1"><i class="fas fa-hotdog mr-1"></i> A. Crispy</p>
+                <h4 id="stok-crispy" class="text-4xl font-black italic text-red-400">0</h4>
+            </div>
             <div class="stat-card border-t-4 border-emerald-500 text-center py-5">
-                <p class="text-[11px] font-black text-white uppercase mb-1">Ikan Tawar</p>
+                <p class="text-[11px] font-black text-white uppercase mb-1"><i class="fas fa-fish mr-1"></i> Ikan Bandeng</p>
                 <h4 id="stok-ikan" class="text-4xl font-black italic text-emerald-400">0</h4>
             </div>
             <div class="stat-card border-t-4 border-cyan-400 text-center py-5">
-                <p class="text-[11px] font-black text-white uppercase mb-1">Ikan Laut</p>
+                <p class="text-[11px] font-black text-white uppercase mb-1"><i class="fas fa-water mr-1"></i> Ikan Laut</p>
                 <h4 id="stok-ikanlaut" class="text-4xl font-black italic text-cyan-400">0</h4>
             </div>
         </div>
@@ -148,10 +204,8 @@
             snap.forEach(doc => {
                 const data = doc.data();
                 if(!data.tgl) return;
-                
                 const tglTrans = new Date(data.tgl).getTime();
                 const total = Number(data.total) || 0;
-
                 if(tglTrans >= startToday) hariIni += total;
                 if(tglTrans >= startMonth) bulanIni += total;
             });
@@ -170,7 +224,7 @@
         function unlockDashboard() {
             document.getElementById('login-screen').style.display = 'none';
             document.getElementById('main-dashboard').style.display = 'block';
-            document.body.style.backgroundColor = "#000000";
+            document.body.style.backgroundColor = "#0A192F";
         }
 
         const cfgStok = { apiKey: "AIzaSyCCmKgOnBFpluEKuycYjrBRm4zbxrHI1P8", databaseURL: "https://stocklistmacca-default-rtdb.asia-southeast1.firebasedatabase.app" };
@@ -184,7 +238,7 @@
         let dataLaundry = [];
 
         dbStok.ref('stok_macca_v14_flow').on('value', snap => {
-            let m=0, u=0, i=0, il=0;
+            let m=0, u=0, i=0, il=0, crispy=0;
             let qrisGerai=0, cashGerai=0;
             let totalBulanIni = 0;
             
@@ -203,12 +257,16 @@
                 const price = Number(v.price) || 0;
                 const note = (v.note || "").toUpperCase();
                 const time = v.time || 0;
+                const type = (v.type || "").toUpperCase();
 
                 const flow = (v.status === 'Masuk' || v.status === 'TAMBAH') ? qty : -qty;
-                if(v.type === 'Mentah') m+=flow; 
-                else if(v.type === 'Ungkep') u+=flow; 
-                else if(v.type === 'Ikan') i+=flow; 
-                else if(v.type === 'IkanLaut') il+=flow;
+                
+                // Logic Filter Stok Baru
+                if(type === 'MENTAH') m += flow; 
+                else if(type === 'UNGKEP') u += flow; 
+                else if(type === 'IKAN') i += flow; 
+                else if(type === 'IKANLAUT') il += flow;
+                else if(type === 'CRISPY' || type === 'AYAM CRISPY') crispy += flow;
 
                 if(price > 0 && note.includes("GERAI DEPAN")) {
                     const subtotal = qty * price;
@@ -222,6 +280,7 @@
 
             document.getElementById('stok-mentah').innerText = m;
             document.getElementById('stok-ungkep').innerText = u;
+            document.getElementById('stok-crispy').innerText = crispy;
             document.getElementById('stok-ikan').innerText = i;
             document.getElementById('stok-ikanlaut').innerText = il;
             
@@ -263,10 +322,10 @@
                 const colorIdx = index % 5;
 
                 html += `
-                <div class="stat-card border-driver-${colorIdx} py-6 shadow-xl">
+                <div class="stat-card border-driver-${colorIdx} py-6 shadow-xl fade-in">
                     <div class="flex justify-between items-start">
                         <div class="flex-1">
-                            <h4 class="font-black text-white text-lg tracking-tight uppercase mb-3">${name}</h4>
+                            <h4 class="font-black text-white text-lg tracking-tight uppercase mb-3"><i class="fas fa-user-circle mr-2 opacity-50"></i>${name}</h4>
                             <div class="flex gap-4">
                                 <div class="bg-blue-500/20 border border-blue-400/30 px-4 py-2 rounded-2xl text-center">
                                     <p class="text-[10px] font-black text-blue-300 uppercase leading-none mb-1">Laundry</p>
@@ -280,7 +339,7 @@
                         </div>
                         <div class="text-right">
                             <p class="text-4xl font-black text-gold italic leading-none">${point.toLocaleString()}</p>
-                            <p class="text-[10px] font-black text-white bg-zinc-700 px-2 py-1 rounded-md mt-2 uppercase">Total Poin</p>
+                            <p class="text-[10px] font-black text-white bg-white/10 px-2 py-1 rounded-md mt-2 uppercase tracking-widest">Total Poin</p>
                         </div>
                     </div>
                 </div>`;
