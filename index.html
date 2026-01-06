@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>MACCA BOSS - HYBRID MODE</title>
+    <title>MACCA BOSS - PRESTIGE EDITION</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
@@ -13,98 +13,64 @@
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
 
     <style>
-        :root { 
-            --gold: #FFD700; 
-            --deep-blue: #0A192F; 
-            --card-glass: rgba(20, 20, 20, 0.7); 
-            --emerald: #10b981; 
-            --cyan: #00E5FF; 
-            --crispy: #ff6b6b;
-        }
+        :root { --gold: #FFD700; --deep-blue: #0A192F; --card-glass: rgba(20, 20, 20, 0.7); }
+        body { margin: 0; font-family: 'Plus Jakarta Sans', sans-serif; background-color: #ffffff; transition: background-color 0.4s ease; overflow-x: hidden; }
         
-        body { 
-            margin: 0; 
-            font-family: 'Plus Jakarta Sans', sans-serif; 
-            background-color: #ffffff; 
-            transition: background-color 0.5s ease; 
-        }
+        /* LOGIN SCREEN ORIGINAL DENGAN ANIMASI CROWN */
+        #login-screen { position: fixed; inset: 0; background: #ffffff; z-index: 9999; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px; }
+        .login-box { background: #ffffff; padding: 40px 30px; border-radius: 40px; border: 2px solid #e2e8f0; width: 100%; max-width: 360px; text-align: center; box-shadow: 0 20px 50px rgba(0,0,0,0.1); }
         
-        /* LOGIN OVERLAY */
-        #login-screen { 
-            position: fixed; inset: 0; background: #ffffff; z-index: 9999; 
-            display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px; 
+        /* ANIMASI DENYUT MAHKOTA */
+        .crown-container {
+            width: 100px; height: 100px; background: #0f172a; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            margin: 0 auto 24px auto; box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            position: relative;
         }
-        .login-box { 
-            background: #ffffff; padding: 40px 30px; border-radius: 40px; 
-            border: 2px solid #e2e8f0; width: 100%; max-width: 360px; text-align: center;
-            box-shadow: 0 20px 50px rgba(0,0,0,0.1);
-        }
+        .crown-icon { font-size: 45px; color: var(--gold); animation: crownPulse 2s infinite ease-in-out; }
         
-        /* DASHBOARD */
-        #main-dashboard { 
-            display: none; 
-            background: radial-gradient(circle at top right, #112240, #0A192F); 
-            min-height: 100vh; 
-            color: #ffffff; 
+        @keyframes crownPulse {
+            0% { transform: scale(1); filter: drop-shadow(0 0 0px rgba(255, 215, 0, 0)); }
+            50% { transform: scale(1.15); filter: drop-shadow(0 0 15px rgba(255, 215, 0, 0.6)); }
+            100% { transform: scale(1); filter: drop-shadow(0 0 0px rgba(255, 215, 0, 0)); }
         }
+
+        /* DASHBOARD STYLES */
+        #main-dashboard { display: none; background: radial-gradient(circle at top right, #112240, #0A192F); min-height: 100vh; color: #ffffff; }
+        .stat-card { background: var(--card-glass); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border: 1px solid rgba(255,255,255,0.1); border-radius: 24px; padding: 22px; transition: all 0.3s ease; cursor: pointer; }
+        .section-title { font-size: 13px; font-weight: 800; letter-spacing: 1.5px; text-transform: uppercase; margin: 30px 0 15px 0; display: flex; align-items: center; gap: 10px; color: #ffffff; }
+        .section-title::after { content: ""; flex: 1; height: 2px; background: linear-gradient(to right, var(--gold), transparent); opacity: 0.3; }
+
+        /* MODAL FIX */
+        #modal-global {
+            display: none; position: fixed; inset: 0; z-index: 10000;
+            background: rgba(10, 25, 47, 0.98); backdrop-filter: blur(25px);
+            padding: 20px; animation: slideUp 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+        .modal-container { max-width: 500px; margin: 0 auto; height: 100%; display: flex; flex-direction: column; }
+        #modal-title { color: #ffffff !important; }
+        .list-item-row { background: rgba(255,255,255,0.03); border-bottom: 1px solid rgba(255,255,255,0.05); padding: 16px 15px; display: flex; justify-content: space-between; align-items: center; }
         
-        .stat-card { 
-            background: var(--card-glass); 
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            border: 1px solid rgba(255,255,255,0.1); 
-            border-radius: 24px; 
-            padding: 22px; 
-            position: relative; 
-            overflow: hidden; 
-            transition: transform 0.3s ease;
-        }
-        
-        .section-title { 
-            font-size: 13px; 
-            font-weight: 800; 
-            color: #FFFFFF; 
-            letter-spacing: 1.5px; 
-            text-transform: uppercase; 
-            margin: 30px 0 15px 0; 
-            display: flex; 
-            align-items: center; 
-            gap: 10px; 
-        }
-        .section-title::after { 
-            content: ""; 
-            flex: 1; 
-            height: 2px; 
-            background: linear-gradient(to right, var(--gold), transparent); 
-            opacity: 0.3;
-        }
-        
-        /* AKSEN DRIVER */
         .border-driver-0 { border-left: 8px solid #3b82f6; } 
         .border-driver-1 { border-left: 8px solid #a855f7; } 
         .border-driver-2 { border-left: 8px solid #f59e0b; } 
         .border-driver-3 { border-left: 8px solid #ec4899; } 
         .border-driver-4 { border-left: 8px solid #06b6d4; }
-
-        /* Animation */
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        .fade-in { animation: fadeIn 0.5s ease forward; }
+        .fade-in { animation: fadeIn 0.5s ease forwards; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
 <body class="antialiased">
 
     <div id="login-screen">
         <div class="login-box">
-            <div class="w-24 h-24 bg-slate-900 rounded-full flex items-center justify-center mx-auto mb-6 shadow-xl">
-                <i class="fas fa-crown text-yellow-400 text-4xl"></i>
+            <div class="crown-container">
+                <i class="fas fa-crown crown-icon"></i>
             </div>
             <p class="text-slate-400 text-[10px] font-black uppercase tracking-[0.3em] mb-1">Authenticated Access</p>
             <h1 class="text-slate-800 text-xl font-bold uppercase mb-1">SELAMAT DATANG</h1>
             <h2 class="text-slate-900 text-4xl font-black italic uppercase mb-10">PAK BOSS</h2>
-            
             <button onclick="unlockDashboard()" class="w-full bg-slate-900 text-white font-black py-5 rounded-2xl active:scale-95 transition-all uppercase tracking-widest shadow-2xl">
                 <i class="fas fa-unlock-alt mr-2"></i> MASUK SISTEM <i class="fas fa-arrow-right ml-2 text-yellow-400"></i>
             </button>
@@ -114,75 +80,83 @@
     <div id="main-dashboard" class="p-6 pb-24">
         <header class="flex justify-between items-center mb-10">
             <div>
-                <h1 class="text-3xl font-black italic tracking-tighter uppercase leading-none text-white">MACCA <span class="text-yellow-400">BOSS</span></h1>
-                <p class="text-[10px] font-extrabold text-white bg-blue-600 px-2 py-0.5 rounded mt-1 inline-block uppercase tracking-wider">
-                    <i class="fas fa-shield-halved mr-1"></i> Authorized Only
-                </p>
+                <h1 class="text-3xl font-black italic uppercase text-white leading-none">MACCA <span class="text-yellow-400">BOSS</span></h1>
+                <p class="text-[10px] font-extrabold bg-blue-600 px-2 py-0.5 rounded mt-1 inline-block uppercase">Authorized Only</p>
             </div>
-            <button onclick="location.reload()" class="bg-white/10 backdrop-blur-md p-4 rounded-2xl border border-white/20 text-white active:scale-90 transition-all">
-                <i class="fas fa-power-off text-red-400"></i>
-            </button>
+            <button onclick="location.reload()" class="bg-white/10 p-4 rounded-2xl border border-white/20 text-white"><i class="fas fa-power-off text-red-400"></i></button>
         </header>
 
         <div class="section-title"><i class="fas fa-wallet text-gold"></i> Omzet Penjualan</div>
         <div class="grid grid-cols-1 gap-4 mb-8">
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div class="stat-card border-l-4 border-indigo-500">
+                <div onclick="openModal('KOPI_HARI')" class="stat-card border-l-4 border-indigo-500">
                     <p class="text-white font-bold text-[11px] uppercase opacity-60">Kopi Shaka (Hari Ini)</p>
                     <h2 id="kopi-hari" class="text-4xl font-black italic text-indigo-400 mt-1">Rp 0</h2>
                 </div>
-                <div class="stat-card border-l-4 border-gold">
+                <div onclick="openModal('KOPI_BULAN')" class="stat-card border-l-4 border-gold">
                     <p class="text-white font-bold text-[11px] uppercase opacity-60">Kopi Shaka (Bulan Ini)</p>
                     <h2 id="kopi-bulan" class="text-4xl font-black italic text-gold mt-1">Rp 0</h2>
                 </div>
             </div>
-
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div class="stat-card border-l-4 border-purple-500">
+                <div onclick="openModal('REKAP_HARI')" class="stat-card border-l-4 border-purple-500">
                     <p class="text-white font-bold text-[11px] uppercase opacity-60">Gerai Depan (Hari Ini)</p>
                     <h2 id="total-gerai" class="text-4xl font-black italic text-purple-400 mt-1">Rp 0</h2>
-                    <div class="flex gap-4 mt-2 opacity-70 text-[10px] font-black uppercase tracking-tighter">
-                        <span class="text-cyan-400">QRIS: <span id="val-qris">Rp 0</span></span>
-                        <span class="text-emerald-400">CASH: <span id="val-cash">Rp 0</span></span>
-                    </div>
+                    <div class="flex gap-4 mt-2 opacity-70 text-[10px] font-black uppercase text-white"><span class="text-cyan-300">QRIS: <span id="val-qris">Rp 0</span></span><span class="text-emerald-300">CASH: <span id="val-cash">Rp 0</span></span></div>
                 </div>
-
-                <div class="stat-card border-l-4 border-emerald-500">
+                <div onclick="openModal('REKAP_BULAN')" class="stat-card border-l-4 border-emerald-500">
                     <p class="text-white font-bold text-[11px] uppercase opacity-60">Gerai Depan (Bulan Ini)</p>
                     <h2 id="total-gerai-bulan" class="text-4xl font-black italic text-emerald-400 mt-1">Rp 0</h2>
-                    <div class="flex gap-4 mt-2 opacity-50 text-[9px] font-black uppercase tracking-tighter">
-                        <span id="label-bulan" class="bg-emerald-500/20 text-emerald-400 px-2 py-0.5 rounded">---</span>
-                    </div>
+                    <div id="label-bulan" class="mt-2 text-[9px] font-black uppercase text-white/50">---</div>
                 </div>
             </div>
         </div>
 
         <div class="section-title"><i class="fas fa-boxes text-orange-500"></i> Status Stok Dapur</div>
-        <div class="grid grid-cols-2 md:grid-cols-3 gap-3 mb-8">
-            <div class="stat-card border-t-4 border-orange-500 text-center py-5">
-                <p class="text-[11px] font-black text-white uppercase mb-1"><i class="fas fa-drumstick-bite mr-1"></i> A. Mentah</p>
+        <div class="grid grid-cols-2 md:grid-cols-3 gap-3 mb-8 text-white">
+            <div onclick="openModal('STOK', 'MENTAH')" class="stat-card border-t-4 border-orange-500 text-center py-5">
+                <p class="text-[11px] font-black uppercase mb-1">A. Mentah</p>
                 <h4 id="stok-mentah" class="text-4xl font-black italic text-orange-400">0</h4>
             </div>
-            <div class="stat-card border-t-4 border-yellow-500 text-center py-5">
-                <p class="text-[11px] font-black text-white uppercase mb-1"><i class="fas fa-fire-alt mr-1"></i> A. Ungkep</p>
+            <div onclick="openModal('STOK', 'UNGKEP')" class="stat-card border-t-4 border-yellow-500 text-center py-5">
+                <p class="text-[11px] font-black uppercase mb-1">A. Ungkep</p>
                 <h4 id="stok-ungkep" class="text-4xl font-black italic text-yellow-400">0</h4>
             </div>
-            <div class="stat-card border-t-4 border-red-500 text-center py-5">
-                <p class="text-[11px] font-black text-white uppercase mb-1"><i class="fas fa-hotdog mr-1"></i> A. Crispy</p>
+            <div onclick="openModal('STOK', 'CRISPY')" class="stat-card border-t-4 border-red-500 text-center py-5">
+                <p class="text-[11px] font-black uppercase mb-1">A. Crispy</p>
                 <h4 id="stok-crispy" class="text-4xl font-black italic text-red-400">0</h4>
             </div>
-            <div class="stat-card border-t-4 border-emerald-500 text-center py-5">
-                <p class="text-[11px] font-black text-white uppercase mb-1"><i class="fas fa-fish mr-1"></i> Ikan Bandeng</p>
+            <div onclick="openModal('STOK', 'IKAN')" class="stat-card border-t-4 border-emerald-500 text-center py-5">
+                <p class="text-[11px] font-black uppercase mb-1">Bandeng</p>
                 <h4 id="stok-ikan" class="text-4xl font-black italic text-emerald-400">0</h4>
             </div>
-            <div class="stat-card border-t-4 border-cyan-400 text-center py-5">
-                <p class="text-[11px] font-black text-white uppercase mb-1"><i class="fas fa-water mr-1"></i> Ikan Laut</p>
+            <div onclick="openModal('STOK', 'IKANLAUT')" class="stat-card border-t-4 border-cyan-400 text-center py-5">
+                <p class="text-[11px] font-black uppercase mb-1">Ikan Laut</p>
                 <h4 id="stok-ikanlaut" class="text-4xl font-black italic text-cyan-400">0</h4>
             </div>
         </div>
 
-        <div class="section-title"><i class="fas fa-motorcycle text-cyan"></i> Rekap Poin Driver</div>
+        <div class="section-title"><i class="fas fa-motorcycle text-cyan-400"></i> Rekap Poin Driver</div>
         <div id="driver-list" class="space-y-4"></div>
+    </div>
+
+    <div id="modal-global">
+        <div class="modal-container">
+            <div class="flex justify-between items-center mb-6">
+                <div class="text-white">
+                    <h3 id="modal-title" class="text-3xl font-black italic uppercase">TITLE</h3>
+                    <p id="modal-subtitle" class="text-xs font-bold uppercase tracking-[0.2em] mt-1">SUBTITLE</p>
+                </div>
+                <button onclick="closeModal()" class="w-12 h-12 bg-white/10 rounded-full flex items-center justify-center border border-white/20 text-white"><i class="fas fa-times"></i></button>
+            </div>
+            <div id="modal-content-list" class="flex-1 overflow-y-auto rounded-3xl bg-white/5 border border-white/10 text-white"></div>
+            <div id="modal-footer" class="mt-6 p-6 rounded-3xl shadow-2xl">
+                <div class="flex justify-between items-center">
+                    <span id="footer-label" class="text-white font-bold text-sm uppercase opacity-90">Total</span>
+                    <span id="footer-value" class="text-2xl font-black text-white">0</span>
+                </div>
+            </div>
+        </div>
     </div>
 
     <script type="module">
@@ -195,23 +169,15 @@
         const dbDeliv = getFirestore(appDeliv);
 
         onSnapshot(collection(dbKopi, "transactions"), (snap) => {
-            let hariIni = 0;
-            let bulanIni = 0;
-            const now = new Date();
-            const startToday = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
-            const startMonth = new Date(now.getFullYear(), now.getMonth(), 1).getTime();
-
-            snap.forEach(doc => {
-                const data = doc.data();
-                if(!data.tgl) return;
-                const tglTrans = new Date(data.tgl).getTime();
-                const total = Number(data.total) || 0;
-                if(tglTrans >= startToday) hariIni += total;
-                if(tglTrans >= startMonth) bulanIni += total;
+            window.kopiRaw = snap.docs.map(d => d.data());
+            let h=0, b=0;
+            const now = new Date(), st=new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime(), sm=new Date(now.getFullYear(), now.getMonth(), 1).getTime();
+            window.kopiRaw.forEach(d => {
+                if(!d.tgl) return; const t=new Date(d.tgl).getTime(), v=Number(d.total)||0;
+                if(t>=st) h+=v; if(t>=sm) b+=v;
             });
-            
-            document.getElementById('kopi-hari').innerText = "Rp " + hariIni.toLocaleString();
-            document.getElementById('kopi-bulan').innerText = "Rp " + bulanIni.toLocaleString();
+            document.getElementById('kopi-hari').innerText = "Rp " + h.toLocaleString();
+            document.getElementById('kopi-bulan').innerText = "Rp " + b.toLocaleString();
         });
 
         onSnapshot(collection(dbDeliv, "orders"), (snap) => {
@@ -221,130 +187,140 @@
     </script>
 
     <script>
-        function unlockDashboard() {
-            document.getElementById('login-screen').style.display = 'none';
+        let fullFlowData = [], dataHarian = [], dataBulanan = [], laundryRaw = [];
+
+        function unlockDashboard() { 
+            document.getElementById('login-screen').style.display = 'none'; 
             document.getElementById('main-dashboard').style.display = 'block';
             document.body.style.backgroundColor = "#0A192F";
+        }
+        function closeModal() { document.getElementById('modal-global').style.display = 'none'; }
+
+        function openModal(mode, extra = '') {
+            const modal = document.getElementById('modal-global'), list = document.getElementById('modal-content-list'), 
+                  title = document.getElementById('modal-title'), subtitle = document.getElementById('modal-subtitle'),
+                  fVal = document.getElementById('footer-value'), fLab = document.getElementById('footer-label'), footer = document.getElementById('modal-footer');
+
+            modal.style.display = 'block';
+            let html = '', total = 0;
+
+            if (mode.startsWith('KOPI')) {
+                const isDay = mode === 'KOPI_HARI';
+                title.innerText = "KOPI SHAKA";
+                subtitle.innerText = isDay ? "OMZET HARI INI" : "OMZET BULAN INI"; subtitle.className = "text-xs font-bold uppercase tracking-[0.2em] mt-1 text-indigo-300"; 
+                footer.style.backgroundColor = "#4f46e5"; fLab.innerText = "TOTAL OMZET";
+                const now = new Date(), limit = isDay ? new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime() : new Date(now.getFullYear(), now.getMonth(), 1).getTime();
+                window.kopiRaw.filter(d => new Date(d.tgl).getTime() >= limit).sort((a,b) => new Date(b.tgl) - new Date(a.tgl)).forEach(d => {
+                    const v = Number(d.total)||0; total += v;
+                    html += `<div class="list-item-row"><div class="flex items-center gap-3"><div class="w-10 h-10 bg-indigo-500/20 rounded-full flex items-center justify-center text-indigo-400"><i class="fas fa-coffee"></i></div><div><p class="text-white font-bold text-sm uppercase">${d.pesanan || 'Kopi'}</p><p class="text-[9px] text-indigo-200 font-bold uppercase">${new Date(d.tgl).toLocaleString('id-ID',{day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'})}</p></div></div><p class="font-black text-indigo-300">Rp ${v.toLocaleString()}</p></div>`;
+                });
+                fVal.innerText = "Rp " + total.toLocaleString();
+            }
+            else if (mode === 'DRIVER') {
+                title.innerText = "LOG KERJA"; subtitle.innerText = extra; subtitle.className = "text-xs font-bold uppercase tracking-[0.2em] mt-1 text-cyan-300";
+                footer.style.backgroundColor = "#0891b2"; fLab.innerText = "TOTAL POIN";
+                let count = 0;
+                laundryRaw.filter(o => o.driverName?.toUpperCase().trim() === extra).forEach(o => {
+                    count++;
+                    html += `<div class="list-item-row"><div class="flex items-center gap-3"><div class="w-10 h-10 bg-blue-500/20 rounded-full flex items-center justify-center text-blue-400"><i class="fas fa-tshirt"></i></div><div><p class="text-white font-bold text-sm uppercase">LAUNDRY #${o.noAntrian || 'Odr'}</p><p class="text-[9px] text-blue-200 uppercase">${o.tglSelesai || 'Selesai'}</p></div></div><p class="text-xs font-black text-blue-300">+500</p></div>`;
+                });
+                window.dataDeliv.filter(o => (o.status==="SELESAI"||o.status==="delivered") && o.driver?.toUpperCase().trim() === extra).forEach(o => {
+                    count++;
+                    html += `<div class="list-item-row"><div class="flex items-center gap-3"><div class="w-10 h-10 bg-emerald-500/20 rounded-full flex items-center justify-center text-emerald-400"><i class="fas fa-motorcycle"></i></div><div><p class="text-white font-bold text-sm uppercase">DELIV #${o.orderId?.slice(-4) || 'Odr'}</p><p class="text-[9px] text-emerald-200 uppercase">Success</p></div></div><p class="text-xs font-black text-emerald-300">+500</p></div>`;
+                });
+                fVal.innerText = (count * 500).toLocaleString();
+            }
+            else if (mode.startsWith('REKAP')) {
+                const isDay = mode === 'REKAP_HARI';
+                title.innerText = "GERAI DEPAN";
+                subtitle.innerText = isDay ? "LAPORAN HARIAN" : "LAPORAN BULANAN"; subtitle.className = "text-xs font-bold uppercase tracking-[0.2em] mt-1 text-purple-300";
+                footer.style.backgroundColor = isDay ? "#9333ea" : "#059669"; fLab.innerText = "TOTAL OMZET";
+                let data = isDay ? dataHarian : dataBulanan;
+                data.sort((a,b) => b.time - a.time).forEach(item => {
+                    const sub = item.qty * item.price; total += sub;
+                    const isQris = item.note.includes("QRIS");
+                    let displayType = item.type;
+                    if(displayType === 'UNGKEP') displayType = 'AYAM';
+                    else if(displayType === 'AYAM CRISPY') displayType = 'CRISPY';
+
+                    html += `<div class="list-item-row"><div class="flex items-center gap-3"><div class="w-10 h-10 ${isQris?'bg-cyan-500/20 text-cyan-300':'bg-emerald-500/20 text-emerald-300'} rounded-full flex items-center justify-center"><i class="fas ${isQris?'fa-qrcode':'fa-money-bill-wave'}"></i></div><div><p class="text-white font-bold text-sm uppercase">${displayType}</p><p class="text-[9px] text-white/60 font-medium">${new Date(item.time).toLocaleDateString('id-ID',{day:'2-digit',month:'short'})}</p></div></div><p class="font-black text-white">Rp ${sub.toLocaleString()}</p></div>`;
+                });
+                fVal.innerText = "Rp " + total.toLocaleString();
+            }
+            else if (mode === 'STOK') {
+                const iconMap = { 'MENTAH': 'fa-drumstick-bite', 'UNGKEP': 'fa-fire-alt', 'CRISPY': 'fa-hotdog', 'IKAN': 'fa-fish', 'IKANLAUT': 'fa-water' };
+                const colorMap = { 'MENTAH': 'orange', 'UNGKEP': 'yellow', 'CRISPY': 'red', 'IKAN': 'emerald', 'IKANLAUT': 'cyan' };
+                title.innerText = extra; subtitle.innerText = "ALIRAN STOK FISIK"; subtitle.className = "text-xs font-bold uppercase tracking-[0.2em] mt-1 text-orange-300";
+                footer.style.backgroundColor = "#1e293b"; fLab.innerText = "SISA STOK";
+                fullFlowData.filter(d => (extra === 'CRISPY' ? (d.type === 'CRISPY' || d.type === 'AYAM CRISPY') : d.type === extra)).sort((a,b) => b.time - a.time).forEach(d => {
+                    const isPlus = (d.status === 'MASUK' || d.status === 'TAMBAH');
+                    const flow = isPlus ? d.qty : -d.qty;
+                    html += `<div class="list-item-row"><div class="flex items-center gap-3"><div class="w-10 h-10 bg-${colorMap[extra]}-500/20 rounded-full flex items-center justify-center text-${colorMap[extra]}-400"><i class="fas ${iconMap[extra]}"></i></div><div><p class="text-white font-bold text-sm uppercase">${d.status}</p><p class="text-[9px] text-white/50">${new Date(d.time).toLocaleString('id-ID')}</p></div></div><div class="text-right"><p class="text-lg font-black ${isPlus?'text-emerald-400':'text-red-400'}">${isPlus?'+':''}${flow}</p></div></div>`;
+                });
+                fVal.innerText = document.getElementById('stok-'+extra.toLowerCase()).innerText;
+            }
+            list.innerHTML = html || '<div class="text-center py-20 opacity-20 font-black">TIDAK ADA DATA</div>';
         }
 
         const cfgStok = { apiKey: "AIzaSyCCmKgOnBFpluEKuycYjrBRm4zbxrHI1P8", databaseURL: "https://stocklistmacca-default-rtdb.asia-southeast1.firebasedatabase.app" };
         const cfgLaundry = { apiKey: "AIzaSyA-1GyDIS77tlL0vpiZS_ZLvx1S71TnkQU", databaseURL: "https://awwabim-laundry-default-rtdb.firebaseio.com" };
-        
-        firebase.initializeApp(cfgStok, "STOK_APP");
-        firebase.initializeApp(cfgLaundry, "LAUNDRY_APP");
-        const dbStok = firebase.app("STOK_APP").database();
-        const dbLaundry = firebase.app("LAUNDRY_APP").database();
-
-        let dataLaundry = [];
+        firebase.initializeApp(cfgStok, "STOK_APP"); firebase.initializeApp(cfgLaundry, "LAUNDRY_APP");
+        const dbStok = firebase.app("STOK_APP").database(), dbLaundry = firebase.app("LAUNDRY_APP").database();
 
         dbStok.ref('stok_macca_v14_flow').on('value', snap => {
-            let m=0, u=0, i=0, il=0, crispy=0;
-            let qrisGerai=0, cashGerai=0;
-            let totalBulanIni = 0;
-            
-            const now = new Date();
-            const startToday = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
-            const startMonth = new Date(now.getFullYear(), now.getMonth(), 1).getTime();
-            
-            const monthNames = ["JANUARI", "FEBRUARI", "MARET", "APRIL", "MEI", "JUNI", "JULI", "AGUSTUS", "SEPTEMBER", "OKTOBER", "NOVEMBER", "DESEMBER"];
-            document.getElementById('label-bulan').innerText = monthNames[now.getMonth()] + " " + now.getFullYear();
+            let m=0, u=0, i=0, il=0, crispy=0, qH=0, cH=0, tB=0;
+            dataHarian = []; dataBulanan = []; fullFlowData = [];
+            const now = new Date(), st=new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime(), sm=new Date(now.getFullYear(), now.getMonth(), 1).getTime();
+            document.getElementById('label-bulan').innerText = ["JANUARI","FEBRUARI","MARET","APRIL","MEI","JUNI","JULI","AGUSTUS","SEPTEMBER","OKTOBER","NOVEMBER","DESEMBER"][now.getMonth()] + " " + now.getFullYear();
 
             snap.forEach(c => {
-                const v = c.val();
-                if(!v) return;
-
-                const qty = Number(v.qty) || 0;
-                const price = Number(v.price) || 0;
-                const note = (v.note || "").toUpperCase();
-                const time = v.time || 0;
-                const type = (v.type || "").toUpperCase();
-
-                const flow = (v.status === 'Masuk' || v.status === 'TAMBAH') ? qty : -qty;
-                
-                // Logic Filter Stok Baru
-                if(type === 'MENTAH') m += flow; 
-                else if(type === 'UNGKEP') u += flow; 
-                else if(type === 'IKAN') i += flow; 
-                else if(type === 'IKANLAUT') il += flow;
-                else if(type === 'CRISPY' || type === 'AYAM CRISPY') crispy += flow;
-
-                if(price > 0 && note.includes("GERAI DEPAN")) {
-                    const subtotal = qty * price;
-                    if(time >= startToday) {
-                        if(note.includes("QRIS")) qrisGerai += subtotal;
-                        else cashGerai += subtotal;
-                    }
-                    if(time >= startMonth) totalBulanIni += subtotal;
+                const v = c.val(); if(!v) return;
+                const qty=Number(v.qty)||0, pri=Number(v.price)||0, note=(v.note||"").toUpperCase(), time=v.time||0, type=(v.type||"").toUpperCase(), status=(v.status||"").toUpperCase();
+                fullFlowData.push({type, qty, price:pri, time, note, status});
+                const flow = (status === 'MASUK' || status === 'TAMBAH') ? qty : -qty;
+                if(type==='MENTAH') m+=flow; else if(type==='UNGKEP') u+=flow; else if(type==='IKAN') i+=flow; else if(type==='IKANLAUT') il+=flow; else if(type==='CRISPY' || type==='AYAM CRISPY') crispy+=flow;
+                if(pri > 0 && note.includes("GERAI DEPAN")) {
+                    const sub = qty * pri;
+                    if(time >= sm) { tB += sub; dataBulanan.push({type, qty, price:pri, time, note}); if(time >= st) { if(note.includes("QRIS")) qH += sub; else cH += sub; dataHarian.push({type, qty, price:pri, time, note}); } }
                 }
             });
-
-            document.getElementById('stok-mentah').innerText = m;
-            document.getElementById('stok-ungkep').innerText = u;
-            document.getElementById('stok-crispy').innerText = crispy;
-            document.getElementById('stok-ikan').innerText = i;
-            document.getElementById('stok-ikanlaut').innerText = il;
-            
-            document.getElementById('total-gerai').innerText = "Rp " + (qrisGerai + cashGerai).toLocaleString();
-            document.getElementById('val-qris').innerText = "Rp " + qrisGerai.toLocaleString();
-            document.getElementById('val-cash').innerText = "Rp " + cashGerai.toLocaleString();
-            document.getElementById('total-gerai-bulan').innerText = "Rp " + totalBulanIni.toLocaleString();
+            document.getElementById('stok-mentah').innerText = m; document.getElementById('stok-ungkep').innerText = u;
+            document.getElementById('stok-crispy').innerText = crispy; document.getElementById('stok-ikan').innerText = i;
+            document.getElementById('stok-ikanlaut').innerText = il; document.getElementById('total-gerai').innerText = "Rp " + (qH + cH).toLocaleString();
+            document.getElementById('val-qris').innerText = "Rp " + qH.toLocaleString(); document.getElementById('val-cash').innerText = "Rp " + cH.toLocaleString();
+            document.getElementById('total-gerai-bulan').innerText = "Rp " + tB.toLocaleString();
         });
 
         dbLaundry.ref('Pesanan').on('value', snap => {
-            dataLaundry = [];
-            snap.forEach(c => { if(c.val().status === "SELESAI" && c.val().driverName) dataLaundry.push(c.val()); });
-            updateDriverStats();
+            laundryRaw = []; snap.forEach(c => { if(c.val().status === "SELESAI") laundryRaw.push(c.val()); });
+            window.updateDriverStats();
         });
 
         window.updateDriverStats = function() {
             const stats = {};
-            dataLaundry.forEach(o => {
-                const n = o.driverName.toUpperCase().trim();
-                if(!stats[n]) stats[n] = { l: 0, d: 0 };
-                stats[n].l++;
-            });
-            if(window.dataDeliv) {
-                window.dataDeliv.forEach(o => {
-                    if((o.status === "SELESAI" || o.status === "delivered") && o.driver) {
-                        const n = o.driver.toUpperCase().trim();
-                        if(!stats[n]) stats[n] = { l: 0, d: 0 };
-                        stats[n].d++;
-                    }
-                });
-            }
+            laundryRaw.forEach(o => { const n=o.driverName?.toUpperCase().trim(); if(n){ if(!stats[n]) stats[n]={l:0,d:0}; stats[n].l++; } });
+            if(window.dataDeliv) window.dataDeliv.forEach(o => { if((o.status==="SELESAI"||o.status==="delivered")&&o.driver){ const n=o.driver.toUpperCase().trim(); if(!stats[n]) stats[n]={l:0,d:0}; stats[n].d++; } });
 
             let html = '';
-            const sorted = Object.keys(stats).sort((a,b) => (stats[b].l + stats[b].d) - (stats[a].l + stats[a].d));
-
-            sorted.forEach((name, index) => {
-                const total = stats[name].l + stats[name].d;
-                const point = total * 500;
-                const colorIdx = index % 5;
-
-                html += `
-                <div class="stat-card border-driver-${colorIdx} py-6 shadow-xl fade-in">
+            Object.keys(stats).sort((a,b) => (stats[b].l+stats[b].d)-(stats[a].l+stats[a].d)).forEach((name, index) => {
+                const total = stats[name].l + stats[name].d, point = total * 500;
+                html += `<div onclick="openModal('DRIVER', '${name}')" class="stat-card border-driver-${index%5} py-6 shadow-xl fade-in">
                     <div class="flex justify-between items-start">
                         <div class="flex-1">
-                            <h4 class="font-black text-white text-lg tracking-tight uppercase mb-3"><i class="fas fa-user-circle mr-2 opacity-50"></i>${name}</h4>
+                            <h4 class="font-black text-white text-lg uppercase mb-3"><i class="fas fa-user-circle mr-2 opacity-50"></i>${name}</h4>
                             <div class="flex gap-4">
-                                <div class="bg-blue-500/20 border border-blue-400/30 px-4 py-2 rounded-2xl text-center">
-                                    <p class="text-[10px] font-black text-blue-300 uppercase leading-none mb-1">Laundry</p>
-                                    <p class="text-2xl font-black text-blue-400 leading-none">${stats[name].l}</p>
-                                </div>
-                                <div class="bg-emerald-500/20 border border-emerald-400/30 px-4 py-2 rounded-2xl text-center">
-                                    <p class="text-[10px] font-black text-emerald-300 uppercase leading-none mb-1">Delivery</p>
-                                    <p class="text-2xl font-black text-emerald-400 leading-none">${stats[name].d}</p>
-                                </div>
+                                <div class="bg-blue-500/20 px-3 py-1 rounded-xl text-center"><p class="text-[8px] font-black text-blue-300 uppercase leading-none">Laundry</p><p class="text-xl font-black text-blue-400">${stats[name].l}</p></div>
+                                <div class="bg-emerald-500/20 px-3 py-1 rounded-xl text-center"><p class="text-[8px] font-black text-emerald-300 uppercase leading-none">Deliv</p><p class="text-xl font-black text-emerald-400">${stats[name].d}</p></div>
                             </div>
                         </div>
                         <div class="text-right">
                             <p class="text-4xl font-black text-gold italic leading-none">${point.toLocaleString()}</p>
-                            <p class="text-[10px] font-black text-white bg-white/10 px-2 py-1 rounded-md mt-2 uppercase tracking-widest">Total Poin</p>
+                            <p class="text-[9px] font-black text-white bg-white/10 px-2 py-1 rounded-md mt-2 uppercase tracking-tighter">Total Poin</p>
                         </div>
                     </div>
                 </div>`;
             });
-            document.getElementById('driver-list').innerHTML = html || '<p class="text-center py-10 text-white/20 italic">No Data</p>';
+            document.getElementById('driver-list').innerHTML = html || '<p class="text-center py-10 opacity-20 italic">No Driver Data</p>';
         };
     </script>
 </body>
