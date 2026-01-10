@@ -14,7 +14,7 @@
 
     <style>
         :root { --gold: #FFD700; --deep-blue: #0A192F; --card-glass: rgba(20, 20, 20, 0.7); }
-        body { margin: 0; font-family: 'Plus Jakarta Sans', sans-serif; background-color: #ffffff; transition: background-color 0.4s ease; overflow-x: hidden; }
+        body { margin: 0; font-family: 'Plus Jakarta Sans', sans-serif; background-color: #0A192F; transition: background-color 0.4s ease; overflow-x: hidden; }
         
         #login-screen { position: fixed; inset: 0; background: #ffffff; z-index: 9999; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px; }
         .login-box { background: #ffffff; padding: 40px 30px; border-radius: 40px; border: 2px solid #e2e8f0; width: 100%; max-width: 360px; text-align: center; box-shadow: 0 20px 50px rgba(0,0,0,0.1); }
@@ -68,7 +68,6 @@
             outline: none;
         }
 
-        /* Bottom Navigation Bar */
         .bottom-nav {
             position: fixed; bottom: 0; left: 0; right: 0;
             background: rgba(10, 25, 47, 0.9); backdrop-filter: blur(15px);
@@ -105,33 +104,33 @@
             <button onclick="location.reload()" class="bg-white/10 p-4 rounded-2xl border border-white/20 text-white"><i class="fas fa-power-off text-red-400"></i></button>
         </header>
 
-        <div class="section-title"><i class="fas fa-wallet text-gold"></i> Omzet Penjualan</div>
-        <div class="grid grid-cols-1 gap-4 mb-8">
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div onclick="openModal('KOPI_HARI')" class="stat-card border-l-4 border-indigo-500">
-                    <p class="text-white font-bold text-[11px] uppercase opacity-60">Kopi Shaka (Hari Ini)</p>
-                    <h2 id="kopi-hari" class="text-4xl font-black italic text-indigo-400 mt-1">Rp 0</h2>
-                    <div class="flex gap-4 mt-2 opacity-70 text-[10px] font-black uppercase text-white">
-                        <span class="text-cyan-300">QRIS: <span id="kopi-qris-hari">Rp 0</span></span>
-                        <span class="text-emerald-300">CASH: <span id="kopi-cash-hari">Rp 0</span></span>
-                    </div>
-                </div>
-                <div onclick="openModal('KOPI_BULAN')" class="stat-card border-l-4 border-gold">
-                    <p class="text-white font-bold text-[11px] uppercase opacity-60">Kopi Shaka (Bulan Ini)</p>
-                    <h2 id="kopi-bulan" class="text-4xl font-black italic text-gold mt-1">Rp 0</h2>
+        <div class="section-title"><i class="fas fa-vault text-gold"></i> Ringkasan Kas Macca</div>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
+            <div onclick="openModal('REKAP_HARI')" class="stat-card border-l-4 border-purple-500">
+                <p class="text-white font-bold text-[11px] uppercase opacity-60">Kas Offline (Cash)</p>
+                <h2 id="val-offline" class="text-4xl font-black italic text-purple-400 mt-1">Rp 0</h2>
+                <p class="text-[9px] font-black uppercase text-white/50 mt-1">Total Saldo Tunai Gerai</p>
+            </div>
+            <div onclick="openModal('REKAP_BULAN')" class="stat-card border-l-4 border-emerald-500">
+                <p class="text-white font-bold text-[11px] uppercase opacity-60">Kas Online (Digital)</p>
+                <h2 id="val-online" class="text-4xl font-black italic text-emerald-400 mt-1">Rp 0</h2>
+                <p class="text-[9px] font-black uppercase text-white/50 mt-1">Total Saldo Bank & Digital</p>
+            </div>
+        </div>
+
+        <div class="section-title"><i class="fas fa-wallet text-indigo-400"></i> Penjualan Kopi Shaka</div>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
+            <div onclick="openModal('KOPI_HARI')" class="stat-card border-l-4 border-indigo-500">
+                <p class="text-white font-bold text-[11px] uppercase opacity-60">Kopi Shaka (Hari Ini)</p>
+                <h2 id="kopi-hari" class="text-4xl font-black italic text-indigo-400 mt-1">Rp 0</h2>
+                <div class="flex gap-4 mt-2 opacity-70 text-[10px] font-black uppercase text-white">
+                    <span class="text-cyan-300">QRIS: <span id="kopi-qris-hari">Rp 0</span></span>
+                    <span class="text-emerald-300">CASH: <span id="kopi-cash-hari">Rp 0</span></span>
                 </div>
             </div>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div onclick="openModal('REKAP_HARI')" class="stat-card border-l-4 border-purple-500">
-                    <p class="text-white font-bold text-[11px] uppercase opacity-60">Gerai Depan (Hari Ini)</p>
-                    <h2 id="total-gerai" class="text-4xl font-black italic text-purple-400 mt-1">Rp 0</h2>
-                    <div class="flex gap-4 mt-2 opacity-70 text-[10px] font-black uppercase text-white"><span class="text-cyan-300">QRIS: <span id="val-qris">Rp 0</span></span><span class="text-emerald-300">CASH: <span id="val-cash">Rp 0</span></span></div>
-                </div>
-                <div onclick="openModal('REKAP_BULAN')" class="stat-card border-l-4 border-emerald-500">
-                    <p class="text-white font-bold text-[11px] uppercase opacity-60">Gerai Depan (Bulan Ini)</p>
-                    <h2 id="total-gerai-bulan" class="text-4xl font-black italic text-emerald-400 mt-1">Rp 0</h2>
-                    <div id="label-bulan" class="mt-2 text-[9px] font-black uppercase text-white/50">---</div>
-                </div>
+            <div onclick="openModal('KOPI_BULAN')" class="stat-card border-l-4 border-gold">
+                <p class="text-white font-bold text-[11px] uppercase opacity-60">Kopi Shaka (Bulan Ini)</p>
+                <h2 id="kopi-bulan" class="text-4xl font-black italic text-gold mt-1">Rp 0</h2>
             </div>
         </div>
 
@@ -169,7 +168,7 @@
             <span>Dashboard</span>
         </div>
         <div class="nav-item">
-            <i class="fas fa-scales-balanced"></i>
+            <i class="fas fa-scale-balanced"></i>
             <span>Neraca</span>
         </div>
         <div class="nav-item">
@@ -225,13 +224,9 @@
                 if(!d.tgl) return;
                 const t = new Date(d.tgl).getTime();
                 const v = Number(d.total) || 0;
-                // Memeriksa catatan atau tipe pembayaran (asumsi field 'note' atau 'pembayaran' mengandung kata QRIS)
                 const isQris = (d.note && d.note.toUpperCase().includes("QRIS")) || (d.pembayaran && d.pembayaran.toUpperCase().includes("QRIS"));
 
-                if(t >= startDay) {
-                    hTotal += v;
-                    if(isQris) hQris += v; else hCash += v;
-                }
+                if(t >= startDay) { hTotal += v; if(isQris) hQris += v; else hCash += v; }
                 if(t >= startMonth) bTotal += v;
             });
 
@@ -248,13 +243,20 @@
     </script>
 
     <script>
-        let fullFlowData = [], dataHarian = [], dataBulanan = [], laundryRaw = [], poInOutRaw = [];
+        let fullFlowData = [], laundryRaw = [], poInOutRaw = [], cashflowRaw = [];
         let currentDriverTarget = "";
 
         const cfgStok = { apiKey: "AIzaSyCCmKgOnBFpluEKuycYjrBRm4zbxrHI1P8", databaseURL: "https://stocklistmacca-default-rtdb.asia-southeast1.firebasedatabase.app" };
         const cfgLaundry = { apiKey: "AIzaSyA-1GyDIS77tlL0vpiZS_ZLvx1S71TnkQU", databaseURL: "https://awwabim-laundry-default-rtdb.firebaseio.com" };
-        firebase.initializeApp(cfgStok, "STOK_APP"); firebase.initializeApp(cfgLaundry, "LAUNDRY_APP");
-        const dbStok = firebase.app("STOK_APP").database(), dbLaundry = firebase.app("LAUNDRY_APP").database();
+        const cfgCashflow = { apiKey: "AIzaSyArN4kSIdGf-MhO_y0Osh_MAsL-jG84zYw", databaseURL: "https://macca-cashflow-v14-default-rtdb.firebaseio.com" };
+        
+        firebase.initializeApp(cfgStok, "STOK_APP"); 
+        firebase.initializeApp(cfgLaundry, "LAUNDRY_APP");
+        firebase.initializeApp(cfgCashflow, "CASHFLOW_APP");
+        
+        const dbStok = firebase.app("STOK_APP").database();
+        const dbLaundry = firebase.app("LAUNDRY_APP").database();
+        const dbCashflow = firebase.app("CASHFLOW_APP").database();
 
         function formatRibuan(input) {
             let value = input.value.replace(/[^0-9]/g, '');
@@ -264,9 +266,24 @@
         function unlockDashboard() { 
             document.getElementById('login-screen').style.display = 'none'; 
             document.getElementById('main-dashboard').style.display = 'block';
-            document.body.style.backgroundColor = "#0A192F";
         }
         function closeModal() { document.getElementById('modal-global').style.display = 'none'; }
+
+        dbCashflow.ref('Cashflow').on('value', snap => {
+            let totalOffline = 0;
+            let totalOnline = 0;
+            cashflowRaw = [];
+            snap.forEach(child => {
+                const val = child.val();
+                if(val) {
+                    cashflowRaw.push(val);
+                    if(val.category === "Offline") totalOffline += (Number(val.amount) || 0);
+                    if(val.category === "Online") totalOnline += (Number(val.amount) || 0);
+                }
+            });
+            document.getElementById('val-offline').innerText = "Rp " + totalOffline.toLocaleString();
+            document.getElementById('val-online').innerText = "Rp " + totalOnline.toLocaleString();
+        });
 
         function openModal(mode, extra = '') {
             const modal = document.getElementById('modal-global'), list = document.getElementById('modal-content-list'), 
@@ -277,48 +294,39 @@
             modal.style.display = 'block';
             let html = '', total = 0;
 
-            if (mode === 'DRIVER' || mode === 'DRIVER_TARIK') {
-                currentDriverTarget = extra; title.innerText = extra;
-                footer.style.backgroundColor = "#0891b2"; fLab.innerText = "SISA POIN";
-                if(mode === 'DRIVER_TARIK') {
-                    document.getElementById('tarik-poin-area').classList.remove('hidden');
-                    subtitle.innerText = "PENARIKAN POIN"; footer.style.backgroundColor = "#dc2626";
-                } else { subtitle.innerText = "LOG KERJA & POIN"; }
+            if (mode.startsWith('KOPI')) {
+                const isHariIni = mode === 'KOPI_HARI';
+                title.innerText = "KOPI SHAKA";
+                subtitle.innerText = isHariIni ? "RIWAYAT HARI INI" : "RIWAYAT BULAN INI";
+                footer.style.backgroundColor = "#6366f1";
+                fLab.innerText = "TOTAL PENJUALAN";
 
-                let dp = 0;
-                laundryRaw.filter(o => o.driverName?.toUpperCase().trim() === extra).forEach(o => {
-                    dp += 500;
-                    html += `<div class="list-item-row"><div class="flex items-center gap-3"><div class="w-10 h-10 bg-blue-500/20 rounded-full flex items-center justify-center text-blue-400"><i class="fas fa-tshirt"></i></div><div><p class="text-white font-bold text-sm uppercase">LAUNDRY #${o.noAntrian || 'Odr'}</p><p class="text-[9px] text-blue-200 uppercase">${o.tglSelesai || 'Selesai'}</p></div></div><p class="text-xs font-black text-blue-300">+500</p></div>`;
-                });
-                window.dataDeliv.filter(o => (o.status==="SELESAI"||o.status==="delivered") && o.driver?.toUpperCase().trim() === extra).forEach(o => {
-                    dp += 500;
-                    html += `<div class="list-item-row"><div class="flex items-center gap-3"><div class="w-10 h-10 bg-emerald-500/20 rounded-full flex items-center justify-center text-emerald-400"><i class="fas fa-motorcycle"></i></div><div><p class="text-white font-bold text-sm uppercase">DELIV #${o.orderId?.slice(-4) || 'Odr'}</p><p class="text-[9px] text-emerald-200 uppercase">Success</p></div></div><p class="text-xs font-black text-emerald-300">+500</p></div>`;
-                });
-                poInOutRaw.filter(o => o.note === extra).forEach(o => {
-                    dp -= o.qty;
-                    html += `<div class="list-item-row bg-red-500/10"><div class="flex items-center gap-3"><div class="w-10 h-10 bg-red-500/20 rounded-full flex items-center justify-center text-red-400"><i class="fas fa-hand-holding-usd"></i></div><div><p class="text-white font-bold text-sm uppercase">PENARIKAN</p><p class="text-[9px] text-red-200 uppercase">${new Date(o.time).toLocaleDateString()}</p></div></div><p class="text-xs font-black text-red-400">-${o.qty.toLocaleString()}</p></div>`;
-                });
-                fVal.innerText = dp.toLocaleString();
-            } else if (mode.startsWith('KOPI')) {
-                const isDay = mode === 'KOPI_HARI'; title.innerText = "KOPI SHAKA";
-                subtitle.innerText = isDay ? "OMZET HARI INI" : "OMZET BULAN INI";
-                footer.style.backgroundColor = "#4f46e5"; fLab.innerText = "TOTAL OMZET";
-                const now = new Date(), limit = isDay ? new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime() : new Date(now.getFullYear(), now.getMonth(), 1).getTime();
-                window.kopiRaw.filter(d => new Date(d.tgl).getTime() >= limit).sort((a,b) => new Date(b.tgl) - new Date(a.tgl)).forEach(d => {
-                    const v = Number(d.total)||0; total += v;
-                    const isQris = (d.note && d.note.toUpperCase().includes("QRIS")) || (d.pembayaran && d.pembayaran.toUpperCase().includes("QRIS"));
-                    html += `<div class="list-item-row"><div class="flex items-center gap-3"><div class="w-10 h-10 ${isQris?'bg-cyan-500/20 text-cyan-300':'bg-emerald-500/20 text-emerald-300'} rounded-full flex items-center justify-center"><i class="fas ${isQris?'fa-qrcode':'fa-coffee'}"></i></div><div><p class="text-white font-bold text-sm uppercase">${d.pesanan || 'Kopi'}</p><p class="text-[9px] text-indigo-200 font-bold uppercase">${new Date(d.tgl).toLocaleString('id-ID',{day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'})}</p></div></div><p class="font-black text-indigo-300">Rp ${v.toLocaleString()}</p></div>`;
-                });
+                const now = new Date();
+                const startDay = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
+                const startMonth = new Date(now.getFullYear(), now.getMonth(), 1).getTime();
+                const limitTime = isHariIni ? startDay : startMonth;
+
+                if(window.kopiRaw) {
+                    window.kopiRaw.filter(d => d.tgl && new Date(d.tgl).getTime() >= limitTime)
+                        .sort((a,b) => new Date(b.tgl) - new Date(a.tgl))
+                        .forEach(item => {
+                            const amt = Number(item.total) || 0;
+                            total += amt;
+                            const isQris = (item.note?.toUpperCase().includes("QRIS")) || (item.pembayaran?.toUpperCase().includes("QRIS"));
+                            html += `<div class="list-item-row"><div class="flex items-center gap-3"><div class="w-10 h-10 ${isQris?'bg-cyan-500/20 text-cyan-400':'bg-emerald-500/20 text-emerald-400'} rounded-full flex items-center justify-center"><i class="fas ${isQris?'fa-qrcode':'fa-money-bill-wave'}"></i></div><div><p class="text-white font-bold text-sm uppercase">${isQris?'QRIS PAYMENT':'CASH PAYMENT'}</p><p class="text-[9px] text-white/50">${item.tgl || ''}</p></div></div><p class="font-black text-white">Rp ${amt.toLocaleString()}</p></div>`;
+                        });
+                }
                 fVal.innerText = "Rp " + total.toLocaleString();
             } else if (mode.startsWith('REKAP')) {
-                const isDay = mode === 'REKAP_HARI'; title.innerText = "GERAI DEPAN";
-                subtitle.innerText = isDay ? "LAPORAN HARIAN" : "LAPORAN BULANAN";
-                footer.style.backgroundColor = isDay ? "#9333ea" : "#059669"; fLab.innerText = "TOTAL OMZET";
-                let data = isDay ? dataHarian : dataBulanan;
-                data.sort((a,b) => b.time - a.time).forEach(item => {
-                    const sub = item.qty * item.price; total += sub;
-                    const isQris = item.note.includes("QRIS");
-                    html += `<div class="list-item-row"><div class="flex items-center gap-3"><div class="w-10 h-10 ${isQris?'bg-cyan-500/20 text-cyan-300':'bg-emerald-500/20 text-emerald-300'} rounded-full flex items-center justify-center"><i class="fas ${isQris?'fa-qrcode':'fa-money-bill-wave'}"></i></div><div><p class="text-white font-bold text-sm uppercase">${item.type}</p><p class="text-[9px] text-white/60 font-medium">${new Date(item.time).toLocaleDateString('id-ID',{day:'2-digit',month:'short'})}</p></div></div><p class="font-black text-white">Rp ${sub.toLocaleString()}</p></div>`;
+                const isOffline = mode === 'REKAP_HARI';
+                title.innerText = isOffline ? "KAS OFFLINE" : "KAS ONLINE";
+                subtitle.innerText = "DETAIL TRANSAKSI";
+                footer.style.backgroundColor = isOffline ? "#9333ea" : "#059669";
+                fLab.innerText = "SUBTOTAL";
+                const filterCat = isOffline ? "Offline" : "Online";
+                cashflowRaw.filter(d => d.category === filterCat).sort((a,b) => b.timestamp - a.timestamp).forEach(item => {
+                    const amt = Number(item.amount) || 0; total += amt;
+                    html += `<div class="list-item-row"><div class="flex items-center gap-3"><div class="w-10 h-10 bg-white/10 rounded-full flex items-center justify-center"><i class="fas ${isOffline?'fa-money-bill-wave':'fa-globe'}"></i></div><div><p class="text-white font-bold text-sm uppercase">${item.description || 'Transaksi'}</p><p class="text-[9px] text-white/50">${item.date || ''}</p></div></div><p class="font-black text-white">Rp ${amt.toLocaleString()}</p></div>`;
                 });
                 fVal.innerText = "Rp " + total.toLocaleString();
             } else if (mode === 'STOK') {
@@ -331,50 +339,40 @@
                     html += `<div class="list-item-row"><div class="flex items-center gap-3"><div class="w-10 h-10 bg-${colorMap[extra]}-500/20 rounded-full flex items-center justify-center text-${colorMap[extra]}-400"><i class="fas ${iconMap[extra]}"></i></div><div><p class="text-white font-bold text-sm uppercase">${d.status}</p><p class="text-[9px] text-white/50">${new Date(d.time).toLocaleString('id-ID')}</p></div></div><p class="text-lg font-black ${isPlus?'text-emerald-400':'text-red-400'}">${isPlus?'+':''}${d.qty}</p></div>`;
                 });
                 fVal.innerText = document.getElementById('stok-'+extra.toLowerCase()).innerText;
+            } else if (mode === 'DRIVER' || mode === 'DRIVER_TARIK') {
+                title.innerText = extra;
+                subtitle.innerText = mode === 'DRIVER' ? "RIWAYAT AKTIVITAS" : "PENARIKAN SALDO";
+                footer.style.backgroundColor = "#0f172a";
+                if(mode === 'DRIVER_TARIK') {
+                    document.getElementById('tarik-poin-area').classList.remove('hidden');
+                    currentDriverTarget = extra;
+                }
             }
             list.innerHTML = html || '<div class="text-center py-20 opacity-20 font-black">TIDAK ADA DATA</div>';
         }
 
-        async function prosesTarikPoin() {
-            const nominalRaw = document.getElementById('input-nominal-tarik').value.replace(/\./g, '');
-            const nominal = parseInt(nominalRaw);
-            if(!nominal || nominal <= 0) return alert("Nominal tidak valid!");
-            if(confirm(`Konfirmasi penarikan poin ${currentDriverTarget} sebesar Rp ${nominal.toLocaleString()}?`)) {
-                await dbStok.ref('stok_macca_v14_flow').push({ type: "POIN_OUT", qty: nominal, price: 0, note: currentDriverTarget, status: "KELUAR", time: Date.now() });
-                alert("Poin Berhasil Ditarik!"); document.getElementById('input-nominal-tarik').value = ""; closeModal();
-            }
-        }
-
         dbStok.ref('stok_macca_v14_flow').on('value', snap => {
-            let m=0, u=0, i=0, il=0, crispy=0, qH=0, cH=0, tB=0;
-            dataHarian = []; dataBulanan = []; fullFlowData = []; poInOutRaw = [];
-            const now = new Date(), st=new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime(), sm=new Date(now.getFullYear(), now.getMonth(), 1).getTime();
-            document.getElementById('label-bulan').innerText = ["JANUARI","FEBRUARI","MARET","APRIL","MEI","JUNI","JULI","AGUSTUS","SEPTEMBER","OKTOBER","NOVEMBER","DESEMBER"][now.getMonth()] + " " + now.getFullYear();
+            let m=0, u=0, i=0, il=0, crispy=0;
+            fullFlowData = []; poInOutRaw = [];
             snap.forEach(c => {
                 const v = c.val(); if(!v) return;
-                const qty=Number(v.qty)||0, pri=Number(v.price)||0, note=(v.note||"").toUpperCase(), time=v.time||0, type=(v.type||"").toUpperCase(), status=(v.status||"").toUpperCase();
-                if(type === "POIN_OUT") poInOutRaw.push({qty, note, time});
+                const qty=Number(v.qty)||0, note=(v.note||"").toUpperCase(), type=(v.type||"").toUpperCase(), status=(v.status||"").toUpperCase();
+                if(type === "POIN_OUT") poInOutRaw.push({qty, note, time: v.time});
                 else {
-                    fullFlowData.push({type, qty, price:pri, time, note, status});
+                    fullFlowData.push({...v, type, qty, status});
                     const flow = (status === 'MASUK' || status === 'TAMBAH') ? qty : -qty;
                     if(type==='MENTAH') m+=flow; else if(type==='UNGKEP') u+=flow; else if(type==='IKAN') i+=flow; else if(type==='IKANLAUT') il+=flow; else if(type==='CRISPY' || type==='AYAM CRISPY') crispy+=flow;
-                    if(pri > 0 && note.includes("GERAI DEPAN")) {
-                        const sub = qty * pri;
-                        if(time >= sm) { tB += sub; dataBulanan.push({type, qty, price:pri, time, note}); if(time >= st) { if(note.includes("QRIS")) qH += sub; else cH += sub; dataHarian.push({type, qty, price:pri, time, note}); } }
-                    }
                 }
             });
             document.getElementById('stok-mentah').innerText = m; document.getElementById('stok-ungkep').innerText = u;
             document.getElementById('stok-crispy').innerText = crispy; document.getElementById('stok-ikan').innerText = i;
-            document.getElementById('stok-ikanlaut').innerText = il; document.getElementById('total-gerai').innerText = "Rp " + (qH + cH).toLocaleString();
-            document.getElementById('val-qris').innerText = "Rp " + qH.toLocaleString(); document.getElementById('val-cash').innerText = "Rp " + cH.toLocaleString();
-            document.getElementById('total-gerai-bulan').innerText = "Rp " + tB.toLocaleString();
-            window.updateDriverStats();
+            document.getElementById('stok-ikanlaut').innerText = il;
+            if(window.updateDriverStats) window.updateDriverStats();
         });
 
         dbLaundry.ref('Pesanan').on('value', snap => {
             laundryRaw = []; snap.forEach(c => { if(c.val().status === "SELESAI") laundryRaw.push(c.val()); });
-            window.updateDriverStats();
+            if(window.updateDriverStats) window.updateDriverStats();
         });
 
         window.updateDriverStats = function() {
@@ -385,7 +383,7 @@
 
             let html = '';
             Object.keys(stats).sort((a,b) => stats[b].p - stats[a].p).forEach((name, index) => {
-                html += `<div class="stat-card border-driver-${index%5} py-6 shadow-xl fade-in">
+                html += `<div class="stat-card border-driver-${index%5} py-6 shadow-xl fade-in mb-4">
                     <div class="flex justify-between items-start">
                         <div class="flex-1" onclick="openModal('DRIVER', '${name}')">
                             <h4 class="font-black text-white text-lg uppercase mb-3"><i class="fas fa-user-circle mr-2 opacity-50"></i>${name}</h4>
@@ -405,6 +403,24 @@
                 </div>`;
             });
             document.getElementById('driver-list').innerHTML = html || '<p class="text-center py-10 opacity-20 italic">No Driver Data</p>';
+        };
+
+        window.prosesTarikPoin = function() {
+            const nominal = parseInt(document.getElementById('input-nominal-tarik').value.replace(/[^0-9]/g, ''));
+            if(!nominal || nominal <= 0) return alert("Masukkan nominal valid");
+            if(confirm(`Tarik ${nominal.toLocaleString()} poin untuk ${currentDriverTarget}?`)) {
+                dbStok.ref('stok_macca_v14_flow').push({
+                    qty: nominal,
+                    type: "POIN_OUT",
+                    note: currentDriverTarget,
+                    status: "KELUAR",
+                    time: Date.now()
+                }).then(() => {
+                    alert("Berhasil ditarik!");
+                    closeModal();
+                    document.getElementById('input-nominal-tarik').value = "";
+                });
+            }
         };
     </script>
 </body>
