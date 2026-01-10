@@ -165,27 +165,23 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
         import { getFirestore, collection, onSnapshot, query, orderBy } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-        // FIREBASE INITIALIZATION
         const cfgCash = { apiKey: "AIzaSyAXs5ZVr6gop28qPKbeaqTRiNdEGZlZMZQ", projectId: "cashflowmacca" };
-        const appCash = initializeApp(cfgCash, "CASH_APP");
-        const dbCash = getFirestore(appCash);
+        const dbCash = getFirestore(initializeApp(cfgCash, "CASH_APP"));
         window.dbCash = dbCash;
 
         const cfgKopi = { apiKey: "AIzaSyAf4pkzvpCuzmXquzIoCDXLAr6-_l3i8O0", projectId: "kopi-shaka" };
-        const appKopi = initializeApp(cfgKopi, "KOPI_APP");
-        const dbKopi = getFirestore(appKopi);
+        const dbKopi = getFirestore(initializeApp(cfgKopi, "KOPI_APP"));
 
         const cfgDeliv = { apiKey: "AIzaSyAWl_NXUXwt29rLArj79j8RlM8bY6kOCCg", projectId: "delivery-macca-new" };
-        const appDeliv = initializeApp(cfgDeliv, "DELIV_APP");
-        const dbDeliv = getFirestore(appDeliv);
+        const dbDeliv = getFirestore(initializeApp(cfgDeliv, "DELIV_APP"));
 
         window.formatDate = (val) => {
             if(!val) return "";
             let d = (val.seconds) ? new Date(val.seconds * 1000) : new Date(val);
-            return d.toLocaleString('id-ID', { day:'2-digit', month:'2-digit', year:'numeric', hour:'2-digit', minute:'2-digit' }).replace(/\//g, '-');
+            return d.toLocaleString('id-ID', { day:'2-digit', month:'2-digit', year:'numeric', hour:'2-digit', minute:'2-digit' });
         };
 
-        // SYNC KAS
+        // KAS SYNC
         onSnapshot(query(collection(dbCash, "transactions"), orderBy("timestamp", "desc")), (snap) => {
             let off = 0, on = 0, offT = 0, onT = 0;
             const today = new Date().toLocaleDateString("en-CA");
@@ -206,7 +202,7 @@
             document.getElementById("val-online-today").innerText = "Rp " + onT.toLocaleString();
         });
 
-        // SYNC KOPI - LOGIKA QRIS DIPERKETAT
+        // KOPI SYNC
         onSnapshot(collection(dbKopi, "transactions"), (snap) => {
             window.kopiRaw = snap.docs.map(d => d.data());
             let hTotal=0, hQris=0, hCash=0, bTotal=0;
@@ -241,7 +237,6 @@
     </script>
 
     <script>
-        // RTDB INTEGRATION
         const cfgStok = { apiKey: "AIzaSyCCmKgOnBFpluEKuycYjrBRm4zbxrHI1P8", databaseURL: "https://stocklistmacca-default-rtdb.asia-southeast1.firebasedatabase.app" };
         const cfgLaundry = { apiKey: "AIzaSyA-1GyDIS77tlL0vpiZS_ZLvx1S71TnkQU", databaseURL: "https://awwabim-laundry-default-rtdb.firebaseio.com" };
         firebase.initializeApp(cfgStok, "STOK_APP");
@@ -255,7 +250,6 @@
         function closeModal() { document.getElementById('modal-global').style.display = 'none'; }
         function formatRibuan(input) { let v = input.value.replace(/[^0-9]/g, ''); input.value = v ? parseInt(v).toLocaleString('id-ID') : ''; }
 
-        // STOK REALTIME
         dbStok.ref('stok_macca_v14_flow').on('value', snap => {
             let m=0, u=0, c=0; flowStokRaw = []; poInOutRaw = [];
             snap.forEach(child => {
@@ -277,7 +271,6 @@
             if(window.updateDriverStats) window.updateDriverStats();
         });
 
-        // DRIVER STATS
         window.updateDriverStats = function() {
             const stats = {};
             laundryRaw.forEach(o => { const n=o.driverName?.toUpperCase().trim(); if(n){ if(!stats[n]) stats[n]={l:0,d:0,p:0}; stats[n].l++; stats[n].p+=500; } });
@@ -299,7 +292,6 @@
             document.getElementById('driver-list').innerHTML = html || '<p class="text-center py-10 opacity-20">No Driver Data</p>';
         };
 
-        // MODAL GLOBAL CONTROLLER
         window.openModal = function(mode, extra = '') {
             const modal = document.getElementById('modal-global'), list = document.getElementById('modal-content-list'), 
                   title = document.getElementById('modal-title'), subtitle = document.getElementById('modal-subtitle'),
@@ -331,9 +323,13 @@
                 const limit = isH ? new Date(new Date().setHours(0,0,0,0)).getTime() : new Date(new Date().getFullYear(), new Date().getMonth(), 1).getTime();
                 window.kopiRaw.filter(d => (d.tgl.seconds?d.tgl.seconds*1000:new Date(d.tgl).getTime()) >= limit).sort((a,b) => (b.tgl.seconds||0) - (a.tgl.seconds||0)).forEach(x => {
                     const v = Number(x.total) || 0; total += v;
-                    const checkStr = `${x.note} ${x.pembayaran} ${x.metode_pembayaran}`.toUpperCase();
-                    const isQ = checkStr.includes("QRIS") || checkStr.includes("TRANSFER");
-                    html += `<div class="list-item-row"><div class="flex items-center gap-3"><div class="w-10 h-10 bg-white/10 rounded-full flex items-center justify-center text-white"><i class="fas ${isQ?'fa-qrcode text-cyan-400':'fa-mug-hot text-emerald-400'}"></i></div><div><p class="font-bold text-sm uppercase">${x.nama_produk || "MENU KOPI"}</p><p class="text-[10px] opacity-50">${window.formatDate(x.tgl)} (${isQ?'QRIS':'CASH'})</p></div></div><p class="font-black text-white">${v.toLocaleString()}</p></div>`;
+                    const checkStr = `${x.note} ${x.pembayaran} ${x.metode_pembayaran} ${x.metode}`.toUpperCase();
+                    const isQ = checkStr.includes("QRIS") || checkStr.includes("TRANSFER") || checkStr.includes("ONLINE");
+                    
+                    // AMBIL NAMA PEMESAN DARI DATABASE
+                    const namaPemesan = x.nama || x.pembeli || x.customer || "TANPA NAMA";
+
+                    html += `<div class="list-item-row"><div class="flex items-center gap-3"><div class="w-10 h-10 bg-white/10 rounded-full flex items-center justify-center text-white"><i class="fas ${isQ?'fa-qrcode text-cyan-400':'fa-mug-hot text-emerald-400'}"></i></div><div><p class="font-bold text-sm uppercase">${namaPemesan}</p><p class="text-[10px] opacity-50">${window.formatDate(x.tgl)} (${isQ?'QRIS':'CASH'})</p></div></div><p class="font-black text-white">${v.toLocaleString()}</p></div>`;
                 });
                 fVal.innerText = "Rp " + total.toLocaleString();
 
