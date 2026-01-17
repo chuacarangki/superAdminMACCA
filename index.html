@@ -115,18 +115,26 @@
         </div>
 
         <div class="section-title"><i class="fas fa-boxes text-orange-500"></i> Status Stok Dapur</div>
-        <div class="grid grid-cols-2 md:grid-cols-3 gap-3 mb-8 text-white">
+        <div class="grid grid-cols-2 md:grid-cols-5 gap-3 mb-8 text-white">
             <div onclick="openModal('STOK', 'MENTAH')" class="stat-card border-t-4 border-orange-500 text-center py-5">
-                <p class="text-[11px] font-black uppercase mb-1">A. Mentah</p>
-                <h4 id="stok-mentah" class="text-4xl font-black italic text-orange-400">0</h4>
+                <p class="text-[10px] font-black uppercase mb-1">A. Mentah</p>
+                <h4 id="stok-mentah" class="text-3xl font-black italic text-orange-400">0</h4>
             </div>
             <div onclick="openModal('STOK', 'UNGKEP')" class="stat-card border-t-4 border-yellow-500 text-center py-5">
-                <p class="text-[11px] font-black uppercase mb-1">A. Ungkep</p>
-                <h4 id="stok-ungkep" class="text-4xl font-black italic text-yellow-400">0</h4>
+                <p class="text-[10px] font-black uppercase mb-1">A. Ungkep</p>
+                <h4 id="stok-ungkep" class="text-3xl font-black italic text-yellow-400">0</h4>
             </div>
             <div onclick="openModal('STOK', 'CRISPY')" class="stat-card border-t-4 border-red-500 text-center py-5">
-                <p class="text-[11px] font-black uppercase mb-1">A. Crispy</p>
-                <h4 id="stok-crispy" class="text-4xl font-black italic text-red-400">0</h4>
+                <p class="text-[10px] font-black uppercase mb-1">A. Crispy</p>
+                <h4 id="stok-crispy" class="text-3xl font-black italic text-red-400">0</h4>
+            </div>
+            <div onclick="openModal('STOK', 'IKAN')" class="stat-card border-t-4 border-emerald-500 text-center py-5">
+                <p class="text-[10px] font-black uppercase mb-1">I. Bandeng</p>
+                <h4 id="stok-ikan" class="text-3xl font-black italic text-emerald-400">0</h4>
+            </div>
+            <div onclick="openModal('STOK', 'IKANLAUT')" class="stat-card border-t-4 border-cyan-500 text-center py-5">
+                <p class="text-[10px] font-black uppercase mb-1">I. Laut</p>
+                <h4 id="stok-ikanlaut" class="text-3xl font-black italic text-cyan-400">0</h4>
             </div>
         </div>
 
@@ -250,8 +258,10 @@
         function closeModal() { document.getElementById('modal-global').style.display = 'none'; }
         function formatRibuan(input) { let v = input.value.replace(/[^0-9]/g, ''); input.value = v ? parseInt(v).toLocaleString('id-ID') : ''; }
 
+        // LOGIKA SINKRONISASI STOK YANG DIPERBAIKI (MENAMPUNG IKAN)
         dbStok.ref('stok_macca_v14_flow').on('value', snap => {
-            let m=0, u=0, c=0; flowStokRaw = []; poInOutRaw = [];
+            let m=0, u=0, c=0, i=0, il=0; 
+            flowStokRaw = []; poInOutRaw = [];
             snap.forEach(child => {
                 const v = child.val(); if(!v) return;
                 const qty = Number(v.qty)||0, type = (v.type||"").toUpperCase(), status = (v.status||"").toUpperCase();
@@ -259,10 +269,19 @@
                 else {
                     flowStokRaw.push({...v, type, status, qty});
                     const flow = (status==='MASUK'||status==='TAMBAH')?qty:-qty;
-                    if(type==='MENTAH') m+=flow; else if(type==='UNGKEP') u+=flow; else if(type==='CRISPY'||type==='AYAM CRISPY') c+=flow;
+                    if(type==='MENTAH') m+=flow; 
+                    else if(type==='UNGKEP') u+=flow; 
+                    else if(type==='CRISPY'||type==='AYAM CRISPY') c+=flow;
+                    else if(type==='IKAN') i+=flow;      // Ikan Bandeng
+                    else if(type==='IKANLAUT') il+=flow; // Ikan Laut
                 }
             });
-            document.getElementById('stok-mentah').innerText = m; document.getElementById('stok-ungkep').innerText = u; document.getElementById('stok-crispy').innerText = c;
+            document.getElementById('stok-mentah').innerText = m; 
+            document.getElementById('stok-ungkep').innerText = u; 
+            document.getElementById('stok-crispy').innerText = c;
+            document.getElementById('stok-ikan').innerText = i;
+            document.getElementById('stok-ikanlaut').innerText = il;
+
             if(window.updateDriverStats) window.updateDriverStats();
         });
 
@@ -326,7 +345,6 @@
                     const checkStr = `${x.note} ${x.pembayaran} ${x.metode_pembayaran} ${x.metode}`.toUpperCase();
                     const isQ = checkStr.includes("QRIS") || checkStr.includes("TRANSFER") || checkStr.includes("ONLINE");
                     
-                    // AMBIL NAMA PEMESAN DARI DATABASE
                     const namaPemesan = x.nama || x.pembeli || x.customer || "TANPA NAMA";
 
                     html += `<div class="list-item-row"><div class="flex items-center gap-3"><div class="w-10 h-10 bg-white/10 rounded-full flex items-center justify-center text-white"><i class="fas ${isQ?'fa-qrcode text-cyan-400':'fa-mug-hot text-emerald-400'}"></i></div><div><p class="font-bold text-sm uppercase">${namaPemesan}</p><p class="text-[10px] opacity-50">${window.formatDate(x.tgl)} (${isQ?'QRIS':'CASH'})</p></div></div><p class="font-black text-white">${v.toLocaleString()}</p></div>`;
@@ -348,7 +366,8 @@
                     html += `<div class="list-item-row border-l-4 border-red-500"><div class="flex items-center gap-3"><div class="w-10 h-10 bg-red-500/20 text-red-400 rounded-full flex items-center justify-center shadow-md"><i class="fas fa-hand-holding-usd"></i></div><div><p class="font-bold text-sm uppercase text-red-400">TARIK POIN</p><p class="text-[9px] text-white/50">${new Date(o.time).toLocaleString()}</p></div></div><p class="font-black text-red-400">-${o.qty.toLocaleString()}</p></div>`;
                 });
             } else if (mode === 'STOK') {
-                title.innerText = extra; subtitle.innerText = "LOG STOK";
+                title.innerText = (extra === 'IKAN' ? 'IKAN BANDENG' : (extra === 'IKANLAUT' ? 'IKAN LAUT' : extra));
+                subtitle.innerText = "LOG STOK";
                 footer.style.backgroundColor = "#1e293b"; fLab.innerText = "TOTAL SISA";
                 flowStokRaw.filter(x => (extra==='CRISPY'?(x.type==='CRISPY'||x.type==='AYAM CRISPY'):x.type===extra)).sort((a,b)=>b.time-a.time).forEach(x => {
                     const isIn = (x.status==='MASUK'||x.status==='TAMBAH');
