@@ -19,59 +19,102 @@
         .login-box { background: white; padding: 40px 30px; border-radius: 40px; border: 2px solid #e2e8f0; max-width: 360px; text-align: center; box-shadow: 0 20px 50px rgba(0,0,0,0.1); }
         .crown-container { width: 100px; height: 100px; background: #0f172a; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 24px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); }
         .crown-icon { font-size: 45px; color: var(--gold); animation: crownPulse 2s infinite ease-in-out; }
-        @keyframes crownPulse { 0%,100% { transform: scale(1); filter: drop-shadow(0 0 0px gold); } 50% { transform: scale(1.12); filter: drop-shadow(0 0 20px gold); } }
+        @keyframes crownPulse { 0%,100% { transform: scale(1); } 50% { transform: scale(1.12); filter: drop-shadow(0 0 20px gold); } }
 
         #main-dashboard { display: none; min-height: 100vh; background: radial-gradient(circle at top right, #112240, #0A192F); padding: 1.5rem; padding-bottom: 5rem; }
         .section-title { font-size: 13px; font-weight: 800; letter-spacing: 1.5px; text-transform: uppercase; margin: 1.5rem 0 1rem; display: flex; align-items: center; gap: 0.5rem; }
         .section-title::after { content: ""; flex: 1; height: 2px; background: linear-gradient(to right, var(--gold), transparent); opacity: 0.3; }
         .stat-card { background: var(--card-glass); backdrop-filter: blur(12px); border: 1px solid rgba(255,255,255,0.1); border-radius: 1.5rem; padding: 1.375rem; transition: all 0.25s ease; }
         .stat-card:hover { transform: translateY(-4px); box-shadow: 0 20px 40px rgba(0,0,0,0.3); }
-        .stat-card:active { transform: scale(0.97); }
 
-        /* Tab */
         .tab-bar { display: flex; overflow-x: auto; gap: 0.75rem; padding: 1rem 0; scrollbar-width: none; }
         .tab-bar::-webkit-scrollbar { display: none; }
         .tab-btn { flex-shrink: 0; padding: 0.75rem 1.25rem; background: rgba(255,255,255,0.08); border-radius: 9999px; font-weight: 700; font-size: 0.95rem; white-space: nowrap; transition: all 0.25s; border: 1px solid transparent; color: white; }
         .tab-btn.active { background: var(--gold); color: #0f172a; border-color: var(--gold); box-shadow: 0 0 20px rgba(255,215,0,0.4); }
-
         .tab-content { display: none; }
         .tab-content.active { display: block; }
 
-        /* Home Icons Grid */
-        .home-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 1.25rem; }
-        .home-card {
-            background: linear-gradient(145deg, rgba(30,41,59,0.7), rgba(15,23,42,0.7));
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255,255,255,0.08);
-            border-radius: 1.5rem;
-            padding: 1.75rem 1rem;
-            text-align: center;
-            cursor: pointer;
-            transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-            position: relative;
+        .home-container { position: relative; min-height: 60vh; display: flex; justify-content: center; align-items: center; margin: 2rem 0; }
+        .central-photo {
+            width: 140px; height: 140px;
+            border-radius: 50%;
             overflow: hidden;
+            border: 4px solid var(--gold);
+            box-shadow: 0 0 30px rgba(255,215,0,0.5), inset 0 0 20px rgba(255,215,0,0.2);
+            z-index: 10;
+            background: #111;
+            cursor: pointer;
+            transition: all 0.3s;
         }
-        .home-card:hover {
-            transform: translateY(-12px) scale(1.05);
-            box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5);
-        }
-        .home-card::before {
-            content: '';
+        .central-photo:hover { transform: scale(1.08); box-shadow: 0 0 50px rgba(255,215,0,0.7); }
+        .central-photo img { width: 100%; height: 100%; object-fit: cover; }
+
+        .icon-orbit { position: absolute; width: 100%; height: 100%; display: flex; justify-content: center; align-items: center; }
+        .orbit-item {
             position: absolute;
-            inset: 0;
-            background: radial-gradient(circle at 30% 20%, rgba(255,215,0,0.08), transparent 60%);
-            opacity: 0;
-            transition: opacity 0.4s;
+            width: 110px; height: 110px;
+            transition: all 0.4s ease;
+            cursor: pointer;
         }
-        .home-card:hover::before { opacity: 1; }
-        .home-icon { font-size: 3.5rem; margin-bottom: 1rem; transition: transform 0.4s; }
-        .home-card:hover .home-icon { transform: scale(1.15) rotate(8deg); }
-        .home-label { font-size: 1.1rem; font-weight: 800; letter-spacing: 0.5px; }
+        .orbit-item:hover { transform: scale(1.15) translateY(-10px); }
+        .orbit-item i { font-size: 3.5rem; }
+        .orbit-item .label { font-size: 0.95rem; font-weight: 700; margin-top: 0.5rem; text-align: center; }
+
+        #orbit-1 { top: 5%; left: 15%; }
+        #orbit-2 { top: 5%; right: 15%; }
+        #orbit-3 { bottom: 10%; left: 10%; }
+        #orbit-4 { bottom: 10%; right: 10%; }
+        #orbit-5 { bottom: -10%; left: 50%; transform: translateX(-50%); }
+
+        @media (max-width: 640px) {
+            .central-photo { width: 120px; height: 120px; }
+            .orbit-item { width: 90px; height: 90px; }
+            .orbit-item i { font-size: 2.8rem; }
+            #orbit-1, #orbit-2 { top: 0%; }
+            #orbit-3, #orbit-4 { bottom: 5%; }
+            #orbit-5 { bottom: -5%; }
+        }
+
+        #photo-lightbox {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.95);
+            z-index: 99999;
+            justify-content: center;
+            align-items: center;
+            backdrop-filter: blur(8px);
+        }
+        #photo-lightbox.active { display: flex; }
+        #lightbox-img {
+            max-width: 95%;
+            max-height: 90vh;
+            border-radius: 12px;
+            box-shadow: 0 0 60px rgba(255,215,0,0.4);
+            border: 2px solid var(--gold);
+        }
+        #close-lightbox {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            color: white;
+            font-size: 2.5rem;
+            cursor: pointer;
+            background: rgba(0,0,0,0.5);
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
 
         #modal-global { display: none; position: fixed; inset: 0; z-index: 10000; background: rgba(10,25,47,0.98); backdrop-filter: blur(25px); padding: 20px; }
         .input-nominal-merah { background: #000 !important; border: 3px solid white !important; color: white !important; font-size: 32px !important; font-weight: 900 !important; text-align: center; border-radius: 15px; padding: 15px; width: 100%; }
-        .border-driver-0 { border-left: 8px solid #3b82f6; } .border-driver-1 { border-left: 8px solid #a855f7; }
-        .border-driver-2 { border-left: 8px solid #f59e0b; } .border-driver-3 { border-left: 8px solid #ec4899; }
+        .border-driver-0 { border-left: 8px solid #3b82f6; }
+        .border-driver-1 { border-left: 8px solid #a855f7; }
+        .border-driver-2 { border-left: 8px solid #f59e0b; }
+        .border-driver-3 { border-left: 8px solid #ec4899; }
         .border-driver-4 { border-left: 8px solid #06b6d4; }
     </style>
 </head>
@@ -95,7 +138,6 @@
             <button onclick="location.reload()" class="bg-white/10 p-4 rounded-2xl border border-white/20 text-white"><i class="fas fa-power-off text-red-400"></i></button>
         </header>
 
-        <!-- Tab Navigation -->
         <div class="tab-bar mb-6">
             <button class="tab-btn active" data-tab="home">HOME</button>
             <button class="tab-btn" data-tab="kas">Ringkasan Kas</button>
@@ -105,34 +147,39 @@
             <button class="tab-btn" data-tab="driver">Poin Driver</button>
         </div>
 
-        <!-- HOME - Dashboard Overview -->
         <div id="tab-home" class="tab-content active">
-            <div class="section-title"><i class="fas fa-tachometer-alt text-gold"></i> Dashboard Overview</div>
-            <div class="home-grid mt-6">
-                <div class="home-card" onclick="switchTab('kas')">
-                    <i class="fas fa-vault home-icon text-purple-400"></i>
-                    <div class="home-label text-purple-300">Ringkasan Kas</div>
+            <div class="section-title text-center"><i class="fas fa-crown text-gold"></i> Selamat Datang, Pak Boss</div>
+            
+            <div class="home-container">
+                <div class="central-photo" onclick="openPhotoLightbox()">
+                    <img src="https://lesehanmacca.com/pakboss.png" alt="Pak Boss">
                 </div>
-                <div class="home-card" onclick="switchTab('kopi')">
-                    <i class="fas fa-mug-hot home-icon text-indigo-400"></i>
-                    <div class="home-label text-indigo-300">Penjualan Kopi</div>
-                </div>
-                <div class="home-card" onclick="switchTab('stok')">
-                    <i class="fas fa-boxes home-icon text-orange-400"></i>
-                    <div class="home-label text-orange-300">Stok Dapur</div>
-                </div>
-                <div class="home-card" onclick="switchTab('pesanan')">
-                    <i class="fas fa-motorcycle home-icon text-rose-400"></i>
-                    <div class="home-label text-rose-300">Pesanan Online</div>
-                </div>
-                <div class="home-card" onclick="switchTab('driver')">
-                    <i class="fas fa-user-check home-icon text-cyan-400"></i>
-                    <div class="home-label text-cyan-300">Poin Driver</div>
+
+                <div class="icon-orbit">
+                    <div id="orbit-1" class="orbit-item" onclick="switchTab('kas')">
+                        <i class="fas fa-vault text-purple-400"></i>
+                        <div class="label text-purple-300">Ringkasan Kas</div>
+                    </div>
+                    <div id="orbit-2" class="orbit-item" onclick="switchTab('kopi')">
+                        <i class="fas fa-mug-hot text-indigo-400"></i>
+                        <div class="label text-indigo-300">Penjualan Kopi</div>
+                    </div>
+                    <div id="orbit-3" class="orbit-item" onclick="switchTab('stok')">
+                        <i class="fas fa-boxes text-orange-400"></i>
+                        <div class="label text-orange-300">Stok Dapur</div>
+                    </div>
+                    <div id="orbit-4" class="orbit-item" onclick="switchTab('pesanan')">
+                        <i class="fas fa-motorcycle text-rose-400"></i>
+                        <div class="label text-rose-300">Pesanan Online</div>
+                    </div>
+                    <div id="orbit-5" class="orbit-item" onclick="switchTab('driver')">
+                        <i class="fas fa-user-check text-cyan-400"></i>
+                        <div class="label text-cyan-300">Poin Driver</div>
+                    </div>
                 </div>
             </div>
         </div>
 
-        <!-- Tab Ringkasan Kas -->
         <div id="tab-kas" class="tab-content">
             <div class="section-title"><i class="fas fa-vault text-gold"></i> Ringkasan Kas Macca</div>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
@@ -153,7 +200,6 @@
             </div>
         </div>
 
-        <!-- Tab Penjualan Kopi -->
         <div id="tab-kopi" class="tab-content">
             <div class="section-title"><i class="fas fa-wallet text-indigo-400"></i> Penjualan Kopi Shaka</div>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
@@ -172,7 +218,6 @@
             </div>
         </div>
 
-        <!-- Tab Stok Dapur -->
         <div id="tab-stok" class="tab-content">
             <div class="section-title"><i class="fas fa-boxes text-orange-500"></i> Status Stok Dapur</div>
             <div class="grid grid-cols-2 md:grid-cols-5 gap-3 mb-8 text-white">
@@ -199,7 +244,6 @@
             </div>
         </div>
 
-        <!-- Tab Pesanan Online -->
         <div id="tab-pesanan" class="tab-content">
             <div class="section-title"><i class="fas fa-motorcycle text-rose-400"></i> Pendapatan Pesanan Online</div>
             <div class="grid grid-cols-1 gap-4 mb-8">
@@ -211,7 +255,6 @@
             </div>
         </div>
 
-        <!-- Tab Poin Driver -->
         <div id="tab-driver" class="tab-content">
             <div class="section-title"><i class="fas fa-motorcycle text-cyan-400"></i> Rekap Poin Driver</div>
             <div id="driver-list" class="space-y-4"></div>
@@ -219,7 +262,13 @@
 
     </div>
 
-    <!-- Modal (sama seperti sebelumnya) -->
+    <!-- Lightbox Foto Pak Boss -->
+    <div id="photo-lightbox" onclick="closePhotoLightbox()">
+        <span id="close-lightbox" onclick="closePhotoLightbox()">×</span>
+        <img id="lightbox-img" src="https://lesehanmacca.com/pakboss.png" alt="Pak Boss Full Size">
+    </div>
+
+    <!-- Modal Global -->
     <div id="modal-global">
         <div id="loading-overlay" class="hidden fixed inset-0 bg-black/70 backdrop-blur-md z-[10001] flex items-center justify-center pointer-events-none">
             <div class="text-center text-white px-8 py-10 bg-slate-900/80 rounded-3xl border border-yellow-500/30 shadow-2xl">
@@ -256,7 +305,6 @@
     </div>
 
     <script type="module">
-        // ... (sama persis seperti versi sebelumnya - import Firebase, onSnapshot untuk cash, kopi, deliv)
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
         import { getFirestore, collection, onSnapshot, query, orderBy } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
@@ -311,7 +359,10 @@
                 const checkStr = `${d.note} ${d.pembayaran} ${d.metode_pembayaran} ${d.metode}`.toUpperCase();
                 const isQ = checkStr.includes("QRIS") || checkStr.includes("TRANSFER") || checkStr.includes("ONLINE");
 
-                if(time >= startDay) { hTotal += v; if(isQ) hQris += v; else hCash += v; }
+                if(time >= startDay) { 
+                    hTotal += v; 
+                    if(isQ) hQris += v; else hCash += v; 
+                }
                 if(time >= startMonth) bTotal += v;
             });
             document.getElementById('kopi-hari').innerText = "Rp " + hTotal.toLocaleString();
@@ -327,7 +378,6 @@
     </script>
 
     <script>
-        // Firebase Realtime DB configs (sama seperti sebelumnya)
         const cfgStok = { apiKey: "AIzaSyCCmKgOnBFpluEKuycYjrBRm4zbxrHI1P8", databaseURL: "https://stocklistmacca-default-rtdb.asia-southeast1.firebasedatabase.app" };
         const cfgLaundry = { apiKey: "AIzaSyA-1GyDIS77tlL0vpiZS_ZLvx1S71TnkQU", databaseURL: "https://awwabim-laundry-default-rtdb.firebaseio.com" };
         firebase.initializeApp(cfgStok, "STOK_APP");
@@ -342,9 +392,9 @@
         const dbLaundry = firebase.app("LAUNDRY_APP").database();
 
         let laundryRaw = [], flowStokRaw = [], poInOutRaw = [], currentDriverTarget = "";
-        let pesananMasukRaw = [], totalPendapatanPesananMasuk = 0;
+        let pesananMasukRaw = [];
+        let totalPendapatanPesananMasuk = 0;
 
-        // Tab switching function
         function switchTab(tabId) {
             document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
             document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
@@ -361,15 +411,27 @@
             document.getElementById('main-dashboard').style.display = 'block';
         }
 
-        function closeModal() { document.getElementById('modal-global').style.display = 'none'; }
+        function closeModal() {
+            document.getElementById('modal-global').style.display = 'none';
+        }
 
         function formatRibuan(input) {
             let v = input.value.replace(/[^0-9]/g, '');
             input.value = v ? parseInt(v).toLocaleString('id-ID') : '';
         }
 
-        // ... (sisa script Firebase listener stok, laundry, kasirnew, updateDriverStats, openModal, prosesTarikPoin)
-        // Copy dari versi sebelumnya mulai dari dbStok.ref('stok_macca_v14_flow').on('value', ... sampai akhir prosesTarikPoin
+        function openPhotoLightbox() {
+            document.getElementById('photo-lightbox').classList.add('active');
+        }
+
+        function closePhotoLightbox() {
+            document.getElementById('photo-lightbox').classList.remove('active');
+        }
+
+        document.getElementById('photo-lightbox').addEventListener('click', function(e) {
+            if (e.target === this) closePhotoLightbox();
+        });
+
         dbStok.ref('stok_macca_v14_flow').on('value', snap => {
             let m=0, u=0, c=0, i=0, il=0; 
             flowStokRaw = []; poInOutRaw = [];
@@ -392,11 +454,15 @@
             document.getElementById('stok-crispy').innerText = c;
             document.getElementById('stok-ikan').innerText = i;
             document.getElementById('stok-ikanlaut').innerText = il;
+
             if(window.updateDriverStats) window.updateDriverStats();
         });
 
         dbLaundry.ref('Pesanan').on('value', snap => {
-            laundryRaw = []; snap.forEach(c => { if(c.val().status === "SELESAI") laundryRaw.push(c.val()); });
+            laundryRaw = []; 
+            snap.forEach(c => { 
+                if(c.val().status === "SELESAI") laundryRaw.push(c.val()); 
+            });
             if(window.updateDriverStats) window.updateDriverStats();
         });
 
@@ -418,67 +484,126 @@
 
         window.updateDriverStats = function() {
             const stats = {};
-            laundryRaw.forEach(o => { const n=o.driverName?.toUpperCase().trim(); if(n){ if(!stats[n]) stats[n]={l:0,d:0,p:0}; stats[n].l++; stats[n].p+=500; } });
-            if(window.dataDeliv) window.dataDeliv.forEach(o => { if((o.status==="SELESAI"||o.status==="delivered")&&o.driver){ const n=o.driver.toUpperCase().trim(); if(!stats[n]) stats[n]={l:0,d:0,p:0}; stats[n].d++; stats[n].p+=500; } });
-            poInOutRaw.forEach(o => { const n=o.note?.toUpperCase().trim(); if(stats[n]) stats[n].p -= o.qty; });
+            laundryRaw.forEach(o => { 
+                const n = o.driverName?.toUpperCase().trim(); 
+                if(n){ 
+                    if(!stats[n]) stats[n]={l:0,d:0,p:0}; 
+                    stats[n].l++; 
+                    stats[n].p+=500; 
+                } 
+            });
+            if(window.dataDeliv) window.dataDeliv.forEach(o => { 
+                if((o.status==="SELESAI"||o.status==="delivered")&&o.driver){ 
+                    const n=o.driver.toUpperCase().trim(); 
+                    if(!stats[n]) stats[n]={l:0,d:0,p:0}; 
+                    stats[n].d++; 
+                    stats[n].p+=500; 
+                } 
+            });
+            poInOutRaw.forEach(o => { 
+                const n=o.note?.toUpperCase().trim(); 
+                if(stats[n]) stats[n].p -= o.qty; 
+            });
             let html = '';
             Object.keys(stats).sort((a,b) => stats[b].p - stats[a].p).forEach((name, index) => {
-                html += `<div class="stat-card border-driver-${index%5} py-6 mb-4"><div class="flex justify-between items-start"><div class="flex-1" onclick="openModal('DRIVER', '${name}')">
-                <h4 class="font-black text-white text-lg uppercase mb-3">${name}</h4>
-                <div class="flex gap-4">
-                    <div class="bg-blue-500/20 px-3 py-1 rounded-xl text-center"><p class="text-[8px] font-black text-blue-300">Laundry</p><p class="text-xl font-black">${stats[name].l}</p></div>
-                    <div class="bg-emerald-500/20 px-3 py-1 rounded-xl text-center"><p class="text-[8px] font-black text-emerald-300">Deliv</p><p class="text-xl font-black">${stats[name].d}</p></div>
-                </div></div>
-                <div class="text-right flex flex-col items-end">
-                    <p class="text-4xl font-black text-gold italic">${stats[name].p.toLocaleString()}</p>
-                    <button onclick="openModal('DRIVER_TARIK', '${name}')" class="bg-red-600 text-white text-[10px] font-black px-4 py-2 rounded-lg mt-3 shadow-lg uppercase">Tarik Poin</button>
-                </div></div></div>`;
+                html += `<div class="stat-card border-driver-${index%5} py-6 mb-4">
+                    <div class="flex justify-between items-start">
+                        <div class="flex-1" onclick="openModal('DRIVER', '${name}')">
+                            <h4 class="font-black text-white text-lg uppercase mb-3">${name}</h4>
+                            <div class="flex gap-4">
+                                <div class="bg-blue-500/20 px-3 py-1 rounded-xl text-center"><p class="text-[8px] font-black text-blue-300">Laundry</p><p class="text-xl font-black">${stats[name].l}</p></div>
+                                <div class="bg-emerald-500/20 px-3 py-1 rounded-xl text-center"><p class="text-[8px] font-black text-emerald-300">Deliv</p><p class="text-xl font-black">${stats[name].d}</p></div>
+                            </div>
+                        </div>
+                        <div class="text-right flex flex-col items-end">
+                            <p class="text-4xl font-black text-gold italic">${stats[name].p.toLocaleString()}</p>
+                            <button onclick="openModal('DRIVER_TARIK', '${name}')" class="bg-red-600 text-white text-[10px] font-black px-4 py-2 rounded-lg mt-3 shadow-lg uppercase">Tarik Poin</button>
+                        </div>
+                    </div>
+                </div>`;
             });
             document.getElementById('driver-list').innerHTML = html || '<p class="text-center py-10 opacity-20">No Driver Data</p>';
         };
 
         window.openModal = function(mode, extra = '') {
-            const modal = document.getElementById('modal-global'), list = document.getElementById('modal-content-list'), 
-                  title = document.getElementById('modal-title'), subtitle = document.getElementById('modal-subtitle'),
-                  fVal = document.getElementById('footer-value'), fLab = document.getElementById('footer-label'), footer = document.getElementById('modal-footer');
+            const modal = document.getElementById('modal-global'),
+                  list = document.getElementById('modal-content-list'),
+                  title = document.getElementById('modal-title'),
+                  subtitle = document.getElementById('modal-subtitle'),
+                  fVal = document.getElementById('footer-value'),
+                  fLab = document.getElementById('footer-label'),
+                  footer = document.getElementById('modal-footer');
             
             document.getElementById('tarik-poin-area').classList.add('hidden');
-            modal.style.display = 'block'; list.innerHTML = '';
+            modal.style.display = 'block'; 
+            list.innerHTML = '';
             let html = '', total = 0;
 
             if (mode === 'REKAP_OFFLINE' || mode === 'REKAP_ONLINE') {
                 const isOff = mode === 'REKAP_OFFLINE';
                 title.innerText = isOff ? "KAS OFFLINE" : "KAS ONLINE";
                 subtitle.innerText = "RIWAYAT TRANSAKSI";
-                footer.style.backgroundColor = isOff ? "#9333ea" : "#059669"; fLab.innerText = "SALDO";
+                footer.style.backgroundColor = isOff ? "#9333ea" : "#059669"; 
+                fLab.innerText = "SALDO";
                 window.cashflowRaw.filter(x => {
                     const d = (x.description||'').toUpperCase();
                     const isOn = (x.isOnline === true || x.category === "ONLINE PAYMENT" || d.includes("QRIS") || d.includes("TRANSFER"));
                     return isOff ? !isOn : isOn;
                 }).forEach(x => {
-                    const amt = x.type === 'out' ? -x.amount : x.amount; total += amt;
-                    html += `<div class="list-item-row"><div class="flex items-center gap-3"><div class="w-10 h-10 bg-white/10 rounded-full flex items-center justify-center text-white"><i class="fas ${isOff?'fa-money-bill-wave':'fa-globe'}"></i></div><div><p class="font-bold text-sm uppercase">${x.description || x.category}</p><p class="text-[10px] opacity-50">${x.timestamp?.toDate().toLocaleString()}</p></div></div><p class="font-black ${x.type==='out'?'text-red-400':'text-emerald-400'}">${amt.toLocaleString()}</p></div>`;
+                    const amt = x.type === 'out' ? -x.amount : x.amount; 
+                    total += amt;
+                    html += `<div class="list-item-row">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 bg-white/10 rounded-full flex items-center justify-center text-white">
+                                <i class="fas ${isOff?'fa-money-bill-wave':'fa-globe'}"></i>
+                            </div>
+                            <div>
+                                <p class="font-bold text-sm uppercase">${x.description || x.category}</p>
+                                <p class="text-[10px] opacity-50">${x.timestamp?.toDate().toLocaleString()}</p>
+                            </div>
+                        </div>
+                        <p class="font-black ${x.type==='out'?'text-red-400':'text-emerald-400'}">${amt.toLocaleString()}</p>
+                    </div>`;
                 });
                 fVal.innerText = "Rp " + total.toLocaleString();
 
             } else if (mode.startsWith('KOPI')) {
                 const isH = mode === 'KOPI_HARI';
-                title.innerText = "KOPI SHAKA"; subtitle.innerText = isH ? "HARI INI" : "BULAN INI";
-                footer.style.backgroundColor = "#6366f1"; fLab.innerText = "TOTAL";
+                title.innerText = "KOPI SHAKA"; 
+                subtitle.innerText = isH ? "HARI INI" : "BULAN INI";
+                footer.style.backgroundColor = "#6366f1"; 
+                fLab.innerText = "TOTAL";
                 const limit = isH ? new Date(new Date().setHours(0,0,0,0)).getTime() : new Date(new Date().getFullYear(), new Date().getMonth(), 1).getTime();
-                window.kopiRaw.filter(d => (d.tgl.seconds?d.tgl.seconds*1000:new Date(d.tgl).getTime()) >= limit).sort((a,b) => (b.tgl.seconds||0) - (a.tgl.seconds||0)).forEach(x => {
-                    const v = Number(x.total) || 0; total += v;
-                    const checkStr = `${x.note} ${x.pembayaran} ${x.metode_pembayaran} ${x.metode}`.toUpperCase();
-                    const isQ = checkStr.includes("QRIS") || checkStr.includes("TRANSFER") || checkStr.includes("ONLINE");
-                    const namaPemesan = x.nama || x.pembeli || x.customer || "TANPA NAMA";
-                    html += `<div class="list-item-row"><div class="flex items-center gap-3"><div class="w-10 h-10 bg-white/10 rounded-full flex items-center justify-center text-white"><i class="fas ${isQ?'fa-qrcode text-cyan-400':'fa-mug-hot text-emerald-400'}"></i></div><div><p class="font-bold text-sm uppercase">${namaPemesan}</p><p class="text-[10px] opacity-50">${window.formatDate(x.tgl)} (${isQ?'QRIS':'CASH'})</p></div></div><p class="font-black text-white">${v.toLocaleString()}</p></div>`;
-                });
+                window.kopiRaw.filter(d => (d.tgl.seconds?d.tgl.seconds*1000:new Date(d.tgl).getTime()) >= limit)
+                    .sort((a,b) => (b.tgl.seconds||0) - (a.tgl.seconds||0))
+                    .forEach(x => {
+                        const v = Number(x.total) || 0; 
+                        total += v;
+                        const checkStr = `${x.note} ${x.pembayaran} ${x.metode_pembayaran} ${x.metode}`.toUpperCase();
+                        const isQ = checkStr.includes("QRIS") || checkStr.includes("TRANSFER") || checkStr.includes("ONLINE");
+                        const namaPemesan = x.nama || x.pembeli || x.customer || "TANPA NAMA";
+                        html += `<div class="list-item-row">
+                            <div class="flex items-center gap-3">
+                                <div class="w-10 h-10 bg-white/10 rounded-full flex items-center justify-center text-white">
+                                    <i class="fas ${isQ?'fa-qrcode text-cyan-400':'fa-mug-hot text-emerald-400'}"></i>
+                                </div>
+                                <div>
+                                    <p class="font-bold text-sm uppercase">${namaPemesan}</p>
+                                    <p class="text-[10px] opacity-50">${window.formatDate(x.tgl)} (${isQ?'QRIS':'CASH'})</p>
+                                </div>
+                            </div>
+                            <p class="font-black text-white">${v.toLocaleString()}</p>
+                        </div>`;
+                    });
                 fVal.innerText = "Rp " + total.toLocaleString();
 
             } else if (mode === 'DRIVER' || mode === 'DRIVER_TARIK') {
                 const drv = extra.toUpperCase().trim();
-                title.innerText = drv; subtitle.innerText = "POIN ACTIVITY";
-                footer.style.backgroundColor = "#0f172a"; fLab.innerText = "INFO"; fVal.innerText = "POIN DETAIL";
+                title.innerText = drv; 
+                subtitle.innerText = "POIN ACTIVITY";
+                footer.style.backgroundColor = "#0f172a"; 
+                fLab.innerText = "INFO"; 
+                fVal.innerText = "POIN DETAIL";
                 
                 if(mode === 'DRIVER_TARIK') { 
                     document.getElementById('tarik-poin-area').classList.remove('hidden'); 
@@ -492,24 +617,64 @@
                 }
 
                 laundryRaw.filter(o => o.driverName?.toUpperCase().trim() === drv).forEach(o => {
-                    html += `<div class="list-item-row"><div class="flex items-center gap-3"><div class="w-10 h-10 bg-blue-500/20 text-blue-400 rounded-full flex items-center justify-center shadow-md"><i class="fas fa-tshirt"></i></div><div><p class="font-bold text-sm uppercase">LAUNDRY</p><p class="text-[9px] text-white/50">${o.tanggalSelesai || 'Completed'}</p></div></div><p class="font-black text-emerald-400">+500</p></div>`;
+                    html += `<div class="list-item-row">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 bg-blue-500/20 text-blue-400 rounded-full flex items-center justify-center shadow-md"><i class="fas fa-tshirt"></i></div>
+                            <div>
+                                <p class="font-bold text-sm uppercase">LAUNDRY</p>
+                                <p class="text-[9px] text-white/50">${o.tanggalSelesai || 'Completed'}</p>
+                            </div>
+                        </div>
+                        <p class="font-black text-emerald-400">+500</p>
+                    </div>`;
                 });
                 if(window.dataDeliv) window.dataDeliv.filter(o => o.driver?.toUpperCase().trim()===drv && (o.status==="SELESAI"||o.status==="delivered")).forEach(o => {
-                    html += `<div class="list-item-row"><div class="flex items-center gap-3"><div class="w-10 h-10 bg-emerald-500/20 text-emerald-400 rounded-full flex items-center justify-center shadow-md"><i class="fas fa-motorcycle"></i></div><div><p class="font-bold text-sm uppercase">DELIVERY</p><p class="text-[9px] text-white/50">${window.formatDate(o.createdAt)}</p></div></div><p class="font-black text-emerald-400">+500</p></div>`;
+                    html += `<div class="list-item-row">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 bg-emerald-500/20 text-emerald-400 rounded-full flex items-center justify-center shadow-md"><i class="fas fa-motorcycle"></i></div>
+                            <div>
+                                <p class="font-bold text-sm uppercase">DELIVERY</p>
+                                <p class="text-[9px] text-white/50">${window.formatDate(o.createdAt)}</p>
+                            </div>
+                        </div>
+                        <p class="font-black text-emerald-400">+500</p>
+                    </div>`;
                 });
                 poInOutRaw.filter(o => o.note?.toUpperCase().trim() === drv).forEach(o => {
-                    html += `<div class="list-item-row border-l-4 border-red-500"><div class="flex items-center gap-3"><div class="w-10 h-10 bg-red-500/20 text-red-400 rounded-full flex items-center justify-center shadow-md"><i class="fas fa-hand-holding-usd"></i></div><div><p class="font-bold text-sm uppercase text-red-400">TARIK POIN</p><p class="text-[9px] text-white/50">${new Date(o.time).toLocaleString()}</p></div></div><p class="font-black text-red-400">-${o.qty.toLocaleString()}</p></div>`;
+                    html += `<div class="list-item-row border-l-4 border-red-500">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 bg-red-500/20 text-red-400 rounded-full flex items-center justify-center shadow-md"><i class="fas fa-hand-holding-usd"></i></div>
+                            <div>
+                                <p class="font-bold text-sm uppercase text-red-400">TARIK POIN</p>
+                                <p class="text-[9px] text-white/50">${new Date(o.time).toLocaleString()}</p>
+                            </div>
+                        </div>
+                        <p class="font-black text-red-400">-${o.qty.toLocaleString()}</p>
+                    </div>`;
                 });
             } else if (mode === 'STOK') {
                 title.innerText = (extra === 'IKAN' ? 'IKAN BANDENG' : (extra === 'IKANLAUT' ? 'IKAN LAUT' : extra));
                 subtitle.innerText = "LOG STOK";
-                footer.style.backgroundColor = "#1e293b"; fLab.innerText = "TOTAL SISA";
-                flowStokRaw.filter(x => (extra==='CRISPY'?(x.type==='CRISPY'||x.type==='AYAM CRISPY'):x.type===extra)).sort((a,b)=>b.time-a.time).forEach(x => {
-                    const isIn = (x.status==='MASUK'||x.status==='TAMBAH');
-                    html += `<div class="list-item-row"><div class="flex items-center gap-3"><div class="w-10 h-10 bg-white/10 rounded-full flex items-center justify-center text-white"><i class="fas fa-box"></i></div><div><p class="font-bold text-sm uppercase">${x.status} - ${x.note || ''}</p><p class="text-[10px] opacity-50">${new Date(x.time).toLocaleString()}</p></div></div><p class="text-lg font-black ${isIn?'text-emerald-400':'text-red-400'}">${isIn?'+':''}${x.qty}</p></div>`;
-                });
+                footer.style.backgroundColor = "#1e293b"; 
+                fLab.innerText = "TOTAL SISA";
+                flowStokRaw.filter(x => (extra==='CRISPY'?(x.type==='CRISPY'||x.type==='AYAM CRISPY'):x.type===extra))
+                    .sort((a,b)=>b.time-a.time)
+                    .forEach(x => {
+                        const isIn = (x.status==='MASUK'||x.status==='TAMBAH');
+                        html += `<div class="list-item-row">
+                            <div class="flex items-center gap-3">
+                                <div class="w-10 h-10 bg-white/10 rounded-full flex items-center justify-center text-white"><i class="fas fa-box"></i></div>
+                                <div>
+                                    <p class="font-bold text-sm uppercase">${x.status} - ${x.note || ''}</p>
+                                    <p class="text-[10px] opacity-50">${new Date(x.time).toLocaleString()}</p>
+                                </div>
+                            </div>
+                            <p class="text-lg font-black ${isIn?'text-emerald-400':'text-red-400'}">${isIn?'+':''}${x.qty}</p>
+                        </div>`;
+                    });
                 fVal.innerText = document.getElementById('stok-'+extra.toLowerCase()).innerText;
             }
+
             list.innerHTML = html || '<div class="text-center py-20 opacity-20 font-black">TIDAK ADA DATA</div>';
         };
 
@@ -563,7 +728,7 @@
 
             } catch (error) {
                 console.error("Gagal tarik poin:", error);
-                alert("GAGAL memproses penarikan!\n\nPesan error: " + (error.message || "Unknown error") + "\n\nCek koneksi & coba lagi.");
+                alert("GAGAL memproses penarikan!\n\nPesan error: " + (error.message || "Unknown error") + "\n\nCek koneksi internet & coba lagi.");
             } finally {
                 loading.classList.add('hidden');
                 tarikBtn.disabled = false;
