@@ -111,17 +111,88 @@
         .border-driver-2 { border-left: 8px solid #f59e0b; }
         .border-driver-3 { border-left: 8px solid #ec4899; }
         .border-driver-4 { border-left: 8px solid #06b6d4; }
+
+ /* Typing tetap, tapi lebih aman di mobile */
+.typing {
+    display: inline-block;
+    overflow: hidden;
+    white-space: nowrap;
+    border-right: 0.15em solid #FFD700;
+    animation: typing 3s steps(30, end) forwards, blink-caret 0.8s step-end infinite;
+    max-width: 100%;
+}
+
+@keyframes typing {
+    from { width: 0 }
+    to   { width: 100% }
+}
+
+/* Cursor lebih halus */
+.cursor {
+    animation: blink 1.1s step-end infinite;
+}
+
+/* Pulse glow ACCEPT - dikecilin efeknya di mobile */
+.animate-pulse-glow {
+    animation: pulse-glow 2.2s infinite;
+}
+@keyframes pulse-glow {
+    0%, 100% { text-shadow: 0 0 15px #22c55e, 0 0 30px #22c55e; }
+    50%      { text-shadow: 0 0 30px #22c55e, 0 0 60px #22c55e; }
+}
+
+/* Pastikan teks tidak overflow di HP */
+#boss-chulu, #fake-password {
+    max-width: 100%;
+    overflow: hidden;
+}
+
     </style>
 </head>
 <body class="antialiased">
 
-    <div id="login-screen">
-        <div class="login-box">
-            <div class="crown-container"><i class="fas fa-crown crown-icon"></i></div>
-            <h2 class="text-slate-900 text-4xl font-black italic uppercase mb-10">PAK BOSS</h2>
-            <button onclick="unlockDashboard()" class="w-full bg-slate-900 text-white font-black py-5 rounded-2xl shadow-2xl active:scale-95 transition-all uppercase">MASUK SISTEM</button>
+  <div id="login-screen" class="fixed inset-0 bg-black flex items-center justify-center z-[9999] transition-opacity duration-700">
+    <div id="login-initial" class="text-center w-full max-w-xs sm:max-w-sm px-5 sm:px-8">
+        <div class="crown-container mx-auto mb-6 w-24 h-24 sm:w-32 sm:h-32">
+            <i class="fas fa-crown crown-icon text-5xl sm:text-6xl"></i>
+        </div>
+        <h2 class="text-slate-900 text-4xl sm:text-5xl font-black italic uppercase mb-10 tracking-wide">PAK BOSS</h2>
+        <button onclick="startBossSequence()" 
+                class="w-full bg-gradient-to-r from-slate-900 to-black text-white font-black text-lg sm:text-xl py-5 sm:py-6 rounded-3xl shadow-2xl hover:shadow-gold active:scale-95 transition-all uppercase tracking-widest border-2 border-yellow-600/40">
+            MASUK SISTEM
+        </button>
+    </div>
+
+    <!-- Sequence animasi -->
+    <div id="boss-sequence" class="hidden flex flex-col items-center justify-center text-center space-y-8 sm:space-y-12 w-full max-w-md sm:max-w-lg px-6 sm:px-10">
+        <!-- 1. BOSS CHULU -->
+        <div class="w-full max-w-[90%] sm:max-w-full">
+            <div class="bg-gradient-to-r from-yellow-600/15 to-amber-800/15 backdrop-blur-xl border border-yellow-500/30 rounded-2xl sm:rounded-3xl p-5 sm:p-8 shadow-xl">
+                <div id="boss-chulu" class="text-4xl sm:text-5xl md:text-6xl font-black text-yellow-400 tracking-wider font-mono overflow-hidden whitespace-nowrap">
+                    <span class="typing inline-block max-w-full"></span><span class="cursor">|</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- 2. Password simulasi -->
+        <div class="w-full max-w-[85%] sm:max-w-sm">
+            <div class="bg-black/70 backdrop-blur-xl border border-red-600/30 rounded-xl sm:rounded-2xl p-5 sm:p-6 shadow-inner">
+                <p class="text-red-300 text-xs sm:text-sm uppercase tracking-widest mb-2 sm:mb-3 font-bold">AUTHORIZING...</p>
+                <div id="fake-password" class="text-2xl sm:text-3xl font-mono text-red-400 tracking-[0.4em] sm:tracking-[0.5em] overflow-hidden whitespace-nowrap">
+                    <span class="typing inline-block max-w-full"></span><span class="cursor">|</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- 3. ACCEPT -->
+        <div id="accept-box" class="hidden">
+            <div class="text-6xl sm:text-7xl md:text-8xl font-black text-green-400 tracking-widest animate-pulse-glow">
+                ACCEPT
+            </div>
+            <p class="text-green-300/80 mt-3 sm:mt-4 text-base sm:text-xl font-bold uppercase tracking-widest animate-fade-in">Access Granted</p>
         </div>
     </div>
+</div>
 
     <div id="main-dashboard">
 
@@ -408,10 +479,51 @@
             btn.addEventListener('click', () => switchTab(btn.dataset.tab));
         });
 
-        function unlockDashboard() {
-            document.getElementById('login-screen').style.display = 'none';
-            document.getElementById('main-dashboard').style.display = 'block';
+       function startBossSequence() {
+    const initial = document.getElementById('login-initial');
+    const sequence = document.getElementById('boss-sequence');
+    
+    initial.classList.add('hidden');
+    sequence.classList.remove('hidden');
+    
+    // 1. Typing "BOSS CHULU"
+    const chuluEl = document.getElementById('boss-chulu').querySelector('.typing');
+    typeWriter(chuluEl, "BOSS CHULU", 80, () => {
+        // 2. Typing fake password setelah 800ms
+        setTimeout(() => {
+            const passEl = document.getElementById('fake-password').querySelector('.typing');
+            typeWriter(passEl, "************", 60, () => {
+                // 3. Tampilkan ACCEPT
+                setTimeout(() => {
+                    document.getElementById('accept-box').classList.remove('hidden');
+                    
+                    // 4. Hilangkan login screen & tampilkan dashboard setelah 2.2 detik
+                    setTimeout(() => {
+                        document.getElementById('login-screen').style.opacity = '0';
+                        setTimeout(() => {
+                            document.getElementById('login-screen').style.display = 'none';
+                            document.getElementById('main-dashboard').style.display = 'block';
+                        }, 800);
+                    }, 2200);
+                }, 900);
+            });
+        }, 1200);
+    });
+}
+
+function typeWriter(element, text, speed, callback) {
+    let i = 0;
+    element.textContent = '';
+    const interval = setInterval(() => {
+        if (i < text.length) {
+            element.textContent += text.charAt(i);
+            i++;
+        } else {
+            clearInterval(interval);
+            if (callback) callback();
         }
+    }, speed);
+}
 
         function closeModal() {
             document.getElementById('modal-global').style.display = 'none';
