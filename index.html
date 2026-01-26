@@ -14,50 +14,64 @@
 
     <style>
         :root { --gold: #FFD700; --deep-blue: #0A192F; --card-glass: rgba(20, 20, 20, 0.7); }
-        body { margin: 0; font-family: 'Plus Jakarta Sans', sans-serif; background-color: #0A192F; transition: background-color 0.4s ease; overflow-x: hidden; }
-        
-        #login-screen { position: fixed; inset: 0; background: #ffffff; z-index: 9999; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px; }
-        .login-box { background: #ffffff; padding: 40px 30px; border-radius: 40px; border: 2px solid #e2e8f0; width: 100%; max-width: 360px; text-align: center; box-shadow: 0 20px 50px rgba(0,0,0,0.1); }
-        
-        .crown-container {
-            width: 100px; height: 100px; background: #0f172a; border-radius: 50%;
-            display: flex; align-items: center; justify-content: center;
-            margin: 0 auto 24px auto; box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-            position: relative;
-        }
+        body { margin: 0; font-family: 'Plus Jakarta Sans', sans-serif; background-color: #0A192F; color: white; overflow-x: hidden; }
+        #login-screen { position: fixed; inset: 0; background: #ffffff; z-index: 9999; display: flex; align-items: center; justify-content: center; padding: 20px; }
+        .login-box { background: white; padding: 40px 30px; border-radius: 40px; border: 2px solid #e2e8f0; max-width: 360px; text-align: center; box-shadow: 0 20px 50px rgba(0,0,0,0.1); }
+        .crown-container { width: 100px; height: 100px; background: #0f172a; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 24px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); }
         .crown-icon { font-size: 45px; color: var(--gold); animation: crownPulse 2s infinite ease-in-out; }
-        
-        @keyframes crownPulse {
-            0% { transform: scale(1); filter: drop-shadow(0 0 0px rgba(255, 215, 0, 0)); }
-            50% { transform: scale(1.15); filter: drop-shadow(0 0 15px rgba(255, 215, 0, 0.6)); }
-            100% { transform: scale(1); filter: drop-shadow(0 0 0px rgba(255, 215, 0, 0)); }
-        }
+        @keyframes crownPulse { 0%,100% { transform: scale(1); filter: drop-shadow(0 0 0px gold); } 50% { transform: scale(1.12); filter: drop-shadow(0 0 20px gold); } }
 
-        #main-dashboard { display: none; background: radial-gradient(circle at top right, #112240, #0A192F); min-height: 100vh; color: #ffffff; }
-        .stat-card { background: var(--card-glass); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border: 1px solid rgba(255,255,255,0.1); border-radius: 24px; padding: 22px; transition: all 0.3s ease; cursor: pointer; }
-        .stat-card:active { transform: scale(0.95); }
-        .section-title { font-size: 13px; font-weight: 800; letter-spacing: 1.5px; text-transform: uppercase; margin: 30px 0 15px 0; display: flex; align-items: center; gap: 10px; color: #ffffff; }
+        #main-dashboard { display: none; min-height: 100vh; background: radial-gradient(circle at top right, #112240, #0A192F); padding: 1.5rem; padding-bottom: 5rem; }
+        .section-title { font-size: 13px; font-weight: 800; letter-spacing: 1.5px; text-transform: uppercase; margin: 1.5rem 0 1rem; display: flex; align-items: center; gap: 0.5rem; }
         .section-title::after { content: ""; flex: 1; height: 2px; background: linear-gradient(to right, var(--gold), transparent); opacity: 0.3; }
+        .stat-card { background: var(--card-glass); backdrop-filter: blur(12px); border: 1px solid rgba(255,255,255,0.1); border-radius: 1.5rem; padding: 1.375rem; transition: all 0.25s ease; }
+        .stat-card:hover { transform: translateY(-4px); box-shadow: 0 20px 40px rgba(0,0,0,0.3); }
+        .stat-card:active { transform: scale(0.97); }
 
-        #modal-global {
-            display: none; position: fixed; inset: 0; z-index: 10000;
-            background: rgba(10, 25, 47, 0.98); backdrop-filter: blur(25px);
-            padding: 20px; animation: slideUp 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-        @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
-        .modal-container { max-width: 500px; margin: 0 auto; height: 100%; display: flex; flex-direction: column; }
-        .list-item-row { background: rgba(255,255,255,0.03); border-bottom: 1px solid rgba(255,255,255,0.05); padding: 16px 15px; display: flex; justify-content: space-between; align-items: center; }
-        
-        .input-nominal-merah {
-            background: #000 !important; border: 3px solid #fff !important; color: #fff !important;
-            font-size: 32px !important; font-weight: 900 !important; text-align: center;
-            border-radius: 15px; padding: 15px; width: 100%; outline: none;
-        }
+        /* Tab */
+        .tab-bar { display: flex; overflow-x: auto; gap: 0.75rem; padding: 1rem 0; scrollbar-width: none; }
+        .tab-bar::-webkit-scrollbar { display: none; }
+        .tab-btn { flex-shrink: 0; padding: 0.75rem 1.25rem; background: rgba(255,255,255,0.08); border-radius: 9999px; font-weight: 700; font-size: 0.95rem; white-space: nowrap; transition: all 0.25s; border: 1px solid transparent; color: white; }
+        .tab-btn.active { background: var(--gold); color: #0f172a; border-color: var(--gold); box-shadow: 0 0 20px rgba(255,215,0,0.4); }
 
-        .border-driver-0 { border-left: 8px solid #3b82f6; } 
-        .border-driver-1 { border-left: 8px solid #a855f7; } 
-        .border-driver-2 { border-left: 8px solid #f59e0b; } 
-        .border-driver-3 { border-left: 8px solid #ec4899; } 
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+
+        /* Home Icons Grid */
+        .home-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 1.25rem; }
+        .home-card {
+            background: linear-gradient(145deg, rgba(30,41,59,0.7), rgba(15,23,42,0.7));
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 1.5rem;
+            padding: 1.75rem 1rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+            position: relative;
+            overflow: hidden;
+        }
+        .home-card:hover {
+            transform: translateY(-12px) scale(1.05);
+            box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5);
+        }
+        .home-card::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(circle at 30% 20%, rgba(255,215,0,0.08), transparent 60%);
+            opacity: 0;
+            transition: opacity 0.4s;
+        }
+        .home-card:hover::before { opacity: 1; }
+        .home-icon { font-size: 3.5rem; margin-bottom: 1rem; transition: transform 0.4s; }
+        .home-card:hover .home-icon { transform: scale(1.15) rotate(8deg); }
+        .home-label { font-size: 1.1rem; font-weight: 800; letter-spacing: 0.5px; }
+
+        #modal-global { display: none; position: fixed; inset: 0; z-index: 10000; background: rgba(10,25,47,0.98); backdrop-filter: blur(25px); padding: 20px; }
+        .input-nominal-merah { background: #000 !important; border: 3px solid white !important; color: white !important; font-size: 32px !important; font-weight: 900 !important; text-align: center; border-radius: 15px; padding: 15px; width: 100%; }
+        .border-driver-0 { border-left: 8px solid #3b82f6; } .border-driver-1 { border-left: 8px solid #a855f7; }
+        .border-driver-2 { border-left: 8px solid #f59e0b; } .border-driver-3 { border-left: 8px solid #ec4899; }
         .border-driver-4 { border-left: 8px solid #06b6d4; }
     </style>
 </head>
@@ -71,78 +85,150 @@
         </div>
     </div>
 
-    <div id="main-dashboard" class="p-6 pb-12">
-        <header class="flex justify-between items-center mb-10">
+    <div id="main-dashboard">
+
+        <header class="flex justify-between items-center mb-6">
             <div>
-                <h1 class="text-3xl font-black italic uppercase text-white leading-none">MACCA <span class="text-yellow-400">BOSS</span></h1>
+                <h1 class="text-3xl font-black italic uppercase leading-none">MACCA <span class="text-yellow-400">BOSS</span></h1>
                 <p class="text-[10px] font-extrabold bg-blue-600 px-2 py-0.5 rounded mt-1 inline-block uppercase tracking-wider">Authorized Only</p>
             </div>
             <button onclick="location.reload()" class="bg-white/10 p-4 rounded-2xl border border-white/20 text-white"><i class="fas fa-power-off text-red-400"></i></button>
         </header>
 
-        <div class="section-title"><i class="fas fa-vault text-gold"></i> Ringkasan Kas Macca</div>
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
-            <div onclick="openModal('REKAP_OFFLINE')" class="stat-card border-l-4 border-purple-500">
-                <p class="text-white font-bold text-[11px] uppercase opacity-60">Kas Offline (Tunai)</p>
-                <h2 id="val-offline" class="text-4xl font-black italic text-purple-400 mt-1">Rp 0</h2>
-                <div class="flex gap-4 mt-2 opacity-70 text-[10px] font-black uppercase text-white">
-                    <span>In Hari Ini: <span id="val-offline-today" class="text-purple-300">Rp 0</span></span>
+        <!-- Tab Navigation -->
+        <div class="tab-bar mb-6">
+            <button class="tab-btn active" data-tab="home">HOME</button>
+            <button class="tab-btn" data-tab="kas">Ringkasan Kas</button>
+            <button class="tab-btn" data-tab="kopi">Penjualan Kopi</button>
+            <button class="tab-btn" data-tab="stok">Stok Dapur</button>
+            <button class="tab-btn" data-tab="pesanan">Pesanan Online</button>
+            <button class="tab-btn" data-tab="driver">Poin Driver</button>
+        </div>
+
+        <!-- HOME - Dashboard Overview -->
+        <div id="tab-home" class="tab-content active">
+            <div class="section-title"><i class="fas fa-tachometer-alt text-gold"></i> Dashboard Overview</div>
+            <div class="home-grid mt-6">
+                <div class="home-card" onclick="switchTab('kas')">
+                    <i class="fas fa-vault home-icon text-purple-400"></i>
+                    <div class="home-label text-purple-300">Ringkasan Kas</div>
                 </div>
-            </div>
-            <div onclick="openModal('REKAP_ONLINE')" class="stat-card border-l-4 border-emerald-500">
-                <p class="text-white font-bold text-[11px] uppercase opacity-60">Kas Online (Digital)</p>
-                <h2 id="val-online" class="text-4xl font-black italic text-emerald-400 mt-1">Rp 0</h2>
-                <div class="flex gap-4 mt-2 opacity-70 text-[10px] font-black uppercase text-white">
-                    <span>In Hari Ini: <span id="val-online-today" class="text-emerald-300">Rp 0</span></span>
+                <div class="home-card" onclick="switchTab('kopi')">
+                    <i class="fas fa-mug-hot home-icon text-indigo-400"></i>
+                    <div class="home-label text-indigo-300">Penjualan Kopi</div>
+                </div>
+                <div class="home-card" onclick="switchTab('stok')">
+                    <i class="fas fa-boxes home-icon text-orange-400"></i>
+                    <div class="home-label text-orange-300">Stok Dapur</div>
+                </div>
+                <div class="home-card" onclick="switchTab('pesanan')">
+                    <i class="fas fa-motorcycle home-icon text-rose-400"></i>
+                    <div class="home-label text-rose-300">Pesanan Online</div>
+                </div>
+                <div class="home-card" onclick="switchTab('driver')">
+                    <i class="fas fa-user-check home-icon text-cyan-400"></i>
+                    <div class="home-label text-cyan-300">Poin Driver</div>
                 </div>
             </div>
         </div>
 
-        <div class="section-title"><i class="fas fa-wallet text-indigo-400"></i> Penjualan Kopi Shaka</div>
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
-            <div onclick="openModal('KOPI_HARI')" class="stat-card border-l-4 border-indigo-500">
-                <p class="text-white font-bold text-[11px] uppercase opacity-60">Kopi Shaka (Hari Ini)</p>
-                <h2 id="kopi-hari" class="text-4xl font-black italic text-indigo-400 mt-1">Rp 0</h2>
-                <div class="flex gap-4 mt-2 opacity-70 text-[10px] font-black uppercase text-white">
-                    <span class="text-cyan-300">QRIS: <span id="kopi-qris-hari">Rp 0</span></span>
-                    <span class="text-emerald-300">CASH: <span id="kopi-cash-hari">Rp 0</span></span>
+        <!-- Tab Ringkasan Kas -->
+        <div id="tab-kas" class="tab-content">
+            <div class="section-title"><i class="fas fa-vault text-gold"></i> Ringkasan Kas Macca</div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
+                <div onclick="openModal('REKAP_OFFLINE')" class="stat-card border-l-4 border-purple-500">
+                    <p class="font-bold text-[11px] uppercase opacity-60">Kas Offline (Tunai)</p>
+                    <h2 id="val-offline" class="text-4xl font-black italic text-purple-400 mt-1">Rp 0</h2>
+                    <div class="flex gap-4 mt-2 opacity-70 text-[10px] font-black uppercase">
+                        <span>In Hari Ini: <span id="val-offline-today" class="text-purple-300">Rp 0</span></span>
+                    </div>
+                </div>
+                <div onclick="openModal('REKAP_ONLINE')" class="stat-card border-l-4 border-emerald-500">
+                    <p class="font-bold text-[11px] uppercase opacity-60">Kas Online (Digital)</p>
+                    <h2 id="val-online" class="text-4xl font-black italic text-emerald-400 mt-1">Rp 0</h2>
+                    <div class="flex gap-4 mt-2 opacity-70 text-[10px] font-black uppercase">
+                        <span>In Hari Ini: <span id="val-online-today" class="text-emerald-300">Rp 0</span></span>
+                    </div>
                 </div>
             </div>
-            <div onclick="openModal('KOPI_BULAN')" class="stat-card border-l-4 border-gold">
-                <p class="text-white font-bold text-[11px] uppercase opacity-60">Kopi Shaka (Bulan Ini)</p>
-                <h2 id="kopi-bulan" class="text-4xl font-black italic text-gold mt-1">Rp 0</h2>
+        </div>
+
+        <!-- Tab Penjualan Kopi -->
+        <div id="tab-kopi" class="tab-content">
+            <div class="section-title"><i class="fas fa-wallet text-indigo-400"></i> Penjualan Kopi Shaka</div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
+                <div onclick="openModal('KOPI_HARI')" class="stat-card border-l-4 border-indigo-500">
+                    <p class="font-bold text-[11px] uppercase opacity-60">Kopi Shaka (Hari Ini)</p>
+                    <h2 id="kopi-hari" class="text-4xl font-black italic text-indigo-400 mt-1">Rp 0</h2>
+                    <div class="flex gap-4 mt-2 opacity-70 text-[10px] font-black uppercase">
+                        <span class="text-cyan-300">QRIS: <span id="kopi-qris-hari">Rp 0</span></span>
+                        <span class="text-emerald-300">CASH: <span id="kopi-cash-hari">Rp 0</span></span>
+                    </div>
+                </div>
+                <div onclick="openModal('KOPI_BULAN')" class="stat-card border-l-4 border-gold">
+                    <p class="font-bold text-[11px] uppercase opacity-60">Kopi Shaka (Bulan Ini)</p>
+                    <h2 id="kopi-bulan" class="text-4xl font-black italic text-gold mt-1">Rp 0</h2>
+                </div>
             </div>
         </div>
 
-        <div class="section-title"><i class="fas fa-boxes text-orange-500"></i> Status Stok Dapur</div>
-        <div class="grid grid-cols-2 md:grid-cols-5 gap-3 mb-8 text-white">
-            <div onclick="openModal('STOK', 'MENTAH')" class="stat-card border-t-4 border-orange-500 text-center py-5">
-                <p class="text-[10px] font-black uppercase mb-1">A. Mentah</p>
-                <h4 id="stok-mentah" class="text-3xl font-black italic text-orange-400">0</h4>
-            </div>
-            <div onclick="openModal('STOK', 'UNGKEP')" class="stat-card border-t-4 border-yellow-500 text-center py-5">
-                <p class="text-[10px] font-black uppercase mb-1">A. Ungkep</p>
-                <h4 id="stok-ungkep" class="text-3xl font-black italic text-yellow-400">0</h4>
-            </div>
-            <div onclick="openModal('STOK', 'CRISPY')" class="stat-card border-t-4 border-red-500 text-center py-5">
-                <p class="text-[10px] font-black uppercase mb-1">A. Crispy</p>
-                <h4 id="stok-crispy" class="text-3xl font-black italic text-red-400">0</h4>
-            </div>
-            <div onclick="openModal('STOK', 'IKAN')" class="stat-card border-t-4 border-emerald-500 text-center py-5">
-                <p class="text-[10px] font-black uppercase mb-1">I. Bandeng</p>
-                <h4 id="stok-ikan" class="text-3xl font-black italic text-emerald-400">0</h4>
-            </div>
-            <div onclick="openModal('STOK', 'IKANLAUT')" class="stat-card border-t-4 border-cyan-500 text-center py-5">
-                <p class="text-[10px] font-black uppercase mb-1">I. Laut</p>
-                <h4 id="stok-ikanlaut" class="text-3xl font-black italic text-cyan-400">0</h4>
+        <!-- Tab Stok Dapur -->
+        <div id="tab-stok" class="tab-content">
+            <div class="section-title"><i class="fas fa-boxes text-orange-500"></i> Status Stok Dapur</div>
+            <div class="grid grid-cols-2 md:grid-cols-5 gap-3 mb-8 text-white">
+                <div onclick="openModal('STOK', 'MENTAH')" class="stat-card border-t-4 border-orange-500 text-center py-5">
+                    <p class="text-[10px] font-black uppercase mb-1">A. Mentah</p>
+                    <h4 id="stok-mentah" class="text-3xl font-black italic text-orange-400">0</h4>
+                </div>
+                <div onclick="openModal('STOK', 'UNGKEP')" class="stat-card border-t-4 border-yellow-500 text-center py-5">
+                    <p class="text-[10px] font-black uppercase mb-1">A. Ungkep</p>
+                    <h4 id="stok-ungkep" class="text-3xl font-black italic text-yellow-400">0</h4>
+                </div>
+                <div onclick="openModal('STOK', 'CRISPY')" class="stat-card border-t-4 border-red-500 text-center py-5">
+                    <p class="text-[10px] font-black uppercase mb-1">A. Crispy</p>
+                    <h4 id="stok-crispy" class="text-3xl font-black italic text-red-400">0</h4>
+                </div>
+                <div onclick="openModal('STOK', 'IKAN')" class="stat-card border-t-4 border-emerald-500 text-center py-5">
+                    <p class="text-[10px] font-black uppercase mb-1">I. Bandeng</p>
+                    <h4 id="stok-ikan" class="text-3xl font-black italic text-emerald-400">0</h4>
+                </div>
+                <div onclick="openModal('STOK', 'IKANLAUT')" class="stat-card border-t-4 border-cyan-500 text-center py-5">
+                    <p class="text-[10px] font-black uppercase mb-1">I. Laut</p>
+                    <h4 id="stok-ikanlaut" class="text-3xl font-black italic text-cyan-400">0</h4>
+                </div>
             </div>
         </div>
 
-        <div class="section-title"><i class="fas fa-motorcycle text-cyan-400"></i> Rekap Poin Driver</div>
-        <div id="driver-list" class="space-y-4"></div>
+        <!-- Tab Pesanan Online -->
+        <div id="tab-pesanan" class="tab-content">
+            <div class="section-title"><i class="fas fa-motorcycle text-rose-400"></i> Pendapatan Pesanan Online</div>
+            <div class="grid grid-cols-1 gap-4 mb-8">
+                <div onclick="openModal('PESANAN_MASUK')" class="stat-card border-l-4 border-rose-500 cursor-pointer">
+                    <p class="font-bold text-[11px] uppercase opacity-60">Total Pesanan Online</p>
+                    <h2 id="val-pendapatan-pesanan-masuk" class="text-4xl font-black italic text-rose-400 mt-1">Rp 0</h2>
+                    <div class="mt-2 opacity-70 text-[10px] font-black uppercase">(Real-time dari Kasir Macca New)</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tab Poin Driver -->
+        <div id="tab-driver" class="tab-content">
+            <div class="section-title"><i class="fas fa-motorcycle text-cyan-400"></i> Rekap Poin Driver</div>
+            <div id="driver-list" class="space-y-4"></div>
+        </div>
+
     </div>
 
+    <!-- Modal (sama seperti sebelumnya) -->
     <div id="modal-global">
+        <div id="loading-overlay" class="hidden fixed inset-0 bg-black/70 backdrop-blur-md z-[10001] flex items-center justify-center pointer-events-none">
+            <div class="text-center text-white px-8 py-10 bg-slate-900/80 rounded-3xl border border-yellow-500/30 shadow-2xl">
+                <i class="fas fa-spinner fa-spin text-6xl mb-6 text-yellow-400"></i>
+                <p class="text-2xl font-black uppercase tracking-wide">Memproses Penarikan</p>
+                <p class="text-sm mt-3 opacity-80">Mohon tunggu sebentar, jangan tutup halaman...</p>
+            </div>
+        </div>
+
         <div class="modal-container">
             <div class="flex justify-between items-center mb-6 text-white">
                 <div>
@@ -170,6 +256,7 @@
     </div>
 
     <script type="module">
+        // ... (sama persis seperti versi sebelumnya - import Firebase, onSnapshot untuk cash, kopi, deliv)
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
         import { getFirestore, collection, onSnapshot, query, orderBy } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
@@ -189,7 +276,6 @@
             return d.toLocaleString('id-ID', { day:'2-digit', month:'2-digit', year:'numeric', hour:'2-digit', minute:'2-digit' });
         };
 
-        // KAS SYNC
         onSnapshot(query(collection(dbCash, "transactions"), orderBy("timestamp", "desc")), (snap) => {
             let off = 0, on = 0, offT = 0, onT = 0;
             const today = new Date().toLocaleDateString("en-CA");
@@ -210,7 +296,6 @@
             document.getElementById("val-online-today").innerText = "Rp " + onT.toLocaleString();
         });
 
-        // KOPI SYNC
         onSnapshot(collection(dbKopi, "transactions"), (snap) => {
             window.kopiRaw = snap.docs.map(d => d.data());
             let hTotal=0, hQris=0, hCash=0, bTotal=0;
@@ -226,10 +311,7 @@
                 const checkStr = `${d.note} ${d.pembayaran} ${d.metode_pembayaran} ${d.metode}`.toUpperCase();
                 const isQ = checkStr.includes("QRIS") || checkStr.includes("TRANSFER") || checkStr.includes("ONLINE");
 
-                if(time >= startDay) { 
-                    hTotal += v; 
-                    if(isQ) hQris += v; else hCash += v; 
-                }
+                if(time >= startDay) { hTotal += v; if(isQ) hQris += v; else hCash += v; }
                 if(time >= startMonth) bTotal += v;
             });
             document.getElementById('kopi-hari').innerText = "Rp " + hTotal.toLocaleString();
@@ -245,20 +327,49 @@
     </script>
 
     <script>
+        // Firebase Realtime DB configs (sama seperti sebelumnya)
         const cfgStok = { apiKey: "AIzaSyCCmKgOnBFpluEKuycYjrBRm4zbxrHI1P8", databaseURL: "https://stocklistmacca-default-rtdb.asia-southeast1.firebasedatabase.app" };
         const cfgLaundry = { apiKey: "AIzaSyA-1GyDIS77tlL0vpiZS_ZLvx1S71TnkQU", databaseURL: "https://awwabim-laundry-default-rtdb.firebaseio.com" };
         firebase.initializeApp(cfgStok, "STOK_APP");
         firebase.initializeApp(cfgLaundry, "LAUNDRY_APP");
         const dbStok = firebase.app("STOK_APP").database();
+        const cfgKasirNew = {
+            apiKey: "AIzaSyBWz63o_JFK3Ucvb7IuXI1cNO8SXMHvsEA",
+            databaseURL: "https://kasirmaccanew-default-rtdb.asia-southeast1.firebasedatabase.app"
+        };
+        firebase.initializeApp(cfgKasirNew, "KASIRNEW_APP");
+        const dbKasirNew = firebase.app("KASIRNEW_APP").database();
         const dbLaundry = firebase.app("LAUNDRY_APP").database();
 
         let laundryRaw = [], flowStokRaw = [], poInOutRaw = [], currentDriverTarget = "";
+        let pesananMasukRaw = [], totalPendapatanPesananMasuk = 0;
 
-        function unlockDashboard() { document.getElementById('login-screen').style.display = 'none'; document.getElementById('main-dashboard').style.display = 'block'; }
+        // Tab switching function
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+            document.querySelector(`[data-tab="${tabId}"]`).classList.add('active');
+            document.getElementById(`tab-${tabId}`).classList.add('active');
+        }
+
+        document.querySelectorAll('.tab-btn').forEach(btn => {
+            btn.addEventListener('click', () => switchTab(btn.dataset.tab));
+        });
+
+        function unlockDashboard() {
+            document.getElementById('login-screen').style.display = 'none';
+            document.getElementById('main-dashboard').style.display = 'block';
+        }
+
         function closeModal() { document.getElementById('modal-global').style.display = 'none'; }
-        function formatRibuan(input) { let v = input.value.replace(/[^0-9]/g, ''); input.value = v ? parseInt(v).toLocaleString('id-ID') : ''; }
 
-        // LOGIKA SINKRONISASI STOK YANG DIPERBAIKI (MENAMPUNG IKAN)
+        function formatRibuan(input) {
+            let v = input.value.replace(/[^0-9]/g, '');
+            input.value = v ? parseInt(v).toLocaleString('id-ID') : '';
+        }
+
+        // ... (sisa script Firebase listener stok, laundry, kasirnew, updateDriverStats, openModal, prosesTarikPoin)
+        // Copy dari versi sebelumnya mulai dari dbStok.ref('stok_macca_v14_flow').on('value', ... sampai akhir prosesTarikPoin
         dbStok.ref('stok_macca_v14_flow').on('value', snap => {
             let m=0, u=0, c=0, i=0, il=0; 
             flowStokRaw = []; poInOutRaw = [];
@@ -272,8 +383,8 @@
                     if(type==='MENTAH') m+=flow; 
                     else if(type==='UNGKEP') u+=flow; 
                     else if(type==='CRISPY'||type==='AYAM CRISPY') c+=flow;
-                    else if(type==='IKAN') i+=flow;      // Ikan Bandeng
-                    else if(type==='IKANLAUT') il+=flow; // Ikan Laut
+                    else if(type==='IKAN') i+=flow;      
+                    else if(type==='IKANLAUT') il+=flow; 
                 }
             });
             document.getElementById('stok-mentah').innerText = m; 
@@ -281,13 +392,28 @@
             document.getElementById('stok-crispy').innerText = c;
             document.getElementById('stok-ikan').innerText = i;
             document.getElementById('stok-ikanlaut').innerText = il;
-
             if(window.updateDriverStats) window.updateDriverStats();
         });
 
         dbLaundry.ref('Pesanan').on('value', snap => {
             laundryRaw = []; snap.forEach(c => { if(c.val().status === "SELESAI") laundryRaw.push(c.val()); });
             if(window.updateDriverStats) window.updateDriverStats();
+        });
+
+        dbKasirNew.ref('pesanan_masuk').on('value', snap => {
+            pesananMasukRaw = [];
+            totalPendapatanPesananMasuk = 0;
+            snap.forEach(child => {
+                const pesanan = child.val();
+                if (!pesanan) return;
+                const nominal = Number(pesanan.total_bayar) || 0;
+                if (nominal > 0) {
+                    pesananMasukRaw.push(pesanan);
+                    totalPendapatanPesananMasuk += nominal;
+                }
+            });
+            const el = document.getElementById('val-pendapatan-pesanan-masuk');
+            if (el) el.innerText = "Rp " + totalPendapatanPesananMasuk.toLocaleString('id-ID');
         });
 
         window.updateDriverStats = function() {
@@ -344,9 +470,7 @@
                     const v = Number(x.total) || 0; total += v;
                     const checkStr = `${x.note} ${x.pembayaran} ${x.metode_pembayaran} ${x.metode}`.toUpperCase();
                     const isQ = checkStr.includes("QRIS") || checkStr.includes("TRANSFER") || checkStr.includes("ONLINE");
-                    
                     const namaPemesan = x.nama || x.pembeli || x.customer || "TANPA NAMA";
-
                     html += `<div class="list-item-row"><div class="flex items-center gap-3"><div class="w-10 h-10 bg-white/10 rounded-full flex items-center justify-center text-white"><i class="fas ${isQ?'fa-qrcode text-cyan-400':'fa-mug-hot text-emerald-400'}"></i></div><div><p class="font-bold text-sm uppercase">${namaPemesan}</p><p class="text-[10px] opacity-50">${window.formatDate(x.tgl)} (${isQ?'QRIS':'CASH'})</p></div></div><p class="font-black text-white">${v.toLocaleString()}</p></div>`;
                 });
                 fVal.innerText = "Rp " + total.toLocaleString();
@@ -355,7 +479,18 @@
                 const drv = extra.toUpperCase().trim();
                 title.innerText = drv; subtitle.innerText = "POIN ACTIVITY";
                 footer.style.backgroundColor = "#0f172a"; fLab.innerText = "INFO"; fVal.innerText = "POIN DETAIL";
-                if(mode === 'DRIVER_TARIK') { document.getElementById('tarik-poin-area').classList.remove('hidden'); currentDriverTarget = drv; }
+                
+                if(mode === 'DRIVER_TARIK') { 
+                    document.getElementById('tarik-poin-area').classList.remove('hidden'); 
+                    currentDriverTarget = drv;
+                    document.getElementById('input-nominal-tarik').value = '';
+                    const tarikBtn = document.querySelector('#tarik-poin-area button');
+                    tarikBtn.disabled = false;
+                    tarikBtn.innerHTML = 'KONFIRMASI TARIK';
+                    tarikBtn.classList.remove('opacity-60', 'cursor-not-allowed');
+                    document.getElementById('loading-overlay')?.classList.add('hidden');
+                }
+
                 laundryRaw.filter(o => o.driverName?.toUpperCase().trim() === drv).forEach(o => {
                     html += `<div class="list-item-row"><div class="flex items-center gap-3"><div class="w-10 h-10 bg-blue-500/20 text-blue-400 rounded-full flex items-center justify-center shadow-md"><i class="fas fa-tshirt"></i></div><div><p class="font-bold text-sm uppercase">LAUNDRY</p><p class="text-[9px] text-white/50">${o.tanggalSelesai || 'Completed'}</p></div></div><p class="font-black text-emerald-400">+500</p></div>`;
                 });
@@ -378,15 +513,62 @@
             list.innerHTML = html || '<div class="text-center py-20 opacity-20 font-black">TIDAK ADA DATA</div>';
         };
 
-        window.prosesTarikPoin = function() {
-            const nominal = parseInt(document.getElementById('input-nominal-tarik').value.replace(/[^0-9]/g, ''));
-            if(!nominal || nominal <= 0) return alert("Nominal tidak valid");
-            if(confirm(`Tarik ${nominal.toLocaleString()} poin untuk ${currentDriverTarget}?`)) {
-                dbStok.ref('stok_macca_v14_flow').push({ qty: nominal, type: "POIN_OUT", note: currentDriverTarget, status: "KELUAR", time: Date.now() });
-                window.dbCash.collection("transactions").add({
-                    amount: nominal, category: "PENGELUARAN", description: `TARIK POIN: ${currentDriverTarget}`,
-                    type: "out", isOnline: false, timestamp: new Date()
-                }).then(() => { alert("Poin Berhasil Ditarik!"); closeModal(); });
+        window.prosesTarikPoin = async function() {
+            const inputEl = document.getElementById('input-nominal-tarik');
+            const nominalStr = inputEl.value.replace(/[^0-9]/g, '');
+            const nominal = parseInt(nominalStr) || 0;
+            
+            if (nominal <= 0) {
+                alert("Masukkan nominal penarikan yang valid (minimal 1)");
+                return;
+            }
+
+            const driver = currentDriverTarget;
+            
+            if (!confirm(`Yakin ingin tarik Rp ${nominal.toLocaleString('id-ID')} poin untuk driver:\n${driver} ?`)) return;
+            if (!confirm(`KONFIRMASI AKHIR (TIDAK BISA DIBATALKAN):\n\nTarik: Rp ${nominal.toLocaleString('id-ID')}\nDriver: ${driver}\n\nLanjutkan?`)) return;
+
+            const tarikBtn = document.querySelector('#tarik-poin-area button');
+            tarikBtn.disabled = true;
+            tarikBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> MEMPROSES...';
+            tarikBtn.classList.add('opacity-60', 'cursor-not-allowed');
+
+            const loading = document.getElementById('loading-overlay');
+            loading.classList.remove('hidden');
+
+            try {
+                await dbStok.ref('stok_macca_v14_flow').push({
+                    qty: nominal,
+                    type: "POIN_OUT",
+                    note: driver,
+                    status: "KELUAR",
+                    time: Date.now(),
+                    processedBy: "SUPERADMIN"
+                });
+
+                await window.dbCash.collection("transactions").add({
+                    amount: nominal,
+                    category: "PENGELUARAN",
+                    description: `TARIK POIN DRIVER: ${driver}`,
+                    type: "out",
+                    isOnline: false,
+                    timestamp: new Date(),
+                    note: "Penarikan poin driver - superadmin"
+                });
+
+                alert(`SUKSES!\n\nPenarikan Rp ${nominal.toLocaleString('id-ID')} poin untuk ${driver} telah tercatat.\nSaldo poin sudah dikurangi.`);
+
+                closeModal();
+                if (window.updateDriverStats) window.updateDriverStats();
+
+            } catch (error) {
+                console.error("Gagal tarik poin:", error);
+                alert("GAGAL memproses penarikan!\n\nPesan error: " + (error.message || "Unknown error") + "\n\nCek koneksi & coba lagi.");
+            } finally {
+                loading.classList.add('hidden');
+                tarikBtn.disabled = false;
+                tarikBtn.innerHTML = 'KONFIRMASI TARIK';
+                tarikBtn.classList.remove('opacity-60', 'cursor-not-allowed');
             }
         };
     </script>
