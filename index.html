@@ -34,47 +34,42 @@
         .tab-content { display: none; }
         .tab-content.active { display: block; }
 
-        .home-container { position: relative; min-height: 60vh; display: flex; justify-content: center; align-items: center; margin: 2rem 0; }
+        /* Home Layout Baru: Foto Tengah, 3 atas - 2 bawah */
+        .home-section { padding: 2rem 0; }
+        .central-photo-container { display: flex; justify-content: center; margin: 1.5rem 0; }
         .central-photo {
-            width: 140px; height: 140px;
+            width: 130px; height: 130px;
             border-radius: 50%;
             overflow: hidden;
             border: 4px solid var(--gold);
-            box-shadow: 0 0 30px rgba(255,215,0,0.5), inset 0 0 20px rgba(255,215,0,0.2);
-            z-index: 10;
-            background: #111;
+            box-shadow: 0 0 35px rgba(255,215,0,0.5);
             cursor: pointer;
             transition: all 0.3s;
         }
         .central-photo:hover { transform: scale(1.08); box-shadow: 0 0 50px rgba(255,215,0,0.7); }
         .central-photo img { width: 100%; height: 100%; object-fit: cover; }
 
-        .icon-orbit { position: absolute; width: 100%; height: 100%; display: flex; justify-content: center; align-items: center; }
+        .icon-row { display: flex; justify-content: center; gap: 1rem; flex-wrap: wrap; margin: 1rem 0; }
         .orbit-item {
-            position: absolute;
-            width: 110px; height: 110px;
-            transition: all 0.4s ease;
+            width: 100px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
             cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
         }
-        .orbit-item:hover { transform: scale(1.15) translateY(-10px); }
-        .orbit-item i { font-size: 3.5rem; }
-        .orbit-item .label { font-size: 0.95rem; font-weight: 700; margin-top: 0.5rem; text-align: center; }
-
-        #orbit-1 { top: 5%; left: 15%; }
-        #orbit-2 { top: 5%; right: 15%; }
-        #orbit-3 { bottom: 10%; left: 10%; }
-        #orbit-4 { bottom: 10%; right: 10%; }
-        #orbit-5 { bottom: -10%; left: 50%; transform: translateX(-50%); }
-
-        @media (max-width: 640px) {
-            .central-photo { width: 120px; height: 120px; }
-            .orbit-item { width: 90px; height: 90px; }
-            .orbit-item i { font-size: 2.8rem; }
-            #orbit-1, #orbit-2 { top: 0%; }
-            #orbit-3, #orbit-4 { bottom: 5%; }
-            #orbit-5 { bottom: -5%; }
+        .orbit-item:hover { transform: translateY(-8px) scale(1.08); }
+        .orbit-item i { font-size: 2.8rem; margin-bottom: 0.5rem; }
+        .orbit-item .label {
+            font-size: 0.9rem;
+            font-weight: 700;
+            line-height: 1.2;
+            max-width: 90px;
         }
 
+        /* Lightbox */
         #photo-lightbox {
             display: none;
             position: fixed;
@@ -147,39 +142,45 @@
             <button class="tab-btn" data-tab="driver">Poin Driver</button>
         </div>
 
-        <div id="tab-home" class="tab-content active">
+        <div id="tab-home" class="tab-content active home-section">
             <div class="section-title text-center"><i class="fas fa-crown text-gold"></i> Selamat Datang, Pak Boss</div>
             
-            <div class="home-container">
+            <div class="central-photo-container">
                 <div class="central-photo" onclick="openPhotoLightbox()">
                     <img src="https://lesehanmacca.com/pakboss.png" alt="Pak Boss">
                 </div>
+            </div>
 
-                <div class="icon-orbit">
-                    <div id="orbit-1" class="orbit-item" onclick="switchTab('kas')">
-                        <i class="fas fa-vault text-purple-400"></i>
-                        <div class="label text-purple-300">Ringkasan Kas</div>
-                    </div>
-                    <div id="orbit-2" class="orbit-item" onclick="switchTab('kopi')">
-                        <i class="fas fa-mug-hot text-indigo-400"></i>
-                        <div class="label text-indigo-300">Penjualan Kopi</div>
-                    </div>
-                    <div id="orbit-3" class="orbit-item" onclick="switchTab('stok')">
-                        <i class="fas fa-boxes text-orange-400"></i>
-                        <div class="label text-orange-300">Stok Dapur</div>
-                    </div>
-                    <div id="orbit-4" class="orbit-item" onclick="switchTab('pesanan')">
-                        <i class="fas fa-motorcycle text-rose-400"></i>
-                        <div class="label text-rose-300">Pesanan Online</div>
-                    </div>
-                    <div id="orbit-5" class="orbit-item" onclick="switchTab('driver')">
-                        <i class="fas fa-user-check text-cyan-400"></i>
-                        <div class="label text-cyan-300">Poin Driver</div>
-                    </div>
+            <!-- 3 icon di atas -->
+            <div class="icon-row">
+                <div class="orbit-item" onclick="switchTab('kas')">
+                    <i class="fas fa-vault text-purple-400"></i>
+                    <div class="label text-purple-300">Ringkasan Kas</div>
+                </div>
+                <div class="orbit-item" onclick="switchTab('kopi')">
+                    <i class="fas fa-mug-hot text-indigo-400"></i>
+                    <div class="label text-indigo-300">Penjualan Kopi</div>
+                </div>
+                <div class="orbit-item" onclick="switchTab('stok')">
+                    <i class="fas fa-boxes text-orange-400"></i>
+                    <div class="label text-orange-300">Stok Dapur</div>
+                </div>
+            </div>
+
+            <!-- 2 icon di bawah -->
+            <div class="icon-row" style="justify-content: center; gap: 2.5rem;">
+                <div class="orbit-item" onclick="switchTab('pesanan')">
+                    <i class="fas fa-motorcycle text-rose-400"></i>
+                    <div class="label text-rose-300">Pesanan Online</div>
+                </div>
+                <div class="orbit-item" onclick="switchTab('driver')">
+                    <i class="fas fa-user-check text-cyan-400"></i>
+                    <div class="label text-cyan-300">Poin Driver</div>
                 </div>
             </div>
         </div>
 
+        <!-- Tab Kas -->
         <div id="tab-kas" class="tab-content">
             <div class="section-title"><i class="fas fa-vault text-gold"></i> Ringkasan Kas Macca</div>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
@@ -200,6 +201,7 @@
             </div>
         </div>
 
+        <!-- Tab Kopi -->
         <div id="tab-kopi" class="tab-content">
             <div class="section-title"><i class="fas fa-wallet text-indigo-400"></i> Penjualan Kopi Shaka</div>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
@@ -218,6 +220,7 @@
             </div>
         </div>
 
+        <!-- Tab Stok -->
         <div id="tab-stok" class="tab-content">
             <div class="section-title"><i class="fas fa-boxes text-orange-500"></i> Status Stok Dapur</div>
             <div class="grid grid-cols-2 md:grid-cols-5 gap-3 mb-8 text-white">
@@ -244,6 +247,7 @@
             </div>
         </div>
 
+        <!-- Tab Pesanan Online -->
         <div id="tab-pesanan" class="tab-content">
             <div class="section-title"><i class="fas fa-motorcycle text-rose-400"></i> Pendapatan Pesanan Online</div>
             <div class="grid grid-cols-1 gap-4 mb-8">
@@ -255,6 +259,7 @@
             </div>
         </div>
 
+        <!-- Tab Poin Driver -->
         <div id="tab-driver" class="tab-content">
             <div class="section-title"><i class="fas fa-motorcycle text-cyan-400"></i> Rekap Poin Driver</div>
             <div id="driver-list" class="space-y-4"></div>
@@ -262,7 +267,7 @@
 
     </div>
 
-    <!-- Lightbox Foto Pak Boss -->
+    <!-- Lightbox Foto -->
     <div id="photo-lightbox" onclick="closePhotoLightbox()">
         <span id="close-lightbox" onclick="closePhotoLightbox()">×</span>
         <img id="lightbox-img" src="https://lesehanmacca.com/pakboss.png" alt="Pak Boss Full Size">
@@ -359,10 +364,7 @@
                 const checkStr = `${d.note} ${d.pembayaran} ${d.metode_pembayaran} ${d.metode}`.toUpperCase();
                 const isQ = checkStr.includes("QRIS") || checkStr.includes("TRANSFER") || checkStr.includes("ONLINE");
 
-                if(time >= startDay) { 
-                    hTotal += v; 
-                    if(isQ) hQris += v; else hCash += v; 
-                }
+                if(time >= startDay) { hTotal += v; if(isQ) hQris += v; else hCash += v; }
                 if(time >= startMonth) bTotal += v;
             });
             document.getElementById('kopi-hari').innerText = "Rp " + hTotal.toLocaleString();
@@ -485,7 +487,7 @@
         window.updateDriverStats = function() {
             const stats = {};
             laundryRaw.forEach(o => { 
-                const n = o.driverName?.toUpperCase().trim(); 
+                const n=o.driverName?.toUpperCase().trim(); 
                 if(n){ 
                     if(!stats[n]) stats[n]={l:0,d:0,p:0}; 
                     stats[n].l++; 
@@ -657,21 +659,19 @@
                 subtitle.innerText = "LOG STOK";
                 footer.style.backgroundColor = "#1e293b"; 
                 fLab.innerText = "TOTAL SISA";
-                flowStokRaw.filter(x => (extra==='CRISPY'?(x.type==='CRISPY'||x.type==='AYAM CRISPY'):x.type===extra))
-                    .sort((a,b)=>b.time-a.time)
-                    .forEach(x => {
-                        const isIn = (x.status==='MASUK'||x.status==='TAMBAH');
-                        html += `<div class="list-item-row">
-                            <div class="flex items-center gap-3">
-                                <div class="w-10 h-10 bg-white/10 rounded-full flex items-center justify-center text-white"><i class="fas fa-box"></i></div>
-                                <div>
-                                    <p class="font-bold text-sm uppercase">${x.status} - ${x.note || ''}</p>
-                                    <p class="text-[10px] opacity-50">${new Date(x.time).toLocaleString()}</p>
-                                </div>
+                flowStokRaw.filter(x => (extra==='CRISPY'?(x.type==='CRISPY'||x.type==='AYAM CRISPY'):x.type===extra)).sort((a,b)=>b.time-a.time).forEach(x => {
+                    const isIn = (x.status==='MASUK'||x.status==='TAMBAH');
+                    html += `<div class="list-item-row">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 bg-white/10 rounded-full flex items-center justify-center text-white"><i class="fas fa-box"></i></div>
+                            <div>
+                                <p class="font-bold text-sm uppercase">${x.status} - ${x.note || ''}</p>
+                                <p class="text-[10px] opacity-50">${new Date(x.time).toLocaleString()}</p>
                             </div>
-                            <p class="text-lg font-black ${isIn?'text-emerald-400':'text-red-400'}">${isIn?'+':''}${x.qty}</p>
-                        </div>`;
-                    });
+                        </div>
+                        <p class="text-lg font-black ${isIn?'text-emerald-400':'text-red-400'}">${isIn?'+':''}${x.qty}</p>
+                    </div>`;
+                });
                 fVal.innerText = document.getElementById('stok-'+extra.toLowerCase()).innerText;
             }
 
